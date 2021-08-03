@@ -1,7 +1,7 @@
-import * as THREE from "/vendor/threejs/build/three.module.js";
-
 import { BBox } from "../components/BBox.js";
-import { ProjectedScale } from "../components/Scales.js";
+import { RelativeScale } from "../components/Scales.js";
+
+import Emitter from "../../mixins/Emitter.js";
 
 const _settings = {
   color: 0x6cc5ce,
@@ -13,15 +13,19 @@ function Geometry(json, settings) {
   settings = settings || {};
   this.settings = { ..._settings, ...settings };
 
-  this.bbox = new BBox(json.features, settings.z);
-  this.xScale = new ProjectedScale(
-    this.bbox.get().lngs,
-    settings.xDomain || [0, window.innerWidth]
-  );
-  this.yScale = new ProjectedScale(
-    this.bbox.get().lats,
-    settings.yDomain || [0, window.innerHeight]
-  );
+  this.bbox = new BBox(json.features, settings.z, settings.projection);
+  this.xScale =
+    this.xScale ||
+    new RelativeScale(
+      this.bbox.get().lngs,
+      settings.xDomain || [0, window.innerWidth]
+    );
+  this.yScale =
+    this.yScale ||
+    new RelativeScale(
+      this.bbox.get().lats,
+      settings.yDomain || [0, window.innerHeight]
+    );
 
   this.material = new THREE.MeshLambertMaterial({
     color: settings.color,
@@ -30,21 +34,24 @@ function Geometry(json, settings) {
   const _build = this.build;
   this.build = () => {
     _build.apply(this, arguments);
-    this.built = false;
+    this.built = true;
+    this.$emit("build", { geometry: this });
   };
+
+  Emitter.asEmitter(this);
 }
 
 Geometry.prototype.shapes = [];
 
 Geometry.prototype.build = function () {};
 
-Geometry.prototype.render = function (scene) {
-  if (!this._scene) {
+Geometry.prototype.render = function () {
+  if (!this.scene) {
     throw new Error("Scene must be binded before render");
   }
 
   for (let shape of this.shapes) {
-    this._scene.add(shape);
+    this.scene.add(shape);
   }
 };
 

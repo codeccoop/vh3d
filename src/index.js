@@ -1,10 +1,8 @@
-import * as THREE from "../vendor/threejs/build/three.module.js";
+import Scene from "./scene/index.js";
 
-import Controls from "./components/Controls.js";
-
-import Campus from "./components/Campus.js";
-import Buildings from "./components/Buildings.js";
-import Grass from "./components/Grass.js";
+import Campus from "./layers/Campus.js";
+import Buildings from "./layers/Buildings.js";
+import Grass from "./layers/Grass.js";
 
 const canvas = document.getElementById("canvas");
 const renderer = new THREE.WebGLRenderer({
@@ -16,72 +14,55 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0, 0);
 
-const scene = new THREE.Scene();
-scene.background = null;
-// scene.background = new THREE.Color(0xbfd1e5);
+const scene = new Scene();
 
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  1,
-  10000
-);
-camera.up.set(0, 0, 1);
-
-const lights = new THREE.Group();
-const ambient = new THREE.AmbientLight(0x999999, 0.8);
-lights.add(ambient);
-const direction = new THREE.DirectionalLight(0xffffff, 0.7);
-direction.position.set(0, 0, 2000);
-lights.add(direction);
-scene.add(lights);
-
-function render(time) {
-  if (resizeRendererToDisplaySize(renderer)) {
+renderer.paint = function (time) {
+  if (renderer.resizeToDisplaySize(renderer)) {
     const canvas = renderer.domElement;
-    camera.aspect = canvas.clientWidth / canvas.clientHeight;
-    camera.updateProjectionMatrix();
+    scene.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    scene.camera.updateProjectionMatrix();
   }
 
-  renderer.render(scene, camera);
-}
+  renderer.render(scene, scene.camera);
+};
 
-function resizeRendererToDisplaySize(renderer) {
+renderer.resizeToDisplaySize = function (renderer) {
   const canvas = renderer.domElement;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
-  if (canvas.height !== height || canvas.width !== width) {
+  if (
+    canvas.height !== window.innerHeight ||
+    canvas.width !== window.innerWidth
+  ) {
     renderer.setSize(width, height, false);
     return true;
   }
-}
+};
 
-const root = new THREE.Object3D();
-scene.add(root);
-
-const campus = new Campus();
-campus.load().then((_) => {
-  campus.render();
-  campus.center(camera);
-
-  let controls = new Controls(camera, canvas);
-  controls.addEventListener("change", render);
-
-  // controls.reset();
-
-  Promise.all([buildings.load(), grass.load()]).then((layers) => {
-    for (let layer of layers) {
-      layer.geometry.xScale = campus.geometry.xScale;
-      layer.geometry.yScale = campus.geometry.yScale;
-      layer.render();
-    }
-    render();
-  });
+window.addEventListener("resize", function () {
+  canvas.style.height = window.innerHeight + "px";
+  canvas.style.width = window.innerWidth + "px";
+  renderer.paint();
 });
 
+const campus = new Campus();
 const buildings = new Buildings();
 const grass = new Grass();
 
-campus.addTo(root);
-buildings.addTo(root);
-grass.addTo(root);
+campus.load().then((campus) => {
+  scene.bbox = campus.geometry.bbox;
+  scene.camera.centerOn(campus);
+
+  Promise.all([buildings.load(), grass.load()]).then((layers) => {
+    scene.build();
+    scene.render();
+    renderer.paint();
+  });
+});
+
+scene.addLayer(campus);
+scene.addLayer(buildings);
+scene.addLayer(grass);
+
+scene.addControls(canvas);
+scene.$on("controls:change", renderer.paint);

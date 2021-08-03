@@ -1,13 +1,9 @@
-function BBox(features, z_field) {
+function BBox(features, z_field, epsgCode) {
   var self = this;
   this._bbox = {
     SW: [Infinity, Infinity],
     NE: [-Infinity, -Infinity],
     Z: [null, null],
-  };
-
-  this.valueOf = function () {
-    return this._bbox;
   };
 
   function __init(features, z_field) {

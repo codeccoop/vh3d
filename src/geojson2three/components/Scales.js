@@ -16,14 +16,14 @@ function Scale(range, domain) {
   return fn;
 }
 
-function GeoScale(domain) {
+function AbsoluteScale(domain) {
   const _domain = domain[1] - domain[0];
   return function (val) {
     return (val / 180) * _domain;
   };
 }
 
-function ProjectedScale(range, domain) {
+function RelativeScale(range, domain) {
   const _domain = domain[1] - domain[0];
   const _range = range[1] - range[0];
   return function (val) {
@@ -31,4 +31,11 @@ function ProjectedScale(range, domain) {
   };
 }
 
-export { GeoScale, ProjectedScale, Scale };
+function ProjectedScale(projection, range, domain) {
+  const transformation = proj4(projection, "EPSG:4326");
+  return function (coord) {
+    return pixelScale(transformation.forward(coord));
+  };
+}
+
+export { AbsoluteScale, RelativeScale, ProjectedScale, Scale };

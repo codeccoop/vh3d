@@ -8,9 +8,10 @@ MultiPolygon.prototype = Object.create(Geometry.prototype);
 
 MultiPolygon.prototype.build = function () {
   for (let feat of this.json.features) {
+    let zFactor = this.settings.zFactor || 1;
+    let base = (feat.properties[this.settings.base] || 0) * zFactor;
     let depth =
-      (feat.properties[this.settings.z] || this.settings.z) *
-      (this.settings.zFactor || 1);
+      (feat.properties[this.settings.z] || this.settings.z) * zFactor - base;
     for (let poly of feat.geometry.coordinates) {
       for (let segment of poly) {
         let shape = new this.Shape();
@@ -34,6 +35,8 @@ MultiPolygon.prototype.build = function () {
           material.color.set(this.settings.color(feat));
         }
         this.shapes.push(new this.Mesh(geometry, material));
+        this.shapes[this.shapes.length - 1].position.z =
+          (feat.properties[this.settings.base] || 0) * zFactor;
       }
     }
   }
