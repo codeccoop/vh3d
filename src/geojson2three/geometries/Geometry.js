@@ -27,9 +27,7 @@ function Geometry(json, settings) {
       settings.yDomain || [0, window.innerHeight]
     );
 
-  this.material = new THREE.MeshLambertMaterial({
-    color: settings.color,
-  });
+  this.material = this.Material(settings);
 
   const _build = this.build;
   this.build = () => {
@@ -69,5 +67,10 @@ Geometry.prototype.Geometry = function (shape, settings) {
 };
 
 Geometry.prototype.Mesh = THREE.Mesh;
+
+Geometry.prototype.Material = function (settings) {
+  // return new THREE.MeshLambertMaterial(settings);
+  return new THREE.MeshToonMaterial(settings);
+};
 
 export default Geometry;

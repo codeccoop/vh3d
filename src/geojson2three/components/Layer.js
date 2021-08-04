@@ -1,4 +1,7 @@
 import MultiPolygon from "../geometries/MultiPolygon.js";
+import LineString from "../geometries/LineString.js";
+import Point from "../geometries/Point.js";
+
 import Emitter from "../../mixins/Emitter.js";
 
 const _settings = {
@@ -68,8 +71,10 @@ function Layer(settings) {
 }
 
 Layer.prototype.parse = function (data) {
-  data = data || this.data;
+  data = data || this.json;
+  this.json = data;
   let geomType;
+
   if (data.type === "Feature") {
     geomType = data.geometry?.type;
     this.data = [data.properties];
@@ -82,7 +87,13 @@ Layer.prototype.parse = function (data) {
 
   switch (geomType) {
     case "MultiPolygon":
-      this.geometry = new MultiPolygon(data, this.settings);
+      this.geometry = new MultiPolygon(this.json, this.settings);
+      break;
+    case "LineString":
+      this.geometry = new LineString(this.json, this.settings);
+      break;
+    case "Point":
+      this.geometry = new Point(this.json, this.settings);
       break;
     default:
       throw new Error("Unrecognized geometry");

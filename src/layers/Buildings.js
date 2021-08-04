@@ -5,6 +5,7 @@ function Buildings(settings) {
   settings.z = "alt";
   settings.zFactor = 5;
   settings.base = "base";
+  settings.edges = true;
   settings.color = function (feat) {
     switch (feat.properties.id) {
       case 1:

@@ -23,7 +23,7 @@ class Scene extends THREE.Scene {
     this.lights = new THREE.Group();
     const ambientLight = new THREE.AmbientLight(0x999999, 0.8);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
-    directionalLight.position.set(0, 0, 2000);
+    directionalLight.position.set(1000, 0, 2000);
     this.lights.add(ambientLight);
     this.lights.add(directionalLight);
     this.add(this.lights);

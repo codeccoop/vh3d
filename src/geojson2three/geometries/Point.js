@@ -1,0 +1,67 @@
+import Geometry from "./Geometry.js";
+
+function Point(json, settings) {
+  Geometry.call(this, json, settings);
+}
+
+Point.prototype = Object.create(Geometry.prototype);
+
+Point.prototype.build = function () {
+  for (let feat of this.json.features) {
+    let zFactor = this.settings.zFactor || 1;
+    let base =
+      (feat.properties[this.settings.base] || this.settings.base || 0) *
+      zFactor;
+    let alt =
+      (feat.properties[this.settings.z] || this.settings.z) * zFactor - base;
+
+    let coord = [
+      this.xScale(feat.geometry.coordinates[0]),
+      this.yScale(feat.geometry.coordinates[1]),
+    ];
+    let geometry;
+    if (this.settings.geom_primitive === "cylinder") {
+      geometry = new this.CylinderGeometry(this.settings.radius, alt, 8);
+    } else if (this.settings.geom_primitive === "cone") {
+      geometry = new this.ConeGeometry(this.settings.radius, alt, 8);
+    } else {
+      geometry = new this.SphereGeometry(this.settings.radius, 15, 8);
+    }
+
+    let material = this.material;
+    if (typeof this.settings.color === "function") {
+      material = this.material.clone();
+      material.color.set(this.settings.color(feat));
+    }
+
+    let mesh = new this.Mesh(geometry, material);
+    if (this.settings.geom_primitive === "cylinder") {
+      mesh.position.set(...coord, alt - base);
+    } else if (this.settings.geom_primitive === "cone") {
+      mesh.position.set(...coord, alt - base);
+    } else {
+      mesh.position.set(...coord, alt);
+    }
+    mesh.rotateX(Math.PI * 0.5);
+    this.shapes.push(mesh);
+  }
+};
+
+Point.prototype.CylinderGeometry = function (radius, height, segments) {
+  return new THREE.CylinderGeometry(radius, radius, height, segments);
+};
+
+Point.prototype.SphereGeometry = function (radius, wSegments, hSegments) {
+  return new THREE.SphereGeometry(radius, wSegments, hSegments);
+};
+
+Point.prototype.ConeGeometry = function (radius, height, segments) {
+  return new THREE.ConeGeometry(radius, height, segments);
+};
+
+Point.prototype.Material = function (settings) {
+  // return new THREE.MeshLambertMaterial(settings);
+  return new THREE.MeshToonMaterial(settings);
+};
+
+export default Point;
