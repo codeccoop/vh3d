@@ -17,8 +17,6 @@ class Scene extends THREE.Scene {
       1,
       4000
     );
-    // const helper = new THREE.CameraHelper(this.camera);
-    // this.add(helper);
 
     this.lights = new THREE.Group();
     const ambientLight = new THREE.AmbientLight(0x999999, 0.8);

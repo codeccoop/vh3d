@@ -3,11 +3,13 @@ import Scene from "./scene/index.js";
 import Campus from "./layers/Campus.js";
 import Buildings from "./layers/Buildings.js";
 import Grass from "./layers/Grass.js";
-import Ways from "./layers/Ways.js";
+// import Ways from "./layers/Ways.js";
+import Paths from "./layers/Paths.js";
 import SphericTrees from "./layers/SphericTrees.js";
 import SphericCanopies from "./layers/SphericCanopies.js";
 import TallTrees from "./layers/TallTrees.js";
 import TallCanopies from "./layers/TallCanopies.js";
+import Lego from "./layers/Lego.js";
 
 const canvas = document.getElementById("canvas");
 const renderer = new THREE.WebGLRenderer({
@@ -53,11 +55,13 @@ window.addEventListener("resize", function () {
 const campus = new Campus();
 const buildings = new Buildings();
 const grass = new Grass();
-const ways = new Ways();
+// const ways = new Ways();
+const paths = new Paths();
 const sphericTrees = new SphericTrees();
 const sphericCanopies = new SphericCanopies();
 const tallTrees = new TallTrees();
 const tallCanopies = new TallCanopies();
+const lego = new Lego();
 
 campus.load().then((campus) => {
   scene.bbox = campus.geometry.bbox;
@@ -66,9 +70,11 @@ campus.load().then((campus) => {
   Promise.all([
     buildings.load(),
     grass.load(),
-    ways.load(),
+    // ways.load(),
+    paths.load(),
     sphericTrees.load(),
     tallTrees.load(),
+    lego.load(),
   ]).then((layers) => {
     sphericCanopies.parse(sphericTrees.json);
     tallCanopies.parse(tallTrees.json);
@@ -81,11 +87,13 @@ campus.load().then((campus) => {
 scene.addLayer(campus);
 scene.addLayer(buildings);
 scene.addLayer(grass);
-scene.addLayer(ways);
+// scene.addLayer(ways);
+scene.addLayer(paths);
 scene.addLayer(sphericTrees);
 scene.addLayer(sphericCanopies);
 scene.addLayer(tallTrees);
 scene.addLayer(tallCanopies);
+scene.addLayer(lego);
 
 scene.addControls(canvas);
 scene.$on("controls:change", renderer.paint);

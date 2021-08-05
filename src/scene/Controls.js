@@ -11,7 +11,7 @@ class Controls extends OrbitControls {
     this.maxPolarAngle = Math.PI * (1 / 2.2);
     this.minDistance = 10;
     this.maxDistance = 2000;
-    this.enablePan = false;
+    // this.enablePan = false;
 
     this.addEventListener("change", (ev) => {
       // console.log(ev.target.object.rotation.y);

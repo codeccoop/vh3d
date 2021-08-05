@@ -7,8 +7,8 @@ function MultiPolygon(json, settings) {
 MultiPolygon.prototype = Object.create(Geometry.prototype);
 
 MultiPolygon.prototype.build = function () {
+  const zFactor = this.settings.zFactor || 1;
   for (let feat of this.json.features) {
-    let zFactor = this.settings.zFactor || 1;
     let base = (feat.properties[this.settings.base] || 0) * zFactor;
     let depth =
       (feat.properties[this.settings.z] || this.settings.z) * zFactor - base;
@@ -34,7 +34,20 @@ MultiPolygon.prototype.build = function () {
           material = this.material.clone();
           material.color.set(this.settings.color(feat));
         }
+
         let mesh = new this.Mesh(geometry, material);
+
+        if (material.map) {
+          let surface = this.buildUVSurface(
+            material.map,
+            geometry,
+            material.map.repeat.x,
+            material.map.repeat.y
+          );
+
+          mesh.add(surface);
+        }
+
         if (this.settings.edges) {
           let edges = this.buildEdges(geometry, material.color);
           mesh.add(edges);
@@ -45,19 +58,6 @@ MultiPolygon.prototype.build = function () {
       }
     }
   }
-};
-
-MultiPolygon.prototype.buildEdges = function (geometry, color) {
-  color = color.clone();
-  [("r", "g", "b")].map((band) => {
-    color[band] = color[band] * 0.75;
-  });
-  geometry = new THREE.EdgesGeometry(geometry);
-  return new THREE.LineSegments(
-    geometry,
-    new THREE.LineBasicMaterial({ color: color.getHex() })
-  );
-  // return new this.Mesh(geometry, this.WireframeMaterial());
 };
 
 export default MultiPolygon;

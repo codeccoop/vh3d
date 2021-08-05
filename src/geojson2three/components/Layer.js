@@ -1,4 +1,5 @@
 import MultiPolygon from "../geometries/MultiPolygon.js";
+import Polygon from "../geometries/Polygon.js";
 import LineString from "../geometries/LineString.js";
 import Point from "../geometries/Point.js";
 
@@ -13,7 +14,9 @@ function Layer(settings) {
   settings = settings || {};
   this.settings = { ..._settings, ...settings };
   this.data = this.settings.data;
-  this.name = settings.name;
+  delete this.settings.data;
+  this.name = this.settings.name;
+  delete this.settings.name;
 
   Emitter.asEmitter(this);
 
@@ -89,6 +92,9 @@ Layer.prototype.parse = function (data) {
     case "MultiPolygon":
       this.geometry = new MultiPolygon(this.json, this.settings);
       break;
+    case "Polygon":
+      this.geometry = new Polygon(this.json, this.settings);
+      break;
     case "LineString":
       this.geometry = new LineString(this.json, this.settings);
       break;
@@ -110,7 +116,7 @@ Layer.prototype.parse = function (data) {
 };
 
 Layer.prototype.build = function () {
-  if (!this.built) this.geometry.build();
+  if (this.geometry && !this.built) this.geometry.build();
 };
 
 Layer.prototype.render = function () {
