@@ -12,7 +12,7 @@ Point.prototype.build = function () {
     let base =
       (feat.properties[this.settings.base] || this.settings.base || 0) *
       zFactor;
-    let alt =
+    let height =
       (feat.properties[this.settings.z] || this.settings.z) * zFactor - base;
 
     let coord = [
@@ -21,9 +21,9 @@ Point.prototype.build = function () {
     ];
     let geometry;
     if (this.settings.geom_primitive === "cylinder") {
-      geometry = new this.CylinderGeometry(this.settings.radius, alt, 8);
+      geometry = new this.CylinderGeometry(this.settings.radius, height, 8);
     } else if (this.settings.geom_primitive === "cone") {
-      geometry = new this.ConeGeometry(this.settings.radius, alt, 8);
+      geometry = new this.ConeGeometry(this.settings.radius, height, 8);
     } else {
       geometry = new this.SphereGeometry(this.settings.radius, 15, 8);
     }
@@ -36,11 +36,11 @@ Point.prototype.build = function () {
 
     let mesh = new this.Mesh(geometry, material);
     if (this.settings.geom_primitive === "cylinder") {
-      mesh.position.set(...coord, alt - base);
+      mesh.position.set(...coord, height / 2 + base);
     } else if (this.settings.geom_primitive === "cone") {
-      mesh.position.set(...coord, alt - base);
+      mesh.position.set(...coord, height / 2 + base);
     } else {
-      mesh.position.set(...coord, alt);
+      mesh.position.set(...coord, height);
     }
     mesh.rotateX(Math.PI * 0.5);
     this.shapes.push(mesh);

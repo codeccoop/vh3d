@@ -2,7 +2,7 @@ import Layer from "../geojson2three/components/Layer.js";
 
 function ShpericCanopies(settings) {
   settings = settings || {};
-  settings.z = 10;
+  settings.z = 8;
   settings.zFactor = 1;
   settings.radius = 5;
   settings.color = 0x489668;

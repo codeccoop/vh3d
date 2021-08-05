@@ -5,7 +5,7 @@ function TallCanopies(settings) {
   settings.z = 14;
   settings.zFactor = 1;
   settings.radius = 3.5;
-  settings.base = 1;
+  settings.base = 4;
   settings.color = 0x489668;
   settings.name = "tall_canopies";
 
