@@ -80,6 +80,8 @@ campus.load().then((campus) => {
     tallCanopies.parse(tallTrees.json);
     scene.build();
     scene.render();
+    // console.log(lego.geometry.shapes[0]);
+    lego.geometry.shapes[0].rotateZ(-0.12);
     renderer.paint();
   });
 });

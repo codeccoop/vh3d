@@ -36,10 +36,10 @@ function Geometry(json, settings) {
     this.$emit("build", { geometry: this });
   };
 
+  this.shapes = new Array();
+
   Emitter.asEmitter(this);
 }
-
-Geometry.prototype.shapes = [];
 
 Geometry.prototype.build = function () {};
 
@@ -111,8 +111,8 @@ Geometry.prototype.buildUVSurface = function (
 
 Geometry.prototype.buildEdges = function (geometry, color) {
   color = color.clone();
-  [("r", "g", "b")].map((band) => {
-    color[band] = color[band] * 0.75;
+  ["r", "g", "b"].map((band) => {
+    color[band] = color[band] * 0.5;
   });
   geometry = new THREE.EdgesGeometry(geometry);
   return new THREE.LineSegments(
