@@ -59,8 +59,12 @@ class Scene extends THREE.Scene {
             this.control.activate();
             if (this.state._mode === "pointer") {
               this.fog = new THREE.Fog(0xffffff, 0, 750);
+              this.remove(this.marker);
+              this.add(this.legoPiece);
             } else {
               this.fog = undefined;
+              this.add(this.marker);
+              this.remove(this.legoPiece);
             }
             this.control.dispatchEvent({ type: "init" });
           }

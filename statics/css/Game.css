@@ -36,20 +36,10 @@
     padding: .5em 1.2em;
 }
 
-.menu-wrapper ul li button {
-    background: #ffffff00;
-    border: 1px solid white;
-    border-radius: 5px;
-    width: 300px;
-    font-size: 1.2em;
-    color: white;
-    padding: .8em;
-    cursor: pointer;
-    transition: background 300ms;
-}
-
-.menu-wrapper ul li button:hover {
-    background: #ffffff55;
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .menu-wrapper ul li {
+        width: 150px;
+    }
 }
 
 #canvas {
@@ -60,3 +50,20 @@
     background: linear-gradient(to bottom, #98c8f6 0%,#cbebff 40%,#f0f9ff 100%);
 }
 
+.is-touch-unlocker {
+    position: absolute;
+    z-index: 50;
+    right: 20px;
+    top: 20px;
+}
+
+.is-touch-unlocker:after {
+    content: "X";
+    width: 30px;
+    height: 35px;
+    font-size: 1.8em;
+    line-height: 37px;
+    text-align: center;
+    text-shadow: 0px 0px 3px #000000cc;
+    color: #fff;
+}
