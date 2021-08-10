@@ -18,13 +18,13 @@ function Geometry(json, settings) {
     this.xScale ||
     new RelativeScale(
       this.bbox.get().lngs,
-      settings.xDomain || [0, window.innerWidth]
+      settings.xDomain || [0, document.getElementById("canvas").clientWidth]
     );
   this.yScale =
     this.yScale ||
     new RelativeScale(
       this.bbox.get().lats,
-      settings.yDomain || [0, window.innerHeight]
+      settings.yDomain || [0, document.getElementById("canvas").clientHeight]
     );
 
   this.material = this.Material(settings);

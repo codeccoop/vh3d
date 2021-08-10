@@ -7,13 +7,19 @@
 
 		<link href="statics/css/index.css" rel="stylesheet" type="text/css"/>
 
+    <script src="/node_modules/vue/dist/vue.min.js"></script>
+    <script src="/node_modules/vue-router/dist/vue-router.min.js"></script>
     <script src="/node_modules/proj4/dist/proj4.js"></script>
     <script src="/node_modules/three/build/three.min.js"></script>
     <script src="/node_modules/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="/node_modules/three/examples/js/controls/PointerLockControls.js"></script>
     <script src="/node_modules/three/examples/js/utils/BufferGeometryUtils.js"></script>
+    <script src="/node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
 	</head>
 	<body>
-		<canvas id="canvas"></canvas>
+    <div id="app">
+      <router-view></router-view>
+    </div>
 
     <script type="module" src="src/index.js" ></script>
 	</body>

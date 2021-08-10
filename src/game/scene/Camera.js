@@ -13,9 +13,9 @@ class Camera extends THREE.PerspectiveCamera {
 
     this.position.set(x, -1000, 2000);
     this.lookAt(x, y, z);
-    if (this.parentControls) {
-      this.parentControls.target.set(x, y, z);
-      this.parentControls.update();
+    if (this.parentControl && this.parentControl.target) {
+      this.parentControl.target.set(x, y, z);
+      this.parentControl.update();
     }
   }
 }
