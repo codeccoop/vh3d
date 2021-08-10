@@ -51,3 +51,13 @@ button.button:hover {
 button.button.black:hover {
     background: #00000033;
 }
+
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .text {
+        width: 300px;
+    }
+
+    button.button {
+        width: 150px;
+    }
+}

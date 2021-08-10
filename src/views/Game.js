@@ -7,9 +7,9 @@ export default {
         <div v-if="!help" class="game-menu menu">
           <h2 class="centered">Menu</h2>
           <ul class="centered">
-            <li><button @click="lock = true">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
-            <li><button @click="exit">Sortir</button></li>
-            <li><button @click="help = true">Ajuda</button></li>
+            <li><button @click="lock = true" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
+            <li><button @click="exit" class="button">Sortir</button></li>
+            <li><button @click="help = true" class="button">Ajuda</button></li>
           </ul>
         </div>
         <div v-if="help" class="help-menu menu">
@@ -20,11 +20,12 @@ export default {
             <li><strong>Click esquerra</strong> per interactuar</li>
             <li><strong>ESC</strong> per tornar al menú</li>
             <li><strong>M</strong> per accedir al mapa</li>
-            <li><button @click="help = false">Tornar</button></li>
+            <li><button @click="help = false" class="button">Tornar</button></li>
           </ul>
          </div>
       </div>
     </div>
+    <div v-if="lock" @click="lock = false" class="is-touch-unlocker"></div>
     <canvas id="canvas"></canvas>
   </div>`,
   data() {
