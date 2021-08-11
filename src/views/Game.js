@@ -3,7 +3,7 @@ import Game from "../game/index.js";
 export default {
   template: `<div id="game">
     <div v-if="!lock" class="menu-veil">
-      <div class="menu-wrapper">
+      <div v-if="!waiting" class="menu-wrapper">
         <div v-if="!help" class="game-menu menu">
           <h2 class="centered">Menu</h2>
           <ul class="centered">
@@ -25,14 +25,15 @@ export default {
          </div>
       </div>
     </div>
-    <div v-if="lock" @click="lock = false" class="is-touch-unlocker"></div>
+    <div v-if="lock && isTouch" @click="lock = false" class="is-touch-unlocker"></div>
     <canvas id="canvas"></canvas>
   </div>`,
   data() {
     return {
-      lock: false,
+      lock: undefined,
       help: false,
       game: null,
+      waiting: false,
       lastUnlock: Date.now(),
     };
   },
@@ -63,6 +64,12 @@ export default {
   watch: {
     lock(to, from) {
       this.game.lock(to);
+      if (from !== void 0) {
+        this.waiting = true;
+        setTimeout(() => {
+          this.waiting = false;
+        }, 1000);
+      }
     },
   },
 };

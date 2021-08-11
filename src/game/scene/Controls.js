@@ -17,7 +17,7 @@ export class OrbitControls extends THREE.OrbitControls {
     this.screenSpacePanning = false;
   }
 
-  activate() {
+  activate(state) {
     this.enabled = true;
   }
 
@@ -207,7 +207,8 @@ export class PointerLockControls extends THREE.PointerLockControls {
     this.objects = objects;
   }
 
-  activate() {
+  activate(state) {
+    this.getObject().rotation.fromArray(state.rotation);
     this.enabled = true;
     document.addEventListener("mousemove", this.onMouseMove, true);
     this.lock();

@@ -56,7 +56,7 @@ class Scene extends THREE.Scene {
           if (this.state._mode !== mode) {
             this.control.deactivate();
             this.state._mode = mode;
-            this.control.activate();
+            this.control.activate(this.state);
             if (this.state._mode === "pointer") {
               this.fog = new THREE.Fog(0xffffff, 0, 750);
               this.remove(this.marker);
@@ -114,9 +114,7 @@ class Scene extends THREE.Scene {
     this.controls.pointer.addEventListener("unlock", () => {
       if (this.state.mode === "pointer") {
         this.control.deactivate();
-        setTimeout(() => {
-          document.dispatchEvent(new CustomEvent("unlock"));
-        }, 1000);
+        document.dispatchEvent(new CustomEvent("unlock"));
       }
     });
 
