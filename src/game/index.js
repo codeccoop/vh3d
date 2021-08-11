@@ -60,7 +60,7 @@ export default class Game {
   }
 
   lock(to) {
-    if (to) this.scene.control.activate();
+    if (to) this.scene.control.activate(this.scene.state);
     else this.scene.control.deactivate();
   }
 
