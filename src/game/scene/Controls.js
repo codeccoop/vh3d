@@ -117,7 +117,8 @@ export class PointerLockControls extends THREE.PointerLockControls {
     this.lastTime = performance.now();
     this.lastPosition = this.getObject().position;
 
-    this.objects = [];
+    this.buildings = [];
+    this.trees = [];
     this.floor = [];
   }
 
@@ -190,18 +191,28 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
   isColliding() {
     const position = this.getObject().position;
-    this.raycaster.ray.origin.copy(position);
-    const orientation = this.getDirection(new THREE.Vector3(0, 0, -1));
-    this.raycaster.ray.lookAt(
-      new THREE.Vector3(
-        position.x + 10 * orientation.x * this.direction.x,
-        position.y + 10 * orientation.y * this.direction.y,
-        position.z
-      )
-    );
+    const point = turf.point([position.x, position.y]);
 
-    const collisions = this.raycaster.intersectObjects(this.buildings);
-    return collisions.length > 0;
+    const perimetter = {
+      type: "Polygon",
+      coordinates: [
+        Array.apply(null, Array(10)).map((_, i) => {
+          const bearing = (Math.PI * i) / 10;
+          return [
+            position.x + Math.sin(bearing) * 2,
+            position.y + Math.cos(bearing) * 2,
+          ];
+        }),
+      ],
+    };
+
+    return (
+      this.buildings.features.filter((feat) => {
+        return (
+          feat.properties.base === 0 && turf.booleanIntersects(feat, perimetter)
+        );
+      }).length > 0
+    );
   }
 
   onColliding(delta) {
@@ -209,8 +220,8 @@ export class PointerLockControls extends THREE.PointerLockControls {
     const direction = this.getDirection(new THREE.Vector3(0, 0, -1));
 
     this.getObject().position.fromArray([
-      position.x - 15 * direction.x,
-      position.y - 15 * direction.y,
+      position.x - 10 * direction.x,
+      position.y - 10 * direction.y,
       position.z,
     ]);
 

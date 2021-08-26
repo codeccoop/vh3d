@@ -91,6 +91,7 @@ export default class Game {
   onResize() {
     this.canvas.style.height = window.innerHeight + "px";
     this.canvas.style.width = window.innerWidth + "px";
+    this.scene.onResize();
     this.paint();
   }
 

@@ -17,7 +17,7 @@ function Layer(settings) {
   delete this.settings.data;
   this.name = this.settings.name;
   delete this.settings.name;
-  // this.settings.side = THREE.DoubleSide;
+  this.settings.side = THREE.DoubleSide;
 
   Emitter.asEmitter(this);
 

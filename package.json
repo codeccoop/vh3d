@@ -4,7 +4,7 @@
   "description": "A 3D map of the Vall d'Hebron Hospital Campus",
   "main": "index.js",
   "dependencies": {
-    "@enable3d/ammo-physics": "^0.23.0",
+    "@turf/turf": "^6.5.0",
     "proj4": "^2.7.5",
     "three": "^0.131.2",
     "vue": "^2.6.14",

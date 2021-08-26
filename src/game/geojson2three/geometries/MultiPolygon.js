@@ -17,7 +17,6 @@ MultiPolygon.prototype.build = function () {
         let shape = new this.Shape();
         let init = false;
         for (let coord of segment) {
-          coord = [this.xScale(coord[0]), this.yScale(coord[1])];
           if (!init) {
             shape.moveTo(...coord);
             init = true;

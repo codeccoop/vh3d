@@ -26,7 +26,7 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [840, 320, 2],
+        position: [840, 315, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -175,12 +175,8 @@ class Scene extends THREE.Scene {
         Math.min(window.innerHeight, window.innerWidth),
       ]);
 
-      let layer;
-      for (let layerName in this.geojsonLayers) {
-        layer = this.geojsonLayers[layerName];
-        layer.xScale = this.xScale;
-        layer.yScale = this.yScale;
-      }
+      this.build();
+      this.render();
     });
   }
 
@@ -245,15 +241,25 @@ class Scene extends THREE.Scene {
 
   render() {
     let layer;
+    this.controls.trees = [];
     for (let layerName in this.geojsonLayers) {
       layer = this.geojsonLayers[layerName];
       if (layerName === "campus" && layer.built) {
         this.controls.pointer.floor = layer.geometry.shapes;
       } else if (layerName === "buildings" && layer.built) {
-        this.controls.pointer.buildings = layer.geometry.shapes;
+        this.controls.pointer.buildings = layer.geometry.json;
+      } else if (layerName.toLowerCase().match(/trees/) && layer.built) {
+        this.controls.pointer.trees = this.controls.pointer.trees.concat(
+          layer.geometry.shapes
+        );
       }
       if (layer.built) layer.render();
     }
+  }
+
+  onResize() {
+    this.$emit("bbox:update", { bbox: this.bbox });
+    this.controls.orbit.update();
   }
 }
 

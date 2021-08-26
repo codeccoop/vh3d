@@ -33,7 +33,6 @@ Polygon.prototype.build = function () {
         let shape = new this.Shape();
         let init = false;
         for (let coord of segment) {
-          coord = [this.xScale(coord[0]), this.yScale(coord[1])];
           if (!init) {
             shape.moveTo(...coord);
             init = true;
@@ -48,8 +47,8 @@ Polygon.prototype.build = function () {
 
         mesh = new this.Mesh(geometry, material);
       } else {
-        let lngs = [this.xScale(bbox.lngs[0]), this.xScale(bbox.lngs[1])];
-        let lats = [this.yScale(bbox.lats[0]), this.yScale(bbox.lats[1])];
+        const lngs = bbox.lngs;
+        const lats = bbox.lats;
 
         let lastCoord = null,
           maxDistance = 0,

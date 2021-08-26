@@ -31,6 +31,7 @@ function Geometry(json, settings) {
 
   const _build = this.build;
   this.build = () => {
+    this.scale();
     _build.apply(this, arguments);
     this.built = true;
     this.$emit("build", { geometry: this });
@@ -40,6 +41,38 @@ function Geometry(json, settings) {
 
   Emitter.asEmitter(this);
 }
+
+Geometry.prototype.scale = function () {
+  for (let feat of this.json.features) {
+    if (feat.properties.rescaled) continue;
+    const type = feat.geometry.type;
+    if (type === "Point") {
+      feat.geometry.coordinates = [
+        this.xScale(feat.geometry.coordinates[0]),
+        this.yScale(feat.geometry.coordinates[1]),
+      ];
+    } else if (type === "LineString") {
+      feat.geometry.coordinates = feat.geometry.coordinates.map((coord) => {
+        return [this.xScale(coord[0]), this.yScale(coord[1])];
+      });
+    } else if (type === "Polygon") {
+      feat.geometry.coordinates.forEach((segment, i) => {
+        feat.geometry.coordinates[i] = segment.map((coord) => {
+          return [this.xScale(coord[0]), this.yScale(coord[1])];
+        });
+      });
+    } else if (type === "MultiPolygon") {
+      feat.geometry.coordinates.forEach((poly, i) => {
+        poly.forEach((segment, j) => {
+          feat.geometry.coordinates[i][j] = segment.map((coord) => {
+            return [this.xScale(coord[0]), this.yScale(coord[1])];
+          });
+        });
+      });
+    }
+    feat.properties.rescaled = true;
+  }
+};
 
 Geometry.prototype.build = function () {};
 

@@ -17,10 +17,9 @@ LineString.prototype.build = function () {
     let p0, p1;
     let boxes = feat.geometry.coordinates
       .reduce((acum, coord, i, vector) => {
-        p0 = [this.xScale(coord[0]), this.yScale(coord[1])];
+        p0 = coord;
         p1 = vector[i + 1];
         if (p1) {
-          p1 = [this.xScale(p1[0]), this.yScale(p1[1])];
           acum.push([
             getSection(p0, p1, radius, 0), // origin edge
             getSection(p0, p1, radius, 1), // next edge
