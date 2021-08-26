@@ -99,6 +99,10 @@ export default class Game {
     if (ev.code === "KeyM") {
       if (this.scene.state.mode === "orbit") this.scene.state.mode = "pointer";
       else this.scene.state.mode = "orbit";
+    } else if (ev.code === "KeyH") {
+      document.dispatchEvent(new CustomEvent("help"));
+    } else if (ev.code === "Escape" && this.scene.state.mode === "orbit") {
+      this.lock(false);
     }
   }
 

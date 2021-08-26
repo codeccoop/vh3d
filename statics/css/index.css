@@ -1,6 +1,10 @@
 @import url('/statics/css/Game.css');
 @import url('/statics/css/Cover.css');
 
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     margin: 0;
     padding: 0px;

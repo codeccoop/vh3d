@@ -32,12 +32,12 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
     this.velocity = new THREE.Vector3();
     this.direction = new THREE.Vector3();
-    this.vertex = new THREE.Vector3();
+    this.euler = new THREE.Euler(0, 0, 0, "ZYX");
     this.raycaster = new THREE.Raycaster(
       new THREE.Vector3(),
-      new THREE.Vector3(0, -1, 0),
+      new THREE.Vector3(0, 0, -1),
       0,
-      10
+      5
     );
 
     this.state = {
@@ -46,6 +46,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
       _moveBackward: false,
       _moveLeft: false,
       _moveRight: false,
+      _canJump: true,
     };
 
     Object.defineProperties(this.state, {
@@ -93,20 +94,31 @@ export class PointerLockControls extends THREE.PointerLockControls {
           }
         },
       },
+      canJump: {
+        get: () => {
+          return this.getObject().position.z <= 2;
+        },
+        set: () => {
+          this.getObject().position.z += 0.1;
+          this.update();
+        },
+      },
     });
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    // this.onPointerLockChange = this.onPointerLockChange.bind(this);
+    this.update = this.update.bind(this);
 
     document.addEventListener("keydown", this.onKeyDown);
     document.addEventListener("keyup", this.onKeyUp);
     document.addEventListener("pointerlockchange", this.onPointerLockChange);
 
     this.lastTime = performance.now();
+    this.lastPosition = this.getObject().position;
 
     this.objects = [];
+    this.floor = [];
   }
 
   onKeyDown(event) {
@@ -132,11 +144,16 @@ export class PointerLockControls extends THREE.PointerLockControls {
       case "KeyD":
         this.state.moveRight = true;
         break;
+
+      case "Space":
+        if (this.state.canJump) this.velocity.z += 150;
+        this.state.canJump = false;
+        break;
     }
   }
 
   onKeyUp(event) {
-    if (!this.enabled) return;
+    if (!this.enabled || event.code === "Space") return;
     this.state.moving = false;
     switch (event.code) {
       case "ArrowUp":
@@ -161,50 +178,102 @@ export class PointerLockControls extends THREE.PointerLockControls {
     }
   }
 
-  update() {
-    const time = Date.now();
-    if (!this.enabled) return;
-
+  isFalling() {
     this.raycaster.ray.origin.copy(this.getObject().position);
+    this.raycaster.ray.direction.set(0, 0, -1);
 
-    const intersections = this.raycaster.intersectObjects(this.objects);
-
-    const onObject = intersections.length > 0;
-
-    const delta = 0.05;
-
-    this.velocity.x -= this.velocity.x * 10.0 * delta;
-    this.velocity.y -= this.velocity.y * 10.0 * delta;
-
-    this.direction.y =
-      Number(this.state.moveForward) - Number(this.state.moveBackward);
-    this.direction.x =
-      Number(this.state.moveRight) - Number(this.state.moveLeft);
-    this.direction.normalize();
-
-    if (this.state.moveForward || this.state.moveBackward) {
-      this.velocity.y -= this.direction.y * 400.0 * delta;
-    }
-    if (this.state.moveLeft || this.state.moveRight) {
-      this.velocity.x -= this.direction.x * 400.0 * delta;
-    }
-
-    this.moveRight(-this.velocity.x * delta);
-    this.moveForward(-this.velocity.y * delta);
-
-    this.getObject().position.z = 2;
-
-    this.lastTime = time;
-
-    this.dispatchEvent({ type: "change" });
-
-    if (this.state.moving) {
-      setTimeout(() => this.update(), 50);
-    }
+    return (
+      this.raycaster.intersectObjects(this.floor).length === 0 &&
+      this.state.canJump
+    );
   }
 
-  bindObjects(objects) {
-    this.objects = objects;
+  isColliding() {
+    const position = this.getObject().position;
+    this.raycaster.ray.origin.copy(position);
+    const orientation = this.getDirection(new THREE.Vector3(0, 0, -1));
+    this.raycaster.ray.lookAt(
+      new THREE.Vector3(
+        position.x + 10 * orientation.x * this.direction.x,
+        position.y + 10 * orientation.y * this.direction.y,
+        position.z
+      )
+    );
+
+    const collisions = this.raycaster.intersectObjects(this.buildings);
+    return collisions.length > 0;
+  }
+
+  onColliding(delta) {
+    const position = this.getObject().position;
+    const direction = this.getDirection(new THREE.Vector3(0, 0, -1));
+
+    this.getObject().position.fromArray([
+      position.x - 15 * direction.x,
+      position.y - 15 * direction.y,
+      position.z,
+    ]);
+
+    this.state.moving = false;
+    throw new Exception("Collision");
+  }
+
+  update(time) {
+    if (!this.enabled) return;
+
+    const delta = time && this.lastTime ? (time - this.lastTime) / 1e3 : 5e-2;
+
+    if (!this.state.falling) {
+      try {
+        this.state.falling = this.isFalling();
+
+        this.velocity.x -= this.velocity.x * 10.0 * delta;
+        this.velocity.y -= this.velocity.y * 10.0 * delta;
+        if (!this.state.canJump) this.velocity.z -= 9.8 * 63 * delta;
+        else this.velocity.z = 0;
+
+        this.direction.y =
+          Number(this.state.moveForward) - Number(this.state.moveBackward);
+        this.direction.x =
+          Number(this.state.moveRight) - Number(this.state.moveLeft);
+        this.direction.normalize();
+
+        // if (this.isColliding()) this.onColliding();
+
+        if (this.state.moveForward || this.state.moveBackward) {
+          this.velocity.y -= this.direction.y * 400.0 * delta;
+        }
+        if (this.state.moveLeft || this.state.moveRight) {
+          this.velocity.x -= this.direction.x * 400.0 * delta;
+        }
+
+        this.moveRight(-this.velocity.x * delta);
+        this.moveForward(-this.velocity.y * delta);
+        this.getObject().position.z = Math.max(
+          2,
+          this.getObject().position.z + this.velocity.z * delta
+        );
+
+        if (this.isColliding()) this.onColliding(delta);
+      } catch (e) {
+        console.log("on collision");
+      }
+    } else {
+      this.velocity.z -= 9.8 * 50 * delta;
+      this.getObject().position.z += this.velocity.z * delta;
+      if (this.getObject().position.z < -1e3) {
+        this.deactivate();
+        document.dispatchEvent(new CustomEvent("gameover"));
+      }
+    }
+
+    this.lastTime = time;
+    this.lastPosition = this.getObject().position;
+    this.dispatchEvent({ type: "change" });
+
+    if (this.state.moving || !this.state.canJump || this.state.falling) {
+      requestAnimationFrame(this.update);
+    }
   }
 
   activate(state) {
@@ -232,9 +301,15 @@ export class PointerLockControls extends THREE.PointerLockControls {
     const movementY =
       event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-    const rotation = this.getObject().rotation;
-    rotation.y -= movementX * 0.002;
-    this.getObject().rotation.setFromVector3(rotation.toVector3());
+    this.euler.setFromQuaternion(this.getObject().quaternion, "ZYX");
+    this.euler.z -= movementX * 2e-3;
+    this.euler.x -= movementY * 2e-3;
+    this.euler.x = Math.max(
+      Math.PI * 0.35,
+      Math.min(Math.PI * 0.8, this.euler.x)
+    );
+
+    this.getObject().quaternion.setFromEuler(this.euler);
 
     this.dispatchEvent({ type: "change" });
   }

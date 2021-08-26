@@ -26,9 +26,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [798.7106505288187, 309.94521294983355, 2.0],
-        // rotation: [1.2569447071003694, 1.0917005085438625, 0.0, "XYZ"],
-        rotation: [1.5, Math.PI * 0.5, 0.0, "XYZ"],
+        position: [840, 320, 2],
+        rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
 
@@ -208,12 +207,12 @@ class Scene extends THREE.Scene {
       );
       if (this.legoPiece) {
         const direction = this.control.getDirection(
-          new THREE.Vector3(0, -1, 0)
+          new THREE.Vector3(0, 0, -1)
         );
         this.legoPiece.position.set(
-          this.state.position[0] + 2 * direction.x,
-          this.state.position[1] + 2 * direction.y,
-          1
+          this.state.position[0] + 3.5 * direction.x,
+          this.state.position[1] + 3.5 * direction.y,
+          this.state.position[2] - 1.25
         );
         this.legoPiece.rotation.fromArray(this.state.rotation);
       }
@@ -248,6 +247,11 @@ class Scene extends THREE.Scene {
     let layer;
     for (let layerName in this.geojsonLayers) {
       layer = this.geojsonLayers[layerName];
+      if (layerName === "campus" && layer.built) {
+        this.controls.pointer.floor = layer.geometry.shapes;
+      } else if (layerName === "buildings" && layer.built) {
+        this.controls.pointer.buildings = layer.geometry.shapes;
+      }
       if (layer.built) layer.render();
     }
   }

@@ -32,7 +32,6 @@
 }
 
 .menu-wrapper ul li {
-    width: 300px;
     padding: .5em 1.2em;
 }
 
@@ -66,4 +65,87 @@
     text-align: center;
     text-shadow: 0px 0px 3px #000000cc;
     color: #fff;
+}
+
+.game-aside,
+.controls-highlights {
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    margin: auto;
+    flex-direction: column;
+}
+
+.game-aside {
+    bottom: 0px;
+    width: 150px;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+.controls-highlights {
+    right: 0px;
+    opacity: 1;
+    transition: opacity .5s ease-out;
+}
+
+.controls-highlights.hidden {
+    opacity: 0;
+}
+
+.controls-highlights ul {
+    display: flex;
+}
+
+.game-aside .icon,
+.controls-highlights .icon {
+    width: 100px;
+    height: 150px;
+    padding-top: 100px;
+    margin: 0px 1em;
+    background-size: 66.6%;
+    background-position-x: 50%;
+    background-position-y: 33.3%;
+    background-repeat: no-repeat;
+}
+
+.game-aside .icon {
+    width: 75px;
+    height: 100px;
+    padding-top: 60px;
+}
+
+.game-aside .icon p,
+.controls-highlights .icon p {
+    line-height: 1;
+}
+
+.movement .icon {
+    background-image: url('/statics/images/wasd-icon.svg')
+}
+
+.camera .icon {
+    background-image: url('/statics/images/mouse-icon.svg')
+}
+
+.click .icon {
+    background-image: url('/statics/images/action-icon.svg')
+}
+
+.jump .icon {
+    background-image: url('/statics/images/space-icon.svg')
+}
+
+.escape .icon {
+    background-image: url('/statics/images/esc-icon.svg')
+}
+
+.map .icon {
+    background-image: url('/statics/images/map-icon.svg')
+}
+
+.help .icon {
+    background-image: url('/statics/images/help-icon.svg')
 }
