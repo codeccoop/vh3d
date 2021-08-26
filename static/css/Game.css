@@ -82,7 +82,7 @@
 .game-aside {
     bottom: 0px;
     width: 150px;
-    height: fit-content;
+    height: min-content;
     display: flex;
     align-items: center;
 }

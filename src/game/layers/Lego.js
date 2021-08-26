@@ -42,7 +42,7 @@ Lego.prototype.load = function () {
 
 Lego.prototype.render = function () {
   Layer.prototype.render.call(this);
-  // this.geometry.shapes[0].rotateZ(-0.3);
+  this.geometry.shapes[0].rotateZ(-0.3);
 };
 
 export default Lego;

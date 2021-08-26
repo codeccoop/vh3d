@@ -56,8 +56,7 @@ export default {
       game: null,
       waiting: false,
       gameOver: false,
-      distance: null,
-      maxDistance: null,
+      distance: 101,
     };
   },
   beforeMount() {
@@ -110,15 +109,12 @@ export default {
       this.gameOver = true;
     },
     onDistanceChange(ev) {
-      this.maxDistance = this.maxDistance || ev.detail.value;
-
       this.distance = ev.detail.value;
       if (this.$refs.position) {
         this.$refs.position.style.top =
           Math.min(
             this.$refs.slider.offsetHeight,
-            this.$refs.slider.offsetHeight *
-              (ev.detail.value / this.maxDistance)
+            this.$refs.slider.offsetHeight * (ev.detail.value / 100)
           ) -
           50 +
           "px";
