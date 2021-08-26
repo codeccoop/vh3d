@@ -9,6 +9,7 @@ import SphericCanopies from "./layers/SphericCanopies.js";
 import TallTrees from "./layers/TallTrees.js";
 import TallCanopies from "./layers/TallCanopies.js";
 import Lego from "./layers/Lego.js";
+import Pieces from "./layers/Pieces.js";
 
 function throttle(ms, fn, context) {
   let lastTime = Date.now();
@@ -22,8 +23,9 @@ function throttle(ms, fn, context) {
 }
 
 export default class Game {
-  constructor(isTouch) {
+  constructor(piece, isTouch) {
     const self = this;
+    this.playerData = piece;
     this.isTouch = isTouch;
     this.canvas = document.getElementById("canvas");
     this.renderer = new THREE.WebGLRenderer({
@@ -117,16 +119,37 @@ export default class Game {
     const tallTrees = new TallTrees();
     const tallCanopies = new TallCanopies();
     const lego = new Lego();
+    const pieces = new Pieces();
 
     const gltfLoader = new THREE.GLTFLoader();
-    gltfLoader.load("/statics/gltf/pieza.gltf", (gltf) => {
-      const root = gltf.scene;
-      root.position.fromArray(this.scene.camera.position.toArray());
-      root.position.z = 1;
-      root.rotation.x = Math.PI * 0.5;
+    gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
+      const piece = gltf.scene;
+      piece.position.fromArray(this.scene.camera.position.toArray());
+      piece.position.z = 1;
+      piece.rotation.x = Math.PI * 0.5;
+      const pieceShadow = piece.clone();
+      pieceShadow.scale.set(0.9, 0.9, 0.9);
+
+      piece.children.forEach((child) => {
+        if (child.type === "Mesh") {
+          child.material = new THREE.MeshToonMaterial({
+            color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+          });
+        }
+      });
+      pieceShadow.children.forEach((child) => {
+        if (child.type === "Mesh") {
+          child.material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            opacity: 0.3,
+            transparent: true,
+          });
+        }
+      });
       if (!this.isTouch) {
-        this.scene.add(root);
-        this.scene.legoPiece = root;
+        this.scene.add(piece);
+        this.scene.legoPiece = piece;
+        this.scene.legoShadow = pieceShadow;
       }
 
       campus.load().then((campus) => {
@@ -140,12 +163,12 @@ export default class Game {
           sphericTrees.load(),
           tallTrees.load(),
           lego.load(),
+          pieces.load(),
         ]).then((layers) => {
           sphericCanopies.parse(sphericTrees.json);
           tallCanopies.parse(tallTrees.json);
           this.scene.build();
           this.scene.render();
-          lego.geometry.shapes[0].rotateZ(-0.12);
           this.paint();
         });
       });
@@ -160,5 +183,22 @@ export default class Game {
     this.scene.addLayer(tallTrees);
     this.scene.addLayer(tallCanopies);
     this.scene.addLayer(lego);
+    this.scene.addLayer(pieces);
+
+    this.scene.controls.pointer.addEventListener("change", (ev) => {
+      this.distanceToTarget(pieces.targetOnWorld(this.playerData));
+    });
+  }
+
+  distanceToTarget(target) {
+    const direction = this.scene.controls.pointer.getDirection(
+      new THREE.Vector3(0, 0, -1)
+    );
+    const playerPosition = this.scene.state.position;
+    const position = new THREE.Vector3(
+      playerPosition[0] + 3.5 * direction.x,
+      playerPosition[1] + 3.5 * direction.y,
+      1
+    );
   }
 }

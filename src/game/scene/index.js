@@ -26,7 +26,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [840, 315, 2],
+        // position: [830, 310, 2],
+        position: [175, 254, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -35,6 +36,10 @@ class Scene extends THREE.Scene {
     const markerMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
     this.marker = new THREE.Mesh(markerGeom, markerMaterial);
     this.marker.rotation.x = -Math.PI * 0.5;
+    const position = this.state.pointer.position.map((d, i) =>
+      i < 2 ? d : d + 20
+    );
+    this.marker.position.fromArray(position);
 
     this.cameras = {
       orbit: new Camera(50, window.innerWidth / window.innerHeight, 1, 4000),
@@ -114,6 +119,14 @@ class Scene extends THREE.Scene {
       if (this.state.mode === "pointer") {
         this.control.deactivate();
         document.dispatchEvent(new CustomEvent("unlock"));
+      }
+    });
+
+    this.controls.pointer.addEventListener("onTatami", (ev) => {
+      if (ev.value) {
+        this.add(this.legoShadow);
+      } else {
+        this.remove(this.legoShadow);
       }
     });
 
@@ -205,12 +218,24 @@ class Scene extends THREE.Scene {
         const direction = this.control.getDirection(
           new THREE.Vector3(0, 0, -1)
         );
+        const rotation = this.control.getObject().rotation.clone();
+        const reordered = rotation.reorder("ZYX");
+        const pitch = reordered.x;
         this.legoPiece.position.set(
           this.state.position[0] + 3.5 * direction.x,
           this.state.position[1] + 3.5 * direction.y,
-          this.state.position[2] - 1.25
+          this.state.position[2] -
+            1.25 -
+            this.state.position[2] * Math.cos(pitch)
         );
-        this.legoPiece.rotation.fromArray(this.state.rotation);
+        this.legoShadow.position.set(
+          this.state.position[0] + 6 * direction.x,
+          this.state.position[1] + 6 * direction.y,
+          1
+        );
+        this.legoPiece.rotation.copy(rotation);
+        reordered.x = Math.PI * +0.5;
+        this.legoShadow.rotation.copy(reordered);
       }
     }
 
@@ -252,6 +277,8 @@ class Scene extends THREE.Scene {
         this.controls.pointer.trees = this.controls.pointer.trees.concat(
           layer.geometry.shapes
         );
+      } else if (layerName === "pieces" && layer.built) {
+        this.controls.pointer.tatami = layer.geometry.shapes[0];
       }
       if (layer.built) layer.render();
     }

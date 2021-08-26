@@ -1,5 +1,7 @@
 #game {
     position: relative;
+    height: 100vh;
+    width: 100vw;
 }
 
 .menu-veil {
@@ -17,7 +19,7 @@
 
 .menu-wrapper {
     color: white;
-    background: blue;
+    background: rgb(41, 54, 130);
     box-shadow: 0px 0px 10px #00000077;
     padding: 1em 2em;
 }
@@ -123,29 +125,29 @@
 }
 
 .movement .icon {
-    background-image: url('/statics/images/wasd-icon.svg')
+    background-image: url('/static/images/wasd-icon.svg')
 }
 
 .camera .icon {
-    background-image: url('/statics/images/mouse-icon.svg')
+    background-image: url('/static/images/mouse-icon.svg')
 }
 
 .click .icon {
-    background-image: url('/statics/images/action-icon.svg')
+    background-image: url('/static/images/action-icon.svg')
 }
 
 .jump .icon {
-    background-image: url('/statics/images/space-icon.svg')
+    background-image: url('/static/images/space-icon.svg')
 }
 
 .escape .icon {
-    background-image: url('/statics/images/esc-icon.svg')
+    background-image: url('/static/images/esc-icon.svg')
 }
 
 .map .icon {
-    background-image: url('/statics/images/map-icon.svg')
+    background-image: url('/static/images/map-icon.svg')
 }
 
 .help .icon {
-    background-image: url('/statics/images/help-icon.svg')
+    background-image: url('/static/images/help-icon.svg')
 }

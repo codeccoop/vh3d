@@ -1,5 +1,5 @@
-@import url('/statics/css/Game.css');
-@import url('/statics/css/Cover.css');
+@import url('/static/css/Game.css');
+@import url('/static/css/Cover.css');
 
 * {
     box-sizing: border-box;

@@ -27,8 +27,6 @@ export default {
         <li class="movement"><div class="icon"><p><strong>A,W,D,S</strong><br/>per desplaçar-se</p></div></li>
         <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar</p></div></li>
         <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara</p></div></li>
-        <li class="action"><div class="icon"><p><strong>Click esquerra</strong><br/>per interactuar</p></div></li>
-      </ul>
     </div>
     <aside v-if="!isTouch" class="game-aside">
       <ul class="centered">
@@ -49,6 +47,14 @@ export default {
       gameOver: false,
     };
   },
+  beforeMount() {
+    fetch("/piece/" + this.pieceId)
+      .then((res) => res.json())
+      .then((data) => {
+        this.game = new Game(data, this.isTouch);
+      })
+      .catch((err) => console.error("Error while fetching the piece"));
+  },
   mounted() {
     document.removeEventListener("unlock", this.onGameUnlock);
     document.addEventListener("unlock", this.onGameUnlock);
@@ -56,7 +62,7 @@ export default {
     document.addEventListener("help", this.onHelp);
     document.removeEventListener("gameover", this.onGameOver);
     document.addEventListener("gameover", this.onGameOver);
-    this.game = new Game(this.isTouch);
+    // this.game = new Game(this.isTouch);
   },
   computed: {
     isTouch() {
@@ -66,6 +72,9 @@ export default {
         navigator.msMaxTouchPoints > 0 ||
         window.innerWidth < window.innerHeight
       );
+    },
+    pieceId() {
+      return this.$route.query.pieceId;
     },
   },
   methods: {

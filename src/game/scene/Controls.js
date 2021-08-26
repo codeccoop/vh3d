@@ -96,7 +96,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
       },
       canJump: {
         get: () => {
-          return this.getObject().position.z <= 2;
+          return this.getObject().position.z <= (this.isOnTatami() ? 4 : 2);
         },
         set: () => {
           this.getObject().position.z += 0.1;
@@ -189,6 +189,15 @@ export class PointerLockControls extends THREE.PointerLockControls {
     );
   }
 
+  isOnTatami() {
+    this.raycaster.ray.origin.copy(this.getObject().position);
+    this.raycaster.ray.direction.set(0, 0, -1);
+
+    const intersections = this.raycaster.intersectObject(this.tatami);
+    this.dispatchEvent({ type: "onTatami", value: intersections.length > 0 });
+    return intersections.length > 0;
+  }
+
   isColliding() {
     const position = this.getObject().position;
     const point = turf.point([position.x, position.y]);
@@ -249,19 +258,17 @@ export class PointerLockControls extends THREE.PointerLockControls {
           Number(this.state.moveRight) - Number(this.state.moveLeft);
         this.direction.normalize();
 
-        // if (this.isColliding()) this.onColliding();
-
         if (this.state.moveForward || this.state.moveBackward) {
-          this.velocity.y -= this.direction.y * 400.0 * delta;
+          this.velocity.y -= this.direction.y * 200.0 * delta;
         }
         if (this.state.moveLeft || this.state.moveRight) {
-          this.velocity.x -= this.direction.x * 400.0 * delta;
+          this.velocity.x -= this.direction.x * 200.0 * delta;
         }
 
         this.moveRight(-this.velocity.x * delta);
         this.moveForward(-this.velocity.y * delta);
         this.getObject().position.z = Math.max(
-          2,
+          this.isOnTatami() ? 4 : 2,
           this.getObject().position.z + this.velocity.z * delta
         );
 
