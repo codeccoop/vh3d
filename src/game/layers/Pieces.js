@@ -35,7 +35,7 @@ Pieces.prototype.load = function () {
 
 Pieces.prototype.render = function () {
   Layer.prototype.render.call(this);
-  this.geometry.shapes[0].rotateZ(-0.3);
+  // this.geometry.shapes[0].rotateZ(-0.3);
 };
 
 Pieces.prototype.targetOnWorld = function (playerData) {

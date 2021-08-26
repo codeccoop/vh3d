@@ -6,7 +6,7 @@ export default {
       <p>A continuació et presentem un petit joc que només podrem completar si tots i totes hi participem. Es tracta d'un puzzle col·laboratiu. Tu, com a membre de la familia de la Vall d'Hebrón, tens una peça, la resta de peces són en mans de les teves companyes. Ajudales a completar el puzzle i desentrallem l'enigma: Quina serà l'imàtge que s'hi recull amagada entre les peces?</p>
       <h3>Instruccions</h3>
       <p>Al entrar al joc apareixeras al campus de la Vall d'Hebron, amb una peça entre les mans. El primer que hauràs de fer es trobar, dins del campus, on es que s'està montant el puzzle. A continuació hauràs d'esbrinar el lloc de la teva peça i col·locar-la correctament. Tens, a la teva disposició, un mapa del campús, el teu coneixiement de les instal·lacions, i el teu enginy. Tens llibertat per passejar-te i explorar sense límits, a través del mon, o a través del mapa, per completar la teva missió. I recorda, necessitem la teva peça!</p>
-      <p><router-link to="/game" ><button class="button black">Jugar</button></router-link></p>
+      <p><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
     </main>
     <div id="disclaimer" v-if="showDisclaimer">
       <div class="text">
@@ -30,6 +30,9 @@ export default {
         navigator.msMaxTouchPoints > 0 ||
         window.innerWidth < window.innerHeight
       );
+    },
+    pieceId() {
+      return Math.round(Math.random() * 9000);
     },
   },
   watch: {

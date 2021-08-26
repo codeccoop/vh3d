@@ -26,8 +26,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        // position: [830, 310, 2],
-        position: [175, 254, 2],
+        position: [830, 310, 2],
+        // position: [175, 254, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };

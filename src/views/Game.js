@@ -28,12 +28,23 @@ export default {
         <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar</p></div></li>
         <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara</p></div></li>
     </div>
-    <aside v-if="!isTouch" class="game-aside">
+    <aside v-if="!isTouch" class="game-aside left">
       <ul class="centered">
         <li class="escape"><div class="icon"><p><strong>Menú</strong></p></div></li>
         <li class="map"><div class="icon"><p><strong>Mapa</strong></p></div></li>
         <li class="help"><div class="icon"><p><strong>Controls</strong></p></div></li>
       </ul>
+    </aside>
+    <aside v-if="!isTouch && distance < 100" class="game-aside right">
+      <div class="distance-slider">
+        <h3>Metres</h3>
+        <div ref="slider" class="slider">
+          <div ref="position" class="slider-position">
+             {{distance ? distance.toFixed(2) : ''}}<div></div>
+          </div>
+          <div class="slider-scrollbar"></div>
+        </div>
+      </div>
     </aside>
     <canvas id="canvas"></canvas>
   </div>`,
@@ -45,6 +56,8 @@ export default {
       game: null,
       waiting: false,
       gameOver: false,
+      distance: null,
+      maxDistance: null,
     };
   },
   beforeMount() {
@@ -62,7 +75,8 @@ export default {
     document.addEventListener("help", this.onHelp);
     document.removeEventListener("gameover", this.onGameOver);
     document.addEventListener("gameover", this.onGameOver);
-    // this.game = new Game(this.isTouch);
+    document.removeEventListener("distance", this.onDistanceChange);
+    document.addEventListener("distance", this.onDistanceChange);
   },
   computed: {
     isTouch() {
@@ -94,6 +108,21 @@ export default {
     },
     onGameOver() {
       this.gameOver = true;
+    },
+    onDistanceChange(ev) {
+      this.maxDistance = this.maxDistance || ev.detail.value;
+
+      this.distance = ev.detail.value;
+      if (this.$refs.position) {
+        this.$refs.position.style.top =
+          Math.min(
+            this.$refs.slider.offsetHeight,
+            this.$refs.slider.offsetHeight *
+              (ev.detail.value / this.maxDistance)
+          ) -
+          50 +
+          "px";
+      }
     },
   },
   watch: {

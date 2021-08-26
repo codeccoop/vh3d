@@ -200,5 +200,22 @@ export default class Game {
       playerPosition[1] + 3.5 * direction.y,
       1
     );
+    const distance = position.distanceTo(target);
+    if (distance < 0.6) {
+      this.scene.legoShadow.children.forEach((child) => {
+        child.material.color.setHex(0x00ff00);
+      });
+    } else {
+      this.scene.legoShadow.children.forEach((child) => {
+        child.material.color.setHex(0xffffff);
+      });
+    }
+    document.dispatchEvent(
+      new CustomEvent("distance", {
+        detail: {
+          value: distance,
+        },
+      })
+    );
   }
 }
