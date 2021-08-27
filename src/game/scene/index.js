@@ -28,8 +28,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        // position: [830, 310, 2],
-        position: [175, 254, 2],
+        position: [830, 310, 2],
+        // position: [175, 254, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -292,7 +292,6 @@ class Scene extends THREE.Scene {
   }
 
   initPosition() {
-    return;
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
     this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
