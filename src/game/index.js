@@ -128,7 +128,7 @@ export default class Game {
       piece.position.z = 1;
       piece.rotation.x = Math.PI * 0.5;
       const pieceShadow = piece.clone();
-      pieceShadow.scale.set(0.9, 0.9, 0.9);
+      pieceShadow.scale.set(0.75, 0.75, 0.75);
 
       piece.children.forEach((child) => {
         if (child.type === "Mesh") {
@@ -154,6 +154,7 @@ export default class Game {
 
       campus.load().then((campus) => {
         this.scene.bbox = campus.geometry.bbox;
+        this.scene.initPosition();
         if (this.isTouch) this.scene.camera.centerOn(campus);
 
         Promise.all([
@@ -196,12 +197,12 @@ export default class Game {
     );
     const playerPosition = this.scene.state.position;
     const position = new THREE.Vector3(
-      playerPosition[0] + 3.5 * direction.x,
-      playerPosition[1] + 3.5 * direction.y,
-      1
+      playerPosition[0] + 5 * direction.x,
+      playerPosition[1] + 5 * direction.y,
+      0.5
     );
     const distance = position.distanceTo(target);
-    if (distance < 0.6) {
+    if (distance <= 0.5) {
       this.scene.legoShadow.children.forEach((child) => {
         child.material.color.setHex(0x00ff00);
       });

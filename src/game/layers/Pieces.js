@@ -5,8 +5,8 @@ function Pieces(settings) {
   settings.color = 0xa7ada9;
   settings.transparent = true;
   settings.name = "pieces";
-  settings.z = 1;
-  settings.base = 0.5;
+  settings.z = 0.5;
+  settings.base = 0;
   settings.primitive_type = "box";
 
   Layer.call(this, settings);
@@ -41,8 +41,12 @@ Pieces.prototype.render = function () {
 Pieces.prototype.targetOnWorld = function (playerData) {
   const x = playerData.col * 0.5;
   const y = playerData.row * 0.5;
+  const z = 0.5;
   if (!this.built) return;
-  return this.geometry.shapes[0].localToWorld(new THREE.Vector3(x, y, 0));
+  const position = new THREE.Vector3(x, y, z).applyEuler(
+    this.geometry.shapes[0].rotation.reorder("ZYX")
+  );
+  return this.geometry.shapes[0].localToWorld(position);
 };
 
 export default Pieces;

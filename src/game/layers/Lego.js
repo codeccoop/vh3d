@@ -4,8 +4,8 @@ function Lego(settings) {
   settings = settings || {};
   settings.color = 0xa7ada9;
   settings.name = "lego";
-  settings.z = 1;
-  settings.base = 0.5;
+  settings.z = 0.5;
+  settings.base = 0;
   settings.primitive_type = "box";
 
   Layer.call(this, settings);

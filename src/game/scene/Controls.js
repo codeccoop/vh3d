@@ -96,7 +96,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
       },
       canJump: {
         get: () => {
-          return this.getObject().position.z <= (this.isOnTatami() ? 4 : 2);
+          return this.getObject().position.z <= (this.isOnTatami() ? 3 : 2);
         },
         set: () => {
           this.getObject().position.z += 0.1;
@@ -258,17 +258,18 @@ export class PointerLockControls extends THREE.PointerLockControls {
           Number(this.state.moveRight) - Number(this.state.moveLeft);
         this.direction.normalize();
 
+        const acceleration = this.isOnTatami() ? 75 : 250;
         if (this.state.moveForward || this.state.moveBackward) {
-          this.velocity.y -= this.direction.y * 200.0 * delta;
+          this.velocity.y -= this.direction.y * acceleration * delta;
         }
         if (this.state.moveLeft || this.state.moveRight) {
-          this.velocity.x -= this.direction.x * 200.0 * delta;
+          this.velocity.x -= this.direction.x * acceleration * delta;
         }
 
         this.moveRight(-this.velocity.x * delta);
         this.moveForward(-this.velocity.y * delta);
         this.getObject().position.z = Math.max(
-          this.isOnTatami() ? 4 : 2,
+          this.isOnTatami() ? 3 : 2,
           this.getObject().position.z + this.velocity.z * delta
         );
 

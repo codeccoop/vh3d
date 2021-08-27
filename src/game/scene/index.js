@@ -4,6 +4,8 @@ import { OrbitControls, PointerLockControls } from "./Controls.js";
 import Emitter from "../mixins/Emitter.js";
 import { RelativeScale } from "../geojson2three/components/Scales.js";
 
+const origin = [238580.55031842450262, 5075605.921119668520987];
+
 class Scene extends THREE.Scene {
   constructor(canvas, isTouch) {
     super(...arguments);
@@ -26,8 +28,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [830, 310, 2],
-        // position: [175, 254, 2],
+        // position: [830, 310, 2],
+        position: [175, 254, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -229,9 +231,9 @@ class Scene extends THREE.Scene {
             this.state.position[2] * Math.cos(pitch)
         );
         this.legoShadow.position.set(
-          this.state.position[0] + 6 * direction.x,
-          this.state.position[1] + 6 * direction.y,
-          1
+          this.state.position[0] + 5 * direction.x,
+          this.state.position[1] + 5 * direction.y,
+          0.75
         );
         this.legoPiece.rotation.copy(rotation);
         reordered.x = Math.PI * +0.5;
@@ -287,6 +289,12 @@ class Scene extends THREE.Scene {
   onResize() {
     this.$emit("bbox:update", { bbox: this.bbox });
     this.controls.orbit.update();
+  }
+
+  initPosition() {
+    return;
+    const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
+    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
 }
 
