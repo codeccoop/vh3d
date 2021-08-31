@@ -1,5 +1,6 @@
 import Game from "../game/index.js";
 
+var controlsTimeout;
 export default {
   template: `<div id="game">
     <div v-if="!gameLock" class="menu-veil">
@@ -23,10 +24,16 @@ export default {
     </div>
     <div v-if="gameLock && isTouch" @click="gameLock = false" class="is-touch-unlocker"></div>
     <div v-if="!isTouch" class="controls-highlights" :class="{'hidden': !showControls}">
-      <ul class="centered">
+      <ul v-if="controls === 'pointer'" class="centered">
         <li class="movement"><div class="icon"><p><strong>A,W,D,S</strong><br/>per desplaçar-se</p></div></li>
         <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar</p></div></li>
         <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara</p></div></li>
+      </ul>
+      <ul v-else="controls === 'orbit'" class="centered">
+        <li class="orbit"><div class="icon"><p><strong>Click esquerra</strong><br/>per rotar</p></div></li>
+        <li class="pan"><div class="icon"><p><strong>Click dret</strong><br/>per desplaçar</p></div></li>
+        <li class="zoom"><div class="icon"><p><strong>Scroll</strong><br/>pel zoom</p></div></li>
+      </ul>
     </div>
     <aside v-if="!isTouch" class="game-aside left">
       <ul class="centered">
@@ -57,6 +64,7 @@ export default {
       waiting: false,
       gameOver: false,
       distance: 101,
+      controls: "pointer",
     };
   },
   beforeMount() {
@@ -66,6 +74,7 @@ export default {
         this.game = new Game(data, this.isTouch);
       })
       .catch((err) => console.error("Error while fetching the piece"));
+    this.controls = this.isTouch ? "orbit" : "pointer";
   },
   mounted() {
     document.removeEventListener("unlock", this.onGameUnlock);
@@ -98,8 +107,11 @@ export default {
     onGameUnlock() {
       this.gameLock = false;
     },
-    onHelp() {
-      this.showControls = !this.showControls;
+    onHelp(ev) {
+      clearTimeout(controlsTimeout);
+      this.controls = ev.detail;
+      this.showControls = true;
+      controlsTimeout = setTimeout((_) => (this.showControls = false), 5000);
     },
     restart() {
       this.game = new Game(this.isTouch);
@@ -132,7 +144,7 @@ export default {
       }
       if (to) {
         this.showControls = true;
-        setTimeout((_) => (this.showControls = false), 3000);
+        controlsTimeout = setTimeout((_) => (this.showControls = false), 5000);
       }
     },
   },

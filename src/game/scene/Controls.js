@@ -96,7 +96,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
       },
       canJump: {
         get: () => {
-          return this.getObject().position.z <= (this.isOnTatami() ? 3 : 2);
+          return this.getObject().position.z <= (this.isOnTatami() ? 2.5 : 2);
         },
         set: () => {
           this.getObject().position.z += 0.1;
@@ -269,7 +269,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
         this.moveRight(-this.velocity.x * delta);
         this.moveForward(-this.velocity.y * delta);
         this.getObject().position.z = Math.max(
-          this.isOnTatami() ? 3 : 2,
+          this.isOnTatami() ? 2.5 : 2,
           this.getObject().position.z + this.velocity.z * delta
         );
 
@@ -321,8 +321,8 @@ export class PointerLockControls extends THREE.PointerLockControls {
       event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
     this.euler.setFromQuaternion(this.getObject().quaternion, "ZYX");
-    this.euler.z -= movementX * 2e-3;
-    this.euler.x -= movementY * 2e-3;
+    this.euler.z -= movementX * 1e-3;
+    this.euler.x -= movementY * 1e-3;
     this.euler.x = Math.max(
       Math.PI * 0.35,
       Math.min(Math.PI * 0.8, this.euler.x)

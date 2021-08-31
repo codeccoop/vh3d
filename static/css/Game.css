@@ -87,6 +87,13 @@
     align-items: center;
 }
 
+.game-aside.left ul.centered {
+    background-color: #fff6;
+    border-radius: 10px;
+    padding: 1em 0 2em;
+    box-shadow: 0px 0px 10px #0005;
+}
+
 .game-aside.right {
     left: unset;
     right: 0px;
@@ -107,15 +114,31 @@
     display: flex;
 }
 
+.controls-highlights ul li {
+    background-color: #fff6;
+}
+
+.controls-highlights ul li:first-child {
+    padding-left: 2em;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.controls-highlights ul li:last-child {
+    padding-right: 2em;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .game-aside .icon,
 .controls-highlights .icon {
     width: 100px;
-    height: 150px;
-    padding-top: 100px;
+    height: 200px;
+    padding-top: 105px;
     margin: 0px 1em;
     background-size: 66.6%;
     background-position-x: 50%;
-    background-position-y: 33.3%;
+    background-position-y: 25%;
     background-repeat: no-repeat;
 }
 
@@ -134,7 +157,10 @@
     background-image: url('/static/images/wasd-icon.svg')
 }
 
-.camera .icon {
+.camera .icon,
+.orbit .icon,
+.pan .icon,
+.zoom .icon {
     background-image: url('/static/images/mouse-icon.svg')
 }
 

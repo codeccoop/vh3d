@@ -28,8 +28,8 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [830, 310, 2],
-        // position: [175, 254, 2],
+        // position: [830, 310, 2],
+        position: [175, 254, 2],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -226,9 +226,7 @@ class Scene extends THREE.Scene {
         this.legoPiece.position.set(
           this.state.position[0] + 3.5 * direction.x,
           this.state.position[1] + 3.5 * direction.y,
-          this.state.position[2] -
-            1.25 -
-            this.state.position[2] * Math.cos(pitch)
+          this.state.position[2] - 1.5 - 2 * Math.cos(pitch)
         );
         this.legoShadow.position.set(
           this.state.position[0] + 5 * direction.x,
