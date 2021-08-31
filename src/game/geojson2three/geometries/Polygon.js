@@ -19,6 +19,7 @@ Polygon.prototype.build = function () {
     let bbox = null;
     if (this.settings.primitive_type)
       bbox = new BBox([feat], this.settings.z).get();
+    // bbox = this.bbox.get();
 
     for (let segment of feat.geometry.coordinates) {
       let geometry, material, mesh;
@@ -47,11 +48,13 @@ Polygon.prototype.build = function () {
 
         mesh = new this.Mesh(geometry, material);
       } else {
+        // Case when it's a rectangle
         const lngs = bbox.lngs;
         const lats = bbox.lats;
 
         let lastCoord = null,
           maxDistance = 0,
+          minDistance = Infinity,
           orientation = null;
         for (let coord of segment) {
           if (!lastCoord) {
@@ -63,54 +66,33 @@ Polygon.prototype.build = function () {
           let azimuth = Math.abs(Coordinates.getAzimuth(lastCoord, coord));
           if (distance > maxDistance) {
             orientation = azimuth;
+            maxDistance = distance;
           }
+          if (distance < minDistance) {
+            minDistance = distance;
+          }
+
           lastCoord = coord;
         }
 
         if (this.settings.primitive_type === "box") {
-          geometry = new THREE.BoxGeometry(
-            lngs[1] - lngs[0],
-            lats[1] - lats[0],
-            height
-          );
+          geometry = new THREE.BoxGeometry(maxDistance, minDistance, height);
         } else if (this.settings.primitive_type === "plane") {
-          geometry = new THREE.PlaneGeometry(
-            lngs[1] - lngs[0],
-            lats[1] - lats[0],
-            1,
-            1
-          );
+          geometry = new THREE.PlaneGeometry(maxDistance, minDistance, 1, 1);
         }
 
         mesh = new this.Mesh(geometry, material);
 
-        mesh.position.set(
-          lngs[0] + (lngs[1] - lngs[0]) / 2,
-          lats[0] + (lats[1] - lats[0]) / 2,
-          base
-        );
+        mesh.position.set(bbox.center[0], bbox.center[1], base);
 
-        mesh.rotateZ(orientation);
-        // mesh.rotateZ(Math.atan((lats[1] - lats[0]) / (lngs[1] - lngs[0])));
+        mesh.rotateZ(-orientation);
       }
-
-      /* if (material.map) {
-        let surface = this.buildUVSurface(
-          material.map,
-          geometry,
-          1,
-          1,
-          height - base + 0.05
-        );
-        mesh.add(surface);
-      } */
 
       if (this.settings.edges) {
         let edges = this.buildEdges(geometry, material.color);
         mesh.add(edges);
       }
 
-      // mesh.position.z = base;
       this.shapes.push(mesh);
     }
   }

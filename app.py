@@ -23,19 +23,27 @@ def format_piece (rec):
     return {header: rec[i] for i, header in enumerate(tables["pieces"])}
 
 
-@app.route("/piece/<int:piece_id>")
+@app.route("/piece/<int:piece_id>", methods=["GET", "POST"])
 def piece (piece_id):
     conn = sqlite3.connect("data/vh3d.db")
     cur = conn.cursor()
-    cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?", (piece_id,))
-    piece = cur.fetchone()
-    if not piece:
-        return abort(401)
 
-    res = format_piece(piece)
+    if request.method == "GET":
+        cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?", (piece_id,))
+        piece = cur.fetchone()
+        if not piece:
+            return abort(401)
+
+        res = format_piece(piece)
+    elif request.method == "POST":
+        cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID = ?", (piece_id,))
+        conn.commit()
+        res = {"success": True}
+    else:
+        abort(405)
+
     conn.close()
     return jsonify(res)
-
 
 @app.route("/pieces")
 def pieces ():
@@ -52,14 +60,14 @@ def pieces ():
 def puzzle ():
     conn = sqlite3.connect("data/vh3d.db")
     cur = conn.cursor()
-    cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE done IS FALSE")
+    cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces")
     pieces = cur.fetchall()
 
     image_array = np.zeros((75, 120, 4), dtype=np.uint8)
 
     for piece in pieces:
         piece = format_piece(piece)
-        image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], random.randint(0, 1) * 255]  # not piece["done"] and 255 or 0]
+        image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], piece["done"] and 255 or 0]
 
     img = Image.fromarray(image_array)
     img.save("static/images/puzzle.png")

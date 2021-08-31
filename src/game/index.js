@@ -135,53 +135,71 @@ export default class Game {
     const gltfLoader = new THREE.GLTFLoader();
     gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
       const piece = gltf.scene;
-      piece.position.fromArray(this.scene.camera.position.toArray());
-      piece.position.z = 1;
-      piece.rotation.x = Math.PI * 0.5;
-      const pieceShadow = piece.clone();
-      pieceShadow.scale.set(0.75, 0.75, 0.75);
+      gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
+        const armRight = gltf.scene;
+        armRight.scale.set(1.5, 1.5, 1.5);
+        piece.position.fromArray(this.scene.camera.position.toArray());
+        piece.position.z = 1;
+        piece.rotation.x = Math.PI * 0.5;
+        piece.scale.set(0.9, 0.9, 0.6);
+        const pieceShadow = piece.clone();
+        pieceShadow.scale.set(0.75, 0.75, 0.75);
 
-      piece.children.forEach((child) => {
-        if (child.type === "Mesh") {
-          child.material = new THREE.MeshToonMaterial({
-            color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
-          });
+        piece.children.forEach((child) => {
+          if (child.type === "Mesh") {
+            child.material = new THREE.MeshLambertMaterial({
+              color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+            });
+          }
+        });
+        pieceShadow.children.forEach((child) => {
+          if (child.type === "Mesh") {
+            child.material = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              opacity: 0.3,
+              transparent: true,
+            });
+          }
+        });
+        armRight.children.forEach((child) => {
+          if (child.type === "Mesh") {
+            child.material = new THREE.MeshToonMaterial({
+              color: "rgb(240, 200, 160)",
+            });
+          }
+        });
+        const armLeft = armRight.clone();
+        armLeft.scale.x = armLeft.scale.x * -1;
+        if (!this.isTouch) {
+          this.scene.add(piece);
+          this.scene.add(armRight);
+          this.scene.add(armLeft);
+          this.scene.legoPiece = piece;
+          this.scene.legoShadow = pieceShadow;
+          this.scene.armRight = armRight;
+          this.scene.armLeft = armLeft;
         }
-      });
-      pieceShadow.children.forEach((child) => {
-        if (child.type === "Mesh") {
-          child.material = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            opacity: 0.3,
-            transparent: true,
+
+        campus.load().then((campus) => {
+          this.scene.bbox = campus.geometry.bbox;
+          this.scene.initPosition();
+          if (this.isTouch) this.scene.camera.centerOn(campus);
+
+          Promise.all([
+            buildings.load(),
+            grass.load(),
+            paths.load(),
+            sphericTrees.load(),
+            tallTrees.load(),
+            lego.load(),
+            pieces.load(),
+          ]).then((layers) => {
+            sphericCanopies.parse(sphericTrees.json);
+            tallCanopies.parse(tallTrees.json);
+            this.scene.build();
+            this.scene.render();
+            this.paint();
           });
-        }
-      });
-      if (!this.isTouch) {
-        this.scene.add(piece);
-        this.scene.legoPiece = piece;
-        this.scene.legoShadow = pieceShadow;
-      }
-
-      campus.load().then((campus) => {
-        this.scene.bbox = campus.geometry.bbox;
-        this.scene.initPosition();
-        if (this.isTouch) this.scene.camera.centerOn(campus);
-
-        Promise.all([
-          buildings.load(),
-          grass.load(),
-          paths.load(),
-          sphericTrees.load(),
-          tallTrees.load(),
-          lego.load(),
-          pieces.load(),
-        ]).then((layers) => {
-          sphericCanopies.parse(sphericTrees.json);
-          tallCanopies.parse(tallTrees.json);
-          this.scene.build();
-          this.scene.render();
-          this.paint();
         });
       });
     });
@@ -198,7 +216,7 @@ export default class Game {
     this.scene.addLayer(pieces);
 
     this.scene.controls.pointer.addEventListener("change", (ev) => {
-      this.distanceToTarget(pieces.targetOnWorld(this.playerData));
+      this.distanceToTarget(pieces.getTargetLocation(this.playerData));
     });
   }
 
@@ -206,12 +224,7 @@ export default class Game {
     const direction = this.scene.controls.pointer.getDirection(
       new THREE.Vector3(0, 0, -1)
     );
-    const playerPosition = this.scene.state.position;
-    const position = new THREE.Vector3(
-      playerPosition[0] + 5 * direction.x,
-      playerPosition[1] + 5 * direction.y,
-      0.5
-    );
+    const position = this.scene.legoShadow.position;
     const distance = position.distanceTo(target);
     if (distance <= 0.5) {
       this.scene.legoShadow.children.forEach((child) => {

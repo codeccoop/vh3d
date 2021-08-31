@@ -19,7 +19,7 @@ class Scene extends THREE.Scene {
     this.state = {
       _mode: isTouch ? "orbit" : "pointer",
       orbit: {
-        position: [1279.1460223999, -612.0267163797657, 576.7102234202409],
+        position: [0, 0, 100],
         rotation: [
           1.0833975202556443,
           0.5779279158585705,
@@ -42,9 +42,15 @@ class Scene extends THREE.Scene {
       i < 2 ? d : d + 20
     );
     this.marker.position.fromArray(position);
+    const tileGeom = new THREE.PlaneGeometry(0.5, 0.5);
+    const tileMat = new THREE.MeshLambertMaterial({
+      color: 0xff0000,
+      // transparent: true,
+    });
+    this.tile = new THREE.Mesh(tileGeom, tileMat);
 
     this.cameras = {
-      orbit: new Camera(50, window.innerWidth / window.innerHeight, 1, 4000),
+      orbit: new Camera(55, window.innerWidth / window.innerHeight, 1, 4000),
       pointer: new Camera(35, window.innerWidth / window.innerHeight, 0.1, 400),
     };
 
@@ -67,10 +73,14 @@ class Scene extends THREE.Scene {
               this.fog = new THREE.Fog(0xffffff, 0, 750);
               this.remove(this.marker);
               this.add(this.legoPiece);
+              this.add(this.armRight);
+              this.add(this.armLeft);
             } else {
               this.fog = undefined;
               this.add(this.marker);
               this.remove(this.legoPiece);
+              this.remove(this.armRight);
+              this.remove(this.armLeft);
             }
             this.control.dispatchEvent({ type: "init" });
           }
@@ -226,16 +236,48 @@ class Scene extends THREE.Scene {
         this.legoPiece.position.set(
           this.state.position[0] + 3.5 * direction.x,
           this.state.position[1] + 3.5 * direction.y,
-          this.state.position[2] - 1.5 - 2 * Math.cos(pitch)
+          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
         );
         this.legoShadow.position.set(
-          this.state.position[0] + 5 * direction.x,
-          this.state.position[1] + 5 * direction.y,
-          0.75
+          this.state.position[0] + 8 * direction.x,
+          this.state.position[1] + 8 * direction.y,
+          0.3
         );
+        this.tile.position.set(
+          this.state.position[0] + 8 * direction.x,
+          this.state.position[1] + 8 * direction.y,
+          1.55
+        );
+        this.armRight.position.set(
+          this.state.position[0] + 3 * direction.x,
+          this.state.position[1] + 3 * direction.y,
+          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
+        );
+        this.armRight.position.x += Math.cos(rotation.z) * 0.7;
+        this.armRight.position.y += Math.sin(rotation.z) * 0.7;
+        this.armLeft.position.set(
+          this.state.position[0] + 3 * direction.x,
+          this.state.position[1] + 3 * direction.y,
+          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
+        );
+        this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
+        this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
         this.legoPiece.rotation.copy(rotation);
+        this.armRight.rotation.set(
+          rotation.x - Math.PI * 0.5,
+          rotation.y,
+          rotation.z + Math.PI,
+          "ZYX"
+        );
+        this.armLeft.rotation.set(
+          rotation.x - Math.PI * 0.5,
+          rotation.y,
+          rotation.z + Math.PI,
+          "ZYX"
+        );
         reordered.x = Math.PI * +0.5;
         this.legoShadow.rotation.copy(reordered);
+        this.tile.rotation.copy(reordered);
       }
     }
 
@@ -291,7 +333,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
 }
 

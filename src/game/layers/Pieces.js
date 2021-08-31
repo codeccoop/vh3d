@@ -21,7 +21,7 @@ Pieces.prototype.load = function () {
     this.loader.load("/puzzle", (texture) => {
       texture.magFilter = THREE.NearestFilter;
       texture.center.set(0.5, 0.5);
-      texture.rotation = Math.PI * 0.5;
+      // texture.rotation = Math.PI * 0.5;
       this.settings.map = texture;
       fetch("/data/lego.base.geojson", {
         method: "GET",
@@ -35,18 +35,55 @@ Pieces.prototype.load = function () {
 
 Pieces.prototype.render = function () {
   Layer.prototype.render.call(this);
-  this.geometry.shapes[0].rotateZ(-0.3);
 };
 
-Pieces.prototype.targetOnWorld = function (playerData) {
-  const x = playerData.col * 0.5;
-  const y = playerData.row * 0.5;
-  const z = 0.5;
-  if (!this.built) return;
-  const position = new THREE.Vector3(x, y, z).applyEuler(
-    this.geometry.shapes[0].rotation.reorder("ZYX")
+Pieces.prototype.localToWorld = function (vector) {
+  const mesh = this.geometry.shapes[0];
+  const geom = mesh.geometry;
+  const width = geom.parameters.width;
+  const height = geom.parameters.height;
+  const center = {
+    x: mesh.position.x,
+    y: mesh.position.y,
+  };
+  const origin = {
+    x: center.x - width / 2,
+    y: center.y - height / 2,
+  };
+  const target = {
+    x: origin.x + vector.x,
+    y: origin.y + vector.y,
+  };
+  const distance = {
+    x: target.x - center.x,
+    y: target.y - center.y,
+  };
+  if (distance.x === 0 && distance.y === 0) {
+    return new THREE.Vector3(center.x, center.y, 0.5);
+  }
+
+  const bearing = Math.atan(distance.y / distance.x);
+  const radius =
+    distance.y !== 0
+      ? distance.y / Math.sin(bearing)
+      : distance.x !== 0
+      ? distance.x / Math.cos(bearing)
+      : 0;
+
+  return new THREE.Vector3(
+    center.x + Math.cos(bearing + mesh.rotation.z) * radius,
+    center.y + Math.sin(bearing + mesh.rotation.z) * radius,
+    0.5
   );
-  return this.geometry.shapes[0].localToWorld(position);
+};
+
+Pieces.prototype.getTargetLocation = function (playerData) {
+  const xRel = this.geometry.shapes[0].geometry.parameters.width / 120;
+  const yRel = this.geometry.shapes[0].geometry.parameters.height / 75;
+  const x = (playerData.col + 1) * xRel - xRel * 0.5;
+  const y = (playerData.row + 1) * yRel - yRel * 0.5;
+  if (!this.built) return;
+  return this.localToWorld({ x: x, y: y });
 };
 
 export default Pieces;

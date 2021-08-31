@@ -10,9 +10,9 @@ export class OrbitControls extends THREE.OrbitControls {
     this.minAzimuthAngle = Math.PI * (1 / 4);
     this.maxPolarAngle = Math.PI * (1 / 2.2);
     this.minDistance = 10;
-    this.maxDistance = 2000;
+    this.maxDistance = 1000;
     this.minZoom = 10;
-    this.maxZoom = 2000;
+    this.maxZoom = 1000;
     this.enablePan = true;
     this.screenSpacePanning = false;
   }
@@ -176,6 +176,10 @@ export class PointerLockControls extends THREE.PointerLockControls {
       case "KeyD":
         this.state.moveRight = false;
         break;
+
+      case "Enter":
+        document.dispatchEvent(new CustomEvent("piece"));
+        break;
     }
   }
 
@@ -275,7 +279,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
         if (this.isColliding()) this.onColliding(delta);
       } catch (e) {
-        console.log("on collision");
+        // console.log("on collision");
       }
     } else {
       this.velocity.z -= 9.8 * 50 * delta;
@@ -324,7 +328,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
     this.euler.z -= movementX * 1e-3;
     this.euler.x -= movementY * 1e-3;
     this.euler.x = Math.max(
-      Math.PI * 0.35,
+      Math.PI * 0.42,
       Math.min(Math.PI * 0.8, this.euler.x)
     );
 

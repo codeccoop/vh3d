@@ -21,9 +21,6 @@ Lego.prototype.load = function () {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(75, 120);
-      // texture.offset.set(0.5, 0.5);
-      // texture.center.set(0.25, 0.25);
-      // texture.rotation = Math.PI * 0.5;
       this.settings.map = texture;
       fetch("/data/lego.base.geojson", {
         method: "GET",
@@ -42,7 +39,7 @@ Lego.prototype.load = function () {
 
 Lego.prototype.render = function () {
   Layer.prototype.render.call(this);
-  this.geometry.shapes[0].rotateZ(-0.3);
+  // this.geometry.shapes[0].rotateZ(Math.PI - 0.3);
 };
 
 export default Lego;

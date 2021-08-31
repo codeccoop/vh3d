@@ -65,6 +65,7 @@ export default {
       gameOver: false,
       distance: 101,
       controls: "pointer",
+      done: false,
     };
   },
   beforeMount() {
@@ -85,6 +86,8 @@ export default {
     document.addEventListener("gameover", this.onGameOver);
     document.removeEventListener("distance", this.onDistanceChange);
     document.addEventListener("distance", this.onDistanceChange);
+    document.removeEventListener("piece", this.onPiece);
+    document.addEventListener("piece", this.onPiece);
   },
   computed: {
     isTouch() {
@@ -130,6 +133,19 @@ export default {
           ) -
           50 +
           "px";
+      }
+    },
+    onPiece() {
+      if (this.distance < 0.5) {
+        fetch(`piece/${this.pieceId}`, {
+          method: "POST",
+        }).then((res) => {
+          res.json().then((data) => {
+            if (data["success"]) {
+              this.done = true;
+            }
+          });
+        });
       }
     },
   },
