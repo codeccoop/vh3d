@@ -35,22 +35,6 @@ class Scene extends THREE.Scene {
       },
     };
 
-    const closinesGeom = new THREE.RingGeometry(
-      1.5,
-      1.75,
-      20,
-      1,
-      Math.PI * 1.75,
-      Math.PI * 0.25
-    );
-    const closinesMat = new THREE.MeshLambertMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.8,
-    });
-    this.closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
-    this.closinesRing.position.z = 0.55;
-
     this.cameras = {
       orbit: new Camera(55, window.innerWidth / window.innerHeight, 1, 4000),
       pointer: new Camera(35, window.innerWidth / window.innerHeight, 0.1, 400),
@@ -274,7 +258,7 @@ class Scene extends THREE.Scene {
           rotation.z + Math.PI,
           "ZYX"
         );
-        if (this.getObjectById(this.legoShadow.id)) {
+        if (this.control.state.isOnTatami) {
           const shadowPosition = this.piecesLayer.getNearest(
             {
               x: this.state.position[0] + 8 * direction.x,
@@ -290,8 +274,6 @@ class Scene extends THREE.Scene {
           this.legoShadow.rotation.copy(reordered);
           this.legoShadow.rotation.z =
             this.piecesLayer.geometry.shapes[0].rotation.z;
-
-          const angleToTarget = this.piecesLayer.g;
         }
       }
     }
@@ -349,7 +331,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
 }
 

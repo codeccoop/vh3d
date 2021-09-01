@@ -154,65 +154,19 @@ Pieces.prototype.getNearest = function (vector, direction) {
     ),
   };
 
-  // return new THREE.Vector3(lOrigin.x, lOrigin.y, vector.z);
-  // return new THREE.Vector3(local.x, local.y, vector.z);
-  // return new THREE.Vector3(lPosition.x, lPosition.y, vector.z);
-
   const lRadius = Math.sqrt(
     Math.pow(lPosition.x - lOrigin.x, 2) + Math.pow(lOrigin.y - lPosition.y, 2)
   );
   const lBearing =
     Math.PI * 1.5 +
-    Math.atan(
-      (lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y)
-      // (lOrigin.y - lPosition.y) / (lPosition.x - lOrigin.x)
-    );
+    Math.atan((lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y));
 
-  const lFit = {
-    x:
-      local.x -
-      (lOrigin.x + rel.x * Math.round(lDelta.x / rel.x) + rel.x * 0.5),
-    y:
-      local.y -
-      (lOrigin.y - rel.y * Math.round(lDelta.y / rel.y) + rel.y * 0.5),
-  };
   const position = {
     x: origin.x + Math.cos(lBearing + rotation.z) * lRadius,
     y: origin.y + Math.sin(lBearing + rotation.z) * lRadius,
   };
 
-  const target = {
-    x: vector.x + lFit.y * (forward == 2 ? 1 : -1) * Math.cos(rotation.z),
-    y: vector.y + lFit.x * (forward == 1 ? 1 : -1) * Math.sin(rotation.z),
-  };
-
   return new THREE.Vector3(position.x, position.y, vector.z);
-  // return new THREE.Vector3(target.x, target.y, vector.z);
-};
-
-Pieces.prototype.getPositionsMatrix = function () {
-  if (!this.built) return;
-  const width = this.geometry.shapes[0].geometry.parameters.width;
-  const height = this.geometry.shapes[0].geometry.parameters.height;
-  const xRel = width / 120;
-  const yRel = height / 75;
-  const origin = this.localToWorld({ x: 0, y: 0 });
-  // const limit = this.localToWorld({ x: 0, y: yRel * 75 });
-  this.geometry.shapes[0].updateMatrixWorld();
-  const bearing = this.geometry.shapes[0].rotation.z;
-  const matrix = [];
-  for (let i = 0; i < 120; i++) {
-    if (matrix[i] === void 0) matrix.push([]);
-    for (let j = 0; j < 75; j++) {
-      matrix[i].push([
-        origin.x + xRel * (i % 120) * Math.cos(bearing),
-        origin.y - yRel * j * Math.sin(bearing),
-      ]);
-      matrix[i].x = matrix[i][0][0];
-      matrix[i].y = matrix[i][0][1];
-    }
-  }
-  return matrix;
 };
 
 export default Pieces;

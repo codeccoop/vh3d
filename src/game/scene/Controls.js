@@ -96,7 +96,9 @@ export class PointerLockControls extends THREE.PointerLockControls {
       },
       canJump: {
         get: () => {
-          return this.getObject().position.z <= (this.isOnTatami() ? 2.5 : 2);
+          return (
+            this.getObject().position.z <= (this.state.isOnTatami ? 2.5 : 2)
+          );
         },
         set: () => {
           this.getObject().position.z += 0.1;
@@ -250,6 +252,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
     if (!this.state.falling) {
       try {
         this.state.falling = this.isFalling();
+        this.state.isOnTatami = this.isOnTatami();
 
         this.velocity.x -= this.velocity.x * 10.0 * delta;
         this.velocity.y -= this.velocity.y * 10.0 * delta;
@@ -262,7 +265,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
           Number(this.state.moveRight) - Number(this.state.moveLeft);
         this.direction.normalize();
 
-        const acceleration = this.isOnTatami() ? 75 : 250;
+        const acceleration = this.state.isOnTatami ? 65 : 250;
         if (this.state.moveForward || this.state.moveBackward) {
           this.velocity.y -= this.direction.y * acceleration * delta;
         }
@@ -273,13 +276,14 @@ export class PointerLockControls extends THREE.PointerLockControls {
         this.moveRight(-this.velocity.x * delta);
         this.moveForward(-this.velocity.y * delta);
         this.getObject().position.z = Math.max(
-          this.isOnTatami() ? 2.5 : 2,
+          this.state.isOnTatami ? 2.5 : 2,
           this.getObject().position.z + this.velocity.z * delta
         );
 
-        if (this.isColliding()) this.onColliding(delta);
+        if (!this.state.isOnTatami && this.isColliding())
+          this.onColliding(delta);
       } catch (e) {
-        // console.log("on collision");
+        console.log("on collision");
       }
     } else {
       this.velocity.z -= 9.8 * 50 * delta;

@@ -199,6 +199,7 @@ export default class Game {
             this.scene.build();
             this.scene.render();
             this.paint();
+            this.target = pieces.getTargetLocation(this.playerData);
           });
         });
       });
@@ -222,61 +223,81 @@ export default class Game {
     this.scene.marker = marker;
 
     const closinesGeom = new THREE.RingGeometry(
-      1.5,
-      1.75,
+      1.3,
+      1.4,
       20,
       1,
       -Math.PI * 0.25,
-      Math.PI * 0.25
+      Math.PI * 0.5
     );
     const closinesMat = new THREE.MeshLambertMaterial({
-      color: 0xffffff,
       transparent: true,
       opacity: 0.8,
+      color: 0xfdff85,
+      shininess: 150,
     });
     const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
     this.scene.closinesRing = closinesRing;
 
-    this.scene.controls.pointer.addEventListener("change", (ev) => {
-      if (
-        this.scene.state.mode === "pointer" &&
-        this.scene.control.isOnTatami()
-      ) {
-        const target = pieces.getTargetLocation(this.playerData);
-        this.distanceToTarget(target);
-        closinesRing.updateWorldMatrix();
-        const targetBearing = closinesRing.position.angleTo(target);
-        /* Math.atan(
-          (closinesRing.position.x - target.x) /
-            (closinesRing.position.y - target.y)
-        ); */
-        console.log(targetBearing);
-        closinesRing.rotation.z = targetBearing;
-      }
-    });
+    this.onControlsChange = this.onControlsChange.bind(this);
+    this.scene.controls.pointer.addEventListener(
+      "change",
+      this.onControlsChange
+    );
   }
 
   distanceToTarget(target) {
-    const direction = this.scene.controls.pointer.getDirection(
-      new THREE.Vector3(0, 0, -1)
-    );
+    this.scene.legoShadow.updateMatrixWorld();
     const position = this.scene.legoShadow.position;
     const distance = position.distanceTo(target);
-    if (distance <= 0.4) {
-      this.scene.legoShadow.children.forEach((child) => {
-        child.material.color.setHex(0x00ff00);
-      });
-    } else {
-      this.scene.legoShadow.children.forEach((child) => {
-        child.material.color.setHex(0xff0000);
-      });
+    return distance;
+  }
+
+  onControlsChange(ev) {
+    if (
+      this.scene.state.mode === "pointer" &&
+      this.scene.control.state.isOnTatami
+    ) {
+      const distance = this.distanceToTarget(this.target);
+
+      const xDelta = this.scene.closinesRing.position.x - this.target.x;
+      const yDelta = this.scene.closinesRing.position.y - this.target.y;
+
+      let targetBearing;
+      if (yDelta > 0) {
+        targetBearing = Math.atan(xDelta / yDelta);
+        if (xDelta < 0) {
+          targetBearing = Math.PI * 1.5 - targetBearing;
+        } else {
+          targetBearing = Math.PI * 1.5 - targetBearing;
+        }
+      } else {
+        targetBearing = Math.atan(yDelta / xDelta);
+        if (xDelta > 0) {
+          targetBearing += Math.PI;
+        }
+      }
+
+      this.scene.closinesRing.rotation.z = targetBearing;
+
+      if (distance <= 0.4) {
+        this.scene.legoShadow.children.forEach((child) => {
+          child.material.color.setHex(0x00ff00);
+        });
+        this.paint();
+      } else {
+        this.scene.legoShadow.children.forEach((child) => {
+          child.material.color.setHex(0xff0000);
+        });
+        this.paint();
+      }
+      /* document.dispatchEvent(
+         new CustomEvent("distance", {
+         detail: {
+         value: distance,
+         },
+         })
+         ); */
     }
-    /* document.dispatchEvent(
-      new CustomEvent("distance", {
-        detail: {
-          value: distance,
-        },
-      })
-    ); */
   }
 }
