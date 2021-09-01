@@ -151,6 +151,9 @@ export default {
   },
   watch: {
     gameLock(to, from) {
+      if (from === undefined && !this.isTouch) {
+        window.audioObj.play();
+      }
       this.game.lock(to);
       if (from !== void 0) {
         this.waiting = true;

@@ -14,18 +14,19 @@ function Geometry(json, settings) {
   this.settings = { ..._settings, ...settings };
 
   this.bbox = new BBox(json.features, settings.z, settings.projection);
+  const canvas = document.getElementById("canvas");
+  const domain = [
+    0,
+    canvas.clientWidth < canvas.clientHeight
+      ? canvas.clientWidth
+      : canvas.clientHeight,
+  ];
   this.xScale =
     this.xScale ||
-    new RelativeScale(
-      this.bbox.get().lngs,
-      settings.xDomain || [0, document.getElementById("canvas").clientWidth]
-    );
+    new RelativeScale(this.bbox.get().lngs, settings.xDomain || domain);
   this.yScale =
     this.yScale ||
-    new RelativeScale(
-      this.bbox.get().lats,
-      settings.yDomain || [0, document.getElementById("canvas").clientHeight]
-    );
+    new RelativeScale(this.bbox.get().lats, settings.yDomain || domain);
 
   this.material = this.Material(settings);
 

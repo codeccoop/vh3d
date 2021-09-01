@@ -6,6 +6,7 @@ import { RelativeScale } from "../geojson2three/components/Scales.js";
 
 const origin = [238580.55031842450262, 5075605.921119668520987];
 
+var puzzleRotation;
 class Scene extends THREE.Scene {
   constructor(canvas, isTouch) {
     super(...arguments);
@@ -191,14 +192,15 @@ class Scene extends THREE.Scene {
     });
 
     this.$on("bbox:update", (ev) => {
-      this.xScale = new RelativeScale(ev.detail.bbox.lngs, [
+      const canvas = document.getElementById("canvas");
+      const domain = [
         0,
-        Math.min(window.innerHeight, window.innerWidth),
-      ]);
-      this.yScale = new RelativeScale(ev.detail.bbox.lats, [
-        0,
-        Math.min(window.innerHeight, window.innerWidth),
-      ]);
+        canvas.clientWidth < canvas.clientHeight
+          ? canvas.clientWidth
+          : canvas.clientHeight,
+      ];
+      this.xScale = new RelativeScale(ev.detail.bbox.lngs, domain);
+      this.yScale = new RelativeScale(ev.detail.bbox.lats, domain);
 
       this.build();
       this.render();
@@ -243,6 +245,24 @@ class Scene extends THREE.Scene {
           this.state.position[1] + 8 * direction.y,
           0.3
         );
+        /* let row, distance;
+        row = this.positionsMatrix.reduce(
+          (nearest, row) => {
+            distance = Math.sqrt(
+              Math.pow(this.legoShadow.position.y - row.y, 2) +
+                Math.pow(this.legoShadow.position.x - row.x, 2)
+            );
+            if (distance < nearest.distance) {
+              console.log(distance);
+              nearest = row;
+              nearest.distance = distance;
+            }
+            return nearest;
+          },
+          { distance: Infinity }
+        ); */
+        // console.log(row[0].distance);
+        // console.log(row[0]);
         this.tile.position.set(
           this.state.position[0] + 8 * direction.x,
           this.state.position[1] + 8 * direction.y,
@@ -275,8 +295,9 @@ class Scene extends THREE.Scene {
           rotation.z + Math.PI,
           "ZYX"
         );
-        reordered.x = Math.PI * +0.5;
+        reordered.x = Math.PI * 0.5;
         this.legoShadow.rotation.copy(reordered);
+        this.legoShadow.rotation.z = puzzleRotation.z;
         this.tile.rotation.copy(reordered);
       }
     }
@@ -321,6 +342,18 @@ class Scene extends THREE.Scene {
         );
       } else if (layerName === "pieces" && layer.built) {
         this.controls.pointer.tatami = layer.geometry.shapes[0];
+        puzzleRotation = layer.geometry.shapes[0].rotation;
+        this.positionsMatrix = layer.getPositionsMatrix();
+        const geom = new THREE.CircleGeometry(0.5, 2);
+        const mat = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        this.positionsMatrix.map((row) => {
+          row.map((col) => {
+            // const clone = geom.clone();
+            // const mesh = new THREE.Mesh(clone, mat);
+            // mesh.position.set(col[0], col[1], 1);
+            // this.add(mesh);
+          });
+        });
       }
       if (layer.built) layer.render();
     }
@@ -333,7 +366,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
 }
 

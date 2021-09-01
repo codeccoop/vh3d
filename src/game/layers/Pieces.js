@@ -48,11 +48,11 @@ Pieces.prototype.localToWorld = function (vector) {
   };
   const origin = {
     x: center.x - width / 2,
-    y: center.y - height / 2,
+    y: center.y + height / 2,
   };
   const target = {
     x: origin.x + vector.x,
-    y: origin.y + vector.y,
+    y: origin.y - vector.y,
   };
   const distance = {
     x: target.x - center.x,
@@ -78,12 +78,37 @@ Pieces.prototype.localToWorld = function (vector) {
 };
 
 Pieces.prototype.getTargetLocation = function (playerData) {
+  if (!this.built) return;
   const xRel = this.geometry.shapes[0].geometry.parameters.width / 120;
   const yRel = this.geometry.shapes[0].geometry.parameters.height / 75;
   const x = (playerData.col + 1) * xRel - xRel * 0.5;
   const y = (playerData.row + 1) * yRel - yRel * 0.5;
-  if (!this.built) return;
   return this.localToWorld({ x: x, y: y });
+};
+
+Pieces.prototype.getPositionsMatrix = function () {
+  if (!this.built) return;
+  const width = this.geometry.shapes[0].geometry.parameters.width;
+  const height = this.geometry.shapes[0].geometry.parameters.height;
+  const xRel = width / 120;
+  const yRel = height / 75;
+  const origin = this.localToWorld({ x: 0, y: 0 });
+  // const limit = this.localToWorld({ x: 0, y: yRel * 75 });
+  this.geometry.shapes[0].updateMatrixWorld();
+  const bearing = this.geometry.shapes[0].rotation.z;
+  const matrix = [];
+  for (let i = 0; i < 120; i++) {
+    if (matrix[i] === void 0) matrix.push([]);
+    for (let j = 0; j < 75; j++) {
+      matrix[i].push([
+        origin.x + xRel * (i % 120) * Math.cos(bearing),
+        origin.y - yRel * j * Math.sin(bearing),
+      ]);
+      matrix[i].x = matrix[i][0][0];
+      matrix[i].y = matrix[i][0][1];
+    }
+  }
+  return matrix;
 };
 
 export default Pieces;

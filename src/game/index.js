@@ -143,7 +143,7 @@ export default class Game {
         piece.rotation.x = Math.PI * 0.5;
         piece.scale.set(0.9, 0.9, 0.6);
         const pieceShadow = piece.clone();
-        pieceShadow.scale.set(0.75, 0.75, 0.75);
+        pieceShadow.scale.set(0.85, 0.85, 0.65);
 
         piece.children.forEach((child) => {
           if (child.type === "Mesh") {

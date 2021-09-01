@@ -19,7 +19,6 @@ Polygon.prototype.build = function () {
     let bbox = null;
     if (this.settings.primitive_type)
       bbox = new BBox([feat], this.settings.z).get();
-    // bbox = this.bbox.get();
 
     for (let segment of feat.geometry.coordinates) {
       let geometry, material, mesh;

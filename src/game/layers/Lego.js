@@ -20,7 +20,7 @@ Lego.prototype.load = function () {
     this.loader.load("/static/images/lego.texture--gray.png", (texture) => {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(75, 120);
+      texture.repeat.set(120, 75);
       this.settings.map = texture;
       fetch("/data/lego.base.geojson", {
         method: "GET",
