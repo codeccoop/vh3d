@@ -67,7 +67,7 @@ def puzzle ():
 
     for piece in pieces:
         piece = format_piece(piece)
-        image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], piece["done"] and 255 or 0]
+        image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], random.randint(0, 1) and 255 or 0]  #piece["done"] and 255 or 0]
 
     img = Image.fromarray(image_array)
     img.save("static/images/puzzle.png")

@@ -141,9 +141,9 @@ export default class Game {
         piece.position.fromArray(this.scene.camera.position.toArray());
         piece.position.z = 1;
         piece.rotation.x = Math.PI * 0.5;
-        piece.scale.set(0.9, 0.9, 0.6);
+        piece.scale.set(0.9, 0.85, 0.9);
         const pieceShadow = piece.clone();
-        pieceShadow.scale.set(0.85, 0.85, 0.65);
+        pieceShadow.scale.set(0.9, 0.85, 0.9);
 
         piece.children.forEach((child) => {
           if (child.type === "Mesh") {
@@ -215,8 +215,44 @@ export default class Game {
     this.scene.addLayer(lego);
     this.scene.addLayer(pieces);
 
+    const markerGeom = new THREE.ConeGeometry(10, 30, 32);
+    const markerMat = new THREE.MeshToonMaterial({ color: 0xff0000 });
+    const marker = new THREE.Mesh(markerGeom, markerMat);
+    marker.rotation.x = -Math.PI * 0.5;
+    this.scene.marker = marker;
+
+    const closinesGeom = new THREE.RingGeometry(
+      1.5,
+      1.75,
+      20,
+      1,
+      -Math.PI * 0.25,
+      Math.PI * 0.25
+    );
+    const closinesMat = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.8,
+    });
+    const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
+    this.scene.closinesRing = closinesRing;
+
     this.scene.controls.pointer.addEventListener("change", (ev) => {
-      this.distanceToTarget(pieces.getTargetLocation(this.playerData));
+      if (
+        this.scene.state.mode === "pointer" &&
+        this.scene.control.isOnTatami()
+      ) {
+        const target = pieces.getTargetLocation(this.playerData);
+        this.distanceToTarget(target);
+        closinesRing.updateWorldMatrix();
+        const targetBearing = closinesRing.position.angleTo(target);
+        /* Math.atan(
+          (closinesRing.position.x - target.x) /
+            (closinesRing.position.y - target.y)
+        ); */
+        console.log(targetBearing);
+        closinesRing.rotation.z = targetBearing;
+      }
     });
   }
 
@@ -226,21 +262,21 @@ export default class Game {
     );
     const position = this.scene.legoShadow.position;
     const distance = position.distanceTo(target);
-    if (distance <= 0.5) {
+    if (distance <= 0.4) {
       this.scene.legoShadow.children.forEach((child) => {
         child.material.color.setHex(0x00ff00);
       });
     } else {
       this.scene.legoShadow.children.forEach((child) => {
-        child.material.color.setHex(0xffffff);
+        child.material.color.setHex(0xff0000);
       });
     }
-    document.dispatchEvent(
+    /* document.dispatchEvent(
       new CustomEvent("distance", {
         detail: {
           value: distance,
         },
       })
-    );
+    ); */
   }
 }

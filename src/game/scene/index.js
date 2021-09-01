@@ -6,7 +6,7 @@ import { RelativeScale } from "../geojson2three/components/Scales.js";
 
 const origin = [238580.55031842450262, 5075605.921119668520987];
 
-var puzzleRotation;
+// var puzzleRotation;
 class Scene extends THREE.Scene {
   constructor(canvas, isTouch) {
     super(...arguments);
@@ -35,20 +35,21 @@ class Scene extends THREE.Scene {
       },
     };
 
-    const markerGeom = new THREE.ConeGeometry(10, 30, 32);
-    const markerMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-    this.marker = new THREE.Mesh(markerGeom, markerMaterial);
-    this.marker.rotation.x = -Math.PI * 0.5;
-    const position = this.state.pointer.position.map((d, i) =>
-      i < 2 ? d : d + 20
+    const closinesGeom = new THREE.RingGeometry(
+      1.5,
+      1.75,
+      20,
+      1,
+      Math.PI * 1.75,
+      Math.PI * 0.25
     );
-    this.marker.position.fromArray(position);
-    const tileGeom = new THREE.PlaneGeometry(0.5, 0.5);
-    const tileMat = new THREE.MeshLambertMaterial({
-      color: 0xff0000,
-      // transparent: true,
+    const closinesMat = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.8,
     });
-    this.tile = new THREE.Mesh(tileGeom, tileMat);
+    this.closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
+    this.closinesRing.position.z = 0.55;
 
     this.cameras = {
       orbit: new Camera(55, window.innerWidth / window.innerHeight, 1, 4000),
@@ -137,9 +138,15 @@ class Scene extends THREE.Scene {
 
     this.controls.pointer.addEventListener("onTatami", (ev) => {
       if (ev.value) {
-        this.add(this.legoShadow);
+        if (!this.getObjectById(this.legoShadow.id)) {
+          this.add(this.legoShadow);
+          this.add(this.closinesRing);
+        }
       } else {
-        this.remove(this.legoShadow);
+        if (this.getObjectById(this.legoShadow.id)) {
+          this.remove(this.legoShadow);
+          this.remove(this.closinesRing);
+        }
       }
     });
 
@@ -240,34 +247,6 @@ class Scene extends THREE.Scene {
           this.state.position[1] + 3.5 * direction.y,
           this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
         );
-        this.legoShadow.position.set(
-          this.state.position[0] + 8 * direction.x,
-          this.state.position[1] + 8 * direction.y,
-          0.3
-        );
-        /* let row, distance;
-        row = this.positionsMatrix.reduce(
-          (nearest, row) => {
-            distance = Math.sqrt(
-              Math.pow(this.legoShadow.position.y - row.y, 2) +
-                Math.pow(this.legoShadow.position.x - row.x, 2)
-            );
-            if (distance < nearest.distance) {
-              console.log(distance);
-              nearest = row;
-              nearest.distance = distance;
-            }
-            return nearest;
-          },
-          { distance: Infinity }
-        ); */
-        // console.log(row[0].distance);
-        // console.log(row[0]);
-        this.tile.position.set(
-          this.state.position[0] + 8 * direction.x,
-          this.state.position[1] + 8 * direction.y,
-          1.55
-        );
         this.armRight.position.set(
           this.state.position[0] + 3 * direction.x,
           this.state.position[1] + 3 * direction.y,
@@ -295,10 +274,25 @@ class Scene extends THREE.Scene {
           rotation.z + Math.PI,
           "ZYX"
         );
-        reordered.x = Math.PI * 0.5;
-        this.legoShadow.rotation.copy(reordered);
-        this.legoShadow.rotation.z = puzzleRotation.z;
-        this.tile.rotation.copy(reordered);
+        if (this.getObjectById(this.legoShadow.id)) {
+          const shadowPosition = this.piecesLayer.getNearest(
+            {
+              x: this.state.position[0] + 8 * direction.x,
+              y: this.state.position[1] + 8 * direction.y,
+              z: 0.25,
+            },
+            this.control.getObject().rotation.reorder("ZYX")
+          );
+          this.legoShadow.position.copy(shadowPosition);
+          this.closinesRing.position.copy(shadowPosition);
+          this.closinesRing.position.z = 0.55;
+          reordered.x = Math.PI * 0.5;
+          this.legoShadow.rotation.copy(reordered);
+          this.legoShadow.rotation.z =
+            this.piecesLayer.geometry.shapes[0].rotation.z;
+
+          const angleToTarget = this.piecesLayer.g;
+        }
       }
     }
 
@@ -341,19 +335,8 @@ class Scene extends THREE.Scene {
           layer.geometry.shapes
         );
       } else if (layerName === "pieces" && layer.built) {
+        this.piecesLayer = layer;
         this.controls.pointer.tatami = layer.geometry.shapes[0];
-        puzzleRotation = layer.geometry.shapes[0].rotation;
-        this.positionsMatrix = layer.getPositionsMatrix();
-        const geom = new THREE.CircleGeometry(0.5, 2);
-        const mat = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-        this.positionsMatrix.map((row) => {
-          row.map((col) => {
-            // const clone = geom.clone();
-            // const mesh = new THREE.Mesh(clone, mat);
-            // mesh.position.set(col[0], col[1], 1);
-            // this.add(mesh);
-          });
-        });
       }
       if (layer.built) layer.render();
     }
@@ -366,7 +349,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
   }
 }
 

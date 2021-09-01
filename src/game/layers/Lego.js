@@ -39,6 +39,7 @@ Lego.prototype.load = function () {
 
 Lego.prototype.render = function () {
   Layer.prototype.render.call(this);
+  // this.geometry.shapes[0].rotation.z = 0;
   // this.geometry.shapes[0].rotateZ(Math.PI - 0.3);
 };
 

@@ -84,7 +84,7 @@ Polygon.prototype.build = function () {
 
         mesh.position.set(bbox.center[0], bbox.center[1], base);
 
-        mesh.rotateZ(-orientation);
+        mesh.rotateZ(Math.PI - orientation);
       }
 
       if (this.settings.edges) {
