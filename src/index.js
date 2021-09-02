@@ -2,6 +2,7 @@ import Cover from "./views/Cover.js";
 import Game from "./views/Game.js";
 
 Vue.use(VueRouter);
+Vue.use(VueCarousel);
 
 const router = new VueRouter({
   routes: [

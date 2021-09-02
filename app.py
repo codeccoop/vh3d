@@ -75,7 +75,6 @@ def puzzle ():
     with open("static/images/puzzle.png", "rb") as cur:
         response = make_response(cur.read())
         response.headers.set("Content-Type", "image/png")
-        # response.headers.set("Content-Disposition", "attachment", filename="puzzle.png")
         return response
 
 
