@@ -168,6 +168,7 @@ export default {
             window.audioObj.play();
           }
           this.game.bind();
+          this.game.scene.state.mode = "pointer";
         } else {
           if (!this.isTouch) {
             this.$nextTick(() => {
@@ -177,9 +178,6 @@ export default {
                 document.getElementById("coverMap"),
                 this.coverMap.playerData,
                 "cover"
-              );
-              this.coverMap.scene.marker.position.copy(
-                this.game.scene.control.pointer.position
               );
               this.coverMap.bind();
             });

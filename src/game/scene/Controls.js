@@ -41,7 +41,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
     );
 
     this.state = {
-      moving: false,
+      _moving: false,
       _moveForward: false,
       _moveBackward: false,
       _moveLeft: false,
@@ -50,6 +50,18 @@ export class PointerLockControls extends THREE.PointerLockControls {
     };
 
     Object.defineProperties(this.state, {
+      moving: {
+        get: () => {
+          return this.state._moving;
+        },
+        set: (to) => {
+          this.state._moving = to;
+          if (!to) {
+            this.velocity.x = 0;
+            this.velocity.y = 0;
+          }
+        },
+      },
       moveForward: {
         get: () => {
           return this.state._moveForward;
@@ -126,7 +138,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
   onKeyDown(event) {
     if (!this.enabled) return;
-    this.state.moving = true;
+    this.state.moving = true; // this.state.moving || event.code !== "Space";
     switch (event.code) {
       case "ArrowUp":
       case "KeyW":
@@ -149,7 +161,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
         break;
 
       case "Space":
-        if (this.state.canJump) this.velocity.z += 150;
+        if (this.state.canJump) this.velocity.z += 140;
         this.state.canJump = false;
         break;
     }
@@ -261,7 +273,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
         this.velocity.x -= this.velocity.x * 5 * delta;
         this.velocity.y -= this.velocity.y * 5 * delta;
-        if (!this.state.canJump) this.velocity.z -= 9.8 * 63 * delta;
+        if (!this.state.canJump) this.velocity.z -= 9.8 * 55 * delta;
         else this.velocity.z = 0;
 
         const acceleration = this.state.isOnTatami ? 50 : 200;

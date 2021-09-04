@@ -263,10 +263,13 @@ class Scene extends THREE.Scene {
         "ZYX"
       );
       if (this.controls.pointer.state.isOnTatami) {
+        this.legoPiece.position.z -= 0.25;
+        this.armLeft.position.z -= 0.25;
+        this.armRight.position.z -= 0.25;
         const shadowPosition = this.piecesLayer.getNearest(
           {
-            x: position.x + 8 * direction.x,
-            y: position.y + 8 * direction.y,
+            x: position.x + 9 * direction.x,
+            y: position.y + 9 * direction.y,
             z: 0.25,
           },
           this.controls.pointer.getObject().rotation.reorder("ZYX")
@@ -329,7 +332,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
     this.updatePositions();
   }
 }

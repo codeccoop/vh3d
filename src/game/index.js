@@ -51,13 +51,13 @@ export default class Game {
   bind() {
     this.onControlsChange = this.onControlsChange.bind(this);
     this.scene.$on("control:change", this.onControlsChange);
-    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keydown", this.onKeyDown, true);
     window.addEventListener("resize", this.onResize);
   }
 
   unbind() {
     this.scene.$off("control:change", this.onControlsChange);
-    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("keydown", this.onKeyDown, true);
     window.removeEventListener("resize", this.onResize);
   }
 
@@ -111,12 +111,14 @@ export default class Game {
         })
       );
     } else if (ev.code === "Escape") {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      this.scene.control.deactivate();
       if (this.scene.state.mode === "orbit") {
-        this.scene.state.mode = "pointer";
-      } else {
-        this.scene.control.deactivate();
+        document.dispatchEvent(new CustomEvent("unlock"));
       }
-    } else if (ev.code === "Enter") {
+    } else if (ev.code === "Enter" || ev.code === "NumpadEnter") {
       if (!this.isOnTarget) return;
       this.done = true;
       this.scene.done = true;
@@ -328,6 +330,7 @@ export default class Game {
         this.scene.legoShadow.children.forEach((child) => {
           child.material.color.setHex(0xff0000);
         });
+        this.paint();
         this.isOnTarget = false;
       }
     }
