@@ -11,7 +11,7 @@ class Camera extends THREE.PerspectiveCamera {
     const y = (layer.yScale(bbox.lats[1]) - layer.yScale(bbox.lats[0])) / 2;
     const z = 0;
 
-    this.position.set(x, -1000, 2000);
+    this.position.set(x + 400, -390, 400);
     this.lookAt(x, y, z);
     if (this.parentControl && this.parentControl.target) {
       this.parentControl.target.set(x, y, z);

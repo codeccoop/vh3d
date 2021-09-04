@@ -3,40 +3,21 @@ import Game from "../game/index.js";
 var controlsTimeout;
 export default {
   template: `<div id="game">
-    <div v-if="!gameLock" class="game-cover" :style="background.color">
+    <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
       <div v-if="waiting" class="game-cover__loader">Carregant...</div>
       <div v-else class="game-cover__menu-wrapper">
-        <div v-if="!showInfo" class="game-cover__menu">
+        <div class="game-cover__menu">
           <h2 class="centered">{{ menuTitle }}</h2>
           <ul class="centered">
-            <li v-if="!gameOver"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
-            <li v-if="gameOver"><button @click="restart" class="button">Reiniciar</button></li>
+            <li v-if="!gameOver && !started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
+            <li v-if="!gameOver && started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Continuar' }}</button></li>
+            <li v-if="started && !isTouch"><button @click="restart" class="button">Reiniciar</button></li>
             <li><button @click="exit" class="button">Sortir</button></li>
-            <li><button @click="showInfo = true" class="button">Veure'n més</button></li>
           </ul>
         </div>
-        <div v-if="showInfo" class="game-cover__show-info">
-          <h2 class="centered">Les línies del pla estratègic</h2>
-          <div class="carousel">
-          <carousel
-            :perPage="1"
-          >
-            <slide
-              v-for="banner in banners"
-            >
-              <img :src="'static/images/'+banner" :style="{width: carouselImageWidth, maxWidth: '900px' }" />
-            </slide>
-          </carousel>
-          <ul class="centered">
-            <li><button @click="showInfo = false" class="button">Tornar</button></li>
-          </ul>
-          </div>
-          <!-- <h2 class="centered">Ajuda</h2>
-          <ul class="centered">
-            <li><button @click="showInfo = false" class="button">Tornar</button></li>
-          </ul> -->
+        <div v-if="!isTouch" class="game-cover__map" ref="coverMap">
+          <canvas id="coverMap"></canvas>
         </div>
-        <div v-else class="game-cover__banner" :style="background.image"></div>
       </div>
     </div>
     <div class="game-overlay">
@@ -46,6 +27,7 @@ export default {
           <li class="movement"><div class="icon"><p><strong>A,W,D,S</strong><br/>per desplaçar-se</p></div></li>
           <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar</p></div></li>
           <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara</p></div></li>
+          <li class="enter"><div class="icon"><p><strong>Enter</strong><br/>per col·locar la peça</p></div></li>
         </ul>
         <ul v-else="controls === 'orbit'" class="centered">
           <li class="orbit"><div class="icon"><p><strong>Click esquerra</strong><br/>per rotar</p></div></li>
@@ -53,7 +35,7 @@ export default {
           <li class="zoom"><div class="icon"><p><strong>Scroll</strong><br/>pel zoom</p></div></li>
         </ul>
       </div>
-      <aside v-if="!isTouch" class="game-aside left">
+      <aside v-if="gameLock && !isTouch" class="game-aside left">
         <ul class="centered">
           <li class="escape"><div class="icon"><p><strong>Menú</strong></p></div></li>
           <li class="map"><div class="icon"><p><strong>Mapa</strong></p></div></li>
@@ -61,6 +43,7 @@ export default {
         </ul>
       </aside>
     </div>
+    <div ref="modal" v-if="done" class="done-modal"></div>
     <canvas id="canvas"></canvas>
   </div>`,
   components: {
@@ -69,35 +52,35 @@ export default {
   },
   data() {
     return {
+      started: false,
       gameLock: undefined,
-      showInfo: false,
       showControls: false,
       game: null,
       waiting: false,
       gameOver: false,
-      // distance: 101,
       controls: "pointer",
       done: false,
-      currentBanner: Math.round(Math.random() * 9),
-      banners: Array.apply(null, Array(9)).map((d, i) => `banner-${i + 1}.png`),
-      colors: [
-        "#3A7DF4",
-        "#8F5AB5",
-        "#4FADEA",
-        "#4CA89E",
-        "#4EAE5B",
-        "#84C53B",
-        "#EA436D",
-        "#ED6A48",
-        "#F2A33A",
-      ],
     };
   },
   beforeMount() {
     fetch("/piece/" + this.pieceId)
       .then((res) => res.json())
       .then((data) => {
-        this.game = new Game(data, this.isTouch);
+        this.game = new Game(
+          document.getElementById("canvas"),
+          data,
+          this.isTouch ? "touch" : "pointer"
+        );
+        if (!this.isTouch) {
+          this.coverMap = new Game(
+            document.getElementById("coverMap"),
+            data,
+            "cover"
+          );
+          this.coverMap.bind();
+        } else {
+          this.game.bind();
+        }
       })
       .catch((err) => console.error("Error while fetching the piece"));
     this.controls = this.isTouch ? "orbit" : "pointer";
@@ -109,8 +92,8 @@ export default {
     document.addEventListener("help", this.onHelp);
     document.removeEventListener("gameover", this.onGameOver);
     document.addEventListener("gameover", this.onGameOver);
-    document.removeEventListener("piece", this.onPiece);
-    document.addEventListener("piece", this.onPiece);
+    document.removeEventListener("done", this.onDone);
+    document.addEventListener("done", this.onDone);
   },
   computed: {
     isTouch() {
@@ -124,16 +107,6 @@ export default {
     pieceId() {
       return this.$route.query.pieceId;
     },
-    background() {
-      return {
-        color: { backgroundColor: this.colors[this.currentBanner] },
-        image: {
-          backgroundImage: `url(static/images/${
-            this.banners[this.currentBanner]
-          })`,
-        },
-      };
-    },
     menuTitle() {
       return this.gameOver ? "Game Over" : "Menu";
     },
@@ -143,7 +116,6 @@ export default {
   },
   methods: {
     exit() {
-      this.game.lock();
       this.$router.push({ path: "/" });
     },
     onGameUnlock() {
@@ -153,46 +125,72 @@ export default {
       clearTimeout(controlsTimeout);
       this.controls = ev.detail;
       this.showControls = true;
-      controlsTimeout = setTimeout((_) => (this.showControls = false), 5000);
+      controlsTimeout = setTimeout((_) => (this.showControls = false), 7000);
     },
     restart() {
-      this.game = new Game(this.isTouch);
+      this.game = new Game(
+        this.game.canvas,
+        this.game.playerData,
+        this.isTouch ? "orbit" : "pointer"
+      );
+      this.started = false;
       this.gameOver = false;
     },
     onGameOver() {
       this.gameOver = true;
     },
-    onPiece() {
-      if (this.distance < 0.5) {
-        fetch(`piece/${this.pieceId}`, {
-          method: "POST",
-        }).then((res) => {
-          res.json().then((data) => {
-            if (data["success"]) {
-              this.done = true;
-            }
-          });
+    onDone() {
+      this.done = true;
+      fetch(`piece/${this.pieceId}`, {
+        method: "POST",
+      }).then((res) => {
+        res.json().then((data) => {
+          if (data["success"]) {
+            this.$nextTick(() => {
+              this.$refs.modal.classList.add("visible");
+            });
+          }
         });
-      }
+      });
     },
   },
   watch: {
     gameLock(to, from) {
-      this.game.lock(to);
-      if (from !== void 0) {
-        this.waiting = true;
-        setTimeout(() => {
-          this.waiting = false;
-        }, 1000);
-      }
+      this.waiting = true;
+      setTimeout(() => {
+        this.waiting = false;
+        if (to) {
+          this.started = true;
+          this.showControls = true;
+          controlsTimeout = setTimeout(() => (this.showControls = false), 7000);
+          if (!this.isTouch) {
+            this.coverMap.unbind();
+            window.audioObj.play();
+          }
+          this.game.bind();
+        } else {
+          if (!this.isTouch) {
+            this.$nextTick(() => {
+              this.$refs.coverMap.removeChild(this.$refs.coverMap.children[0]);
+              this.$refs.coverMap.innerHTML = '<canvas id="coverMap"></canvas>';
+              this.coverMap = new Game(
+                document.getElementById("coverMap"),
+                this.coverMap.playerData,
+                "cover"
+              );
+              this.coverMap.scene.marker.position.copy(
+                this.game.scene.control.pointer.position
+              );
+              this.coverMap.bind();
+            });
+            window.audioObj.pause();
+          }
+          this.game.unbind();
+        }
+      }, 1000);
 
-      if (to) {
-        this.showControls = true;
-        controlsTimeout = setTimeout((_) => (this.showControls = false), 5000);
-        if (!this.isTouch) window.audioObj.play();
-      } else {
-        if (!this.isTouch) window.audioObj.pause();
-      }
+      if (!this.isTouch) this.coverMap.lock(!to);
+      this.game.lock(to);
     },
   },
 };

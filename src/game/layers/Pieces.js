@@ -16,9 +16,9 @@ function Pieces(settings) {
 
 Pieces.prototype = Object.create(Layer.prototype);
 
-Pieces.prototype.load = function () {
+Pieces.prototype.load = function (piece_id) {
   return new Promise((res, rej) => {
-    this.loader.load("/puzzle", (texture) => {
+    this.loader.load("/puzzle/" + piece_id, (texture) => {
       texture.magFilter = THREE.NearestFilter;
       texture.center.set(0.5, 0.5);
       // texture.rotation = Math.PI * 0.5;

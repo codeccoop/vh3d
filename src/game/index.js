@@ -23,40 +23,40 @@ function throttle(ms, fn, context) {
 }
 
 export default class Game {
-  constructor(piece, isTouch) {
+  constructor(canvas, piece, mode) {
     const self = this;
+    this.focus = false;
+    this.done = false;
+    this.mode = mode;
     this.playerData = piece;
-    this.isTouch = isTouch;
-    this.canvas = document.getElementById("canvas");
+    this.mode = mode;
+    this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
       canvas: this.canvas,
       pixelRatio: window.devicePixelRatio,
       antialias: true,
     });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setClearColor(0, 0);
 
-    this.scene = new Scene(this.canvas, isTouch);
-    if (isTouch) {
-      this.scene.state.mode = "orbit";
-    } else {
-      this.scene.state.mode = "pointer";
-    }
+    this.scene = new Scene(this.canvas, mode);
 
-    this.paint = throttle(50, this.paint, this);
+    this.paint = throttle(75, this.paint, this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onResize = this.onResize.bind(this);
-
-    this.scene.$on("control:change", this.paint);
-    document.addEventListener("keydown", this.onKeyDown);
-    window.addEventListener("resize", this.onResize);
 
     this.initialize();
   }
 
+  bind() {
+    this.onControlsChange = this.onControlsChange.bind(this);
+    this.scene.$on("control:change", this.onControlsChange);
+    document.addEventListener("keydown", this.onKeyDown);
+    window.addEventListener("resize", this.onResize);
+  }
+
   unbind() {
-    this.scene.$off("control:change", this.paint);
+    this.scene.$off("control:change", this.onControlsChange);
     document.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("resize", this.onResize);
   }
@@ -80,10 +80,7 @@ export default class Game {
     const canvas = this.renderer.domElement;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
-    if (
-      canvas.height !== window.innerHeight ||
-      canvas.width !== window.innerWidth
-    ) {
+    if (canvas.height !== height || canvas.width !== width) {
       this.renderer.setSize(width, height, false);
       return true;
     }
@@ -91,32 +88,48 @@ export default class Game {
   }
 
   onResize() {
-    this.canvas.style.height = window.innerHeight + "px";
-    this.canvas.style.width = window.innerWidth + "px";
     this.scene.onResize();
     this.paint();
   }
 
   onKeyDown(ev) {
-    if (this.isTouch) return;
+    if (this.scene.control.enabled === false || this.mode === "cover") return;
     if (ev.code === "KeyM") {
-      if (this.scene.state.mode === "orbit") this.scene.state.mode = "pointer";
-      else this.scene.state.mode = "orbit";
+      if (this.scene.state.mode === "pointer") this.scene.state.mode = "orbit";
+      else this.scene.state.mode = "pointer";
+      document.dispatchEvent(
+        new CustomEvent("help", {
+          detail: this.scene.state.mode,
+        })
+      );
     }
 
-    if (ev.code === "KeyH" || ev.code === "KeyM") {
+    if (ev.code === "KeyH") {
       document.dispatchEvent(
         new CustomEvent("help", {
           detail: this.scene.state.mode,
         })
       );
     } else if (ev.code === "Escape") {
-      // && this.scene.state.mode === "orbit") {
       if (this.scene.state.mode === "orbit") {
-        this.lock(false);
+        this.scene.state.mode = "pointer";
       } else {
-        document.dispatchEvent(new CustomEvent("unlock"));
+        this.scene.control.deactivate();
       }
+    } else if (ev.code === "Enter") {
+      if (!this.isOnTarget) return;
+      this.done = true;
+      this.scene.done = true;
+      this.scene.legoShadow.children.forEach((child) => {
+        child.material = new THREE.MeshLambertMaterial({
+          color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+        });
+      });
+      this.scene.remove(this.scene.legoPiece);
+      this.scene.legoShadow.position.z = -0.3;
+      this.paint();
+      document.dispatchEvent(new CustomEvent("done"));
+      this.scene.control.deactivate();
     }
   }
 
@@ -132,94 +145,31 @@ export default class Game {
     const lego = new Lego();
     const pieces = new Pieces();
 
-    const gltfLoader = new THREE.GLTFLoader();
-    gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
-      const piece = gltf.scene;
-      gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
-        const armRight = gltf.scene;
-        armRight.scale.set(1.5, 1.5, 1.5);
-        piece.position.fromArray(this.scene.camera.position.toArray());
-        piece.position.z = 1;
-        piece.rotation.x = Math.PI * 0.5;
-        piece.scale.set(0.9, 0.85, 0.9);
-        const pieceShadow = piece.clone();
-        pieceShadow.scale.set(0.9, 0.85, 0.9);
-
-        piece.children.forEach((child) => {
-          if (child.type === "Mesh") {
-            child.material = new THREE.MeshLambertMaterial({
-              color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
-            });
-          }
-        });
-        pieceShadow.children.forEach((child) => {
-          if (child.type === "Mesh") {
-            child.material = new THREE.MeshBasicMaterial({
-              color: 0xffffff,
-              opacity: 0.3,
-              transparent: true,
-            });
-          }
-        });
-        armRight.children.forEach((child) => {
-          if (child.type === "Mesh") {
-            child.material = new THREE.MeshToonMaterial({
-              color: "rgb(240, 200, 160)",
-            });
-          }
-        });
-        const armLeft = armRight.clone();
-        armLeft.scale.x = armLeft.scale.x * -1;
-        if (!this.isTouch) {
-          this.scene.add(piece);
-          this.scene.add(armRight);
-          this.scene.add(armLeft);
-          this.scene.legoPiece = piece;
-          this.scene.legoShadow = pieceShadow;
-          this.scene.armRight = armRight;
-          this.scene.armLeft = armLeft;
-        }
-
-        campus.load().then((campus) => {
-          this.scene.bbox = campus.geometry.bbox;
-          this.scene.initPosition();
-          if (this.isTouch) this.scene.camera.centerOn(campus);
-
-          Promise.all([
-            buildings.load(),
-            grass.load(),
-            paths.load(),
-            sphericTrees.load(),
-            tallTrees.load(),
-            lego.load(),
-            pieces.load(),
-          ]).then((layers) => {
-            sphericCanopies.parse(sphericTrees.json);
-            tallCanopies.parse(tallTrees.json);
-            this.scene.build();
-            this.scene.render();
-            this.paint();
-            this.target = pieces.getTargetLocation(this.playerData);
-          });
-        });
-      });
-    });
-
-    this.scene.addLayer(campus);
-    this.scene.addLayer(buildings);
-    this.scene.addLayer(grass);
-    this.scene.addLayer(paths);
-    this.scene.addLayer(sphericTrees);
-    this.scene.addLayer(sphericCanopies);
-    this.scene.addLayer(tallTrees);
-    this.scene.addLayer(tallCanopies);
-    this.scene.addLayer(lego);
-    this.scene.addLayer(pieces);
-
-    const markerGeom = new THREE.ConeGeometry(10, 30, 32);
+    const markerGeom = new THREE.ConeGeometry(10, 50, 32);
     const markerMat = new THREE.MeshToonMaterial({ color: 0xff0000 });
     const marker = new THREE.Mesh(markerGeom, markerMat);
     marker.rotation.x = -Math.PI * 0.5;
+
+    if (this.mode === "cover") {
+      const loader = new THREE.FontLoader();
+      loader.load(
+        "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeom = new THREE.TextGeometry("Sortida", {
+            size: 15,
+            font: font,
+            height: 2,
+            curveSegments: 12,
+            bevelEnabled: false,
+          });
+          const text = new THREE.Mesh(textGeom, markerMat);
+          text.rotation.x = Math.PI * 0.8;
+          text.position.y -= 45;
+          text.position.x -= 30;
+          marker.add(text);
+        }
+      );
+    }
     this.scene.marker = marker;
 
     const closinesGeom = new THREE.RingGeometry(
@@ -239,11 +189,98 @@ export default class Game {
     const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
     this.scene.closinesRing = closinesRing;
 
-    this.onControlsChange = this.onControlsChange.bind(this);
-    this.scene.controls.pointer.addEventListener(
-      "change",
-      this.onControlsChange
-    );
+    this.loadGltfs(() => {
+      campus.load().then((campus) => {
+        this.scene.bbox = campus.geometry.bbox;
+        this.scene.initPosition();
+        if (this.mode !== "pointer") this.scene.camera.centerOn(campus);
+
+        Promise.all([
+          buildings.load(),
+          grass.load(),
+          paths.load(),
+          sphericTrees.load(),
+          tallTrees.load(),
+          lego.load(),
+          pieces.load(this.playerData.id),
+        ]).then((layers) => {
+          sphericCanopies.parse(sphericTrees.json);
+          tallCanopies.parse(tallTrees.json);
+          this.scene.build();
+          this.scene.render();
+          this.paint();
+          this.target = pieces.getTargetLocation(this.playerData);
+        });
+      });
+    });
+
+    this.scene.addLayer(campus);
+    this.scene.addLayer(buildings);
+    this.scene.addLayer(grass);
+    this.scene.addLayer(paths);
+    this.scene.addLayer(sphericTrees);
+    this.scene.addLayer(sphericCanopies);
+    this.scene.addLayer(tallTrees);
+    this.scene.addLayer(tallCanopies);
+    this.scene.addLayer(lego);
+    this.scene.addLayer(pieces);
+  }
+
+  loadGltfs(callback) {
+    if (this.mode === "pointer") {
+      const gltfLoader = new THREE.GLTFLoader();
+      gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
+        const piece = gltf.scene;
+        gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
+          const armRight = gltf.scene;
+          armRight.scale.set(1.5, 1.5, 1.5);
+          piece.position.fromArray(this.scene.camera.position.toArray());
+          piece.position.z = 1;
+          piece.rotation.x = Math.PI * 0.5;
+          piece.scale.set(0.9, 0.85, 0.9);
+          const pieceShadow = piece.clone();
+          pieceShadow.scale.set(0.9, 0.85, 0.9);
+
+          piece.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshLambertMaterial({
+                color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+              });
+            }
+          });
+          pieceShadow.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                opacity: 0.3,
+                transparent: true,
+              });
+            }
+          });
+          armRight.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshToonMaterial({
+                color: "rgb(240, 200, 160)",
+              });
+            }
+          });
+          const armLeft = armRight.clone();
+          armLeft.scale.x = armLeft.scale.x * -1;
+          this.scene.add(piece);
+          this.scene.add(armRight);
+          this.scene.add(armLeft);
+          this.scene.legoPiece = piece;
+          this.scene.legoShadow = pieceShadow;
+          this.scene.armRight = armRight;
+          this.scene.armLeft = armLeft;
+
+          callback.call(this);
+        });
+      });
+    } else {
+      if (this.mode === "cover") this.scene.add(this.scene.marker);
+      callback.call(this);
+    }
   }
 
   distanceToTarget(target) {
@@ -255,6 +292,7 @@ export default class Game {
 
   onControlsChange(ev) {
     if (
+      !this.done &&
       this.scene.state.mode === "pointer" &&
       this.scene.control.state.isOnTatami
     ) {
@@ -284,20 +322,15 @@ export default class Game {
         this.scene.legoShadow.children.forEach((child) => {
           child.material.color.setHex(0x00ff00);
         });
+        this.isOnTarget = true;
         this.paint();
       } else {
         this.scene.legoShadow.children.forEach((child) => {
           child.material.color.setHex(0xff0000);
         });
-        this.paint();
+        this.isOnTarget = false;
       }
-      /* document.dispatchEvent(
-         new CustomEvent("distance", {
-         detail: {
-         value: distance,
-         },
-         })
-         ); */
     }
+    this.paint();
   }
 }

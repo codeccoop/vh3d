@@ -178,10 +178,6 @@ export class PointerLockControls extends THREE.PointerLockControls {
       case "KeyD":
         this.state.moveRight = false;
         break;
-
-      case "Enter":
-        document.dispatchEvent(new CustomEvent("piece"));
-        break;
     }
   }
 
@@ -247,17 +243,15 @@ export class PointerLockControls extends THREE.PointerLockControls {
   update(time) {
     if (!this.enabled) return;
 
-    const delta = time && this.lastTime ? (time - this.lastTime) / 1e3 : 5e-2;
+    const delta = Math.min(
+      75e-3,
+      time && this.lastTime ? (time - this.lastTime) / 1e3 : 75e-3
+    );
 
     if (!this.state.falling) {
       try {
         this.state.falling = this.isFalling();
         this.state.isOnTatami = this.isOnTatami();
-
-        this.velocity.x -= this.velocity.x * 10.0 * delta;
-        this.velocity.y -= this.velocity.y * 10.0 * delta;
-        if (!this.state.canJump) this.velocity.z -= 9.8 * 63 * delta;
-        else this.velocity.z = 0;
 
         this.direction.y =
           Number(this.state.moveForward) - Number(this.state.moveBackward);
@@ -265,7 +259,12 @@ export class PointerLockControls extends THREE.PointerLockControls {
           Number(this.state.moveRight) - Number(this.state.moveLeft);
         this.direction.normalize();
 
-        const acceleration = this.state.isOnTatami ? 65 : 250;
+        this.velocity.x -= this.velocity.x * 5 * delta;
+        this.velocity.y -= this.velocity.y * 5 * delta;
+        if (!this.state.canJump) this.velocity.z -= 9.8 * 63 * delta;
+        else this.velocity.z = 0;
+
+        const acceleration = this.state.isOnTatami ? 50 : 200;
         if (this.state.moveForward || this.state.moveBackward) {
           this.velocity.y -= this.direction.y * acceleration * delta;
         }
@@ -303,8 +302,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
     }
   }
 
-  activate(state) {
-    this.getObject().rotation.fromArray(state.rotation);
+  activate() {
     this.enabled = true;
     document.addEventListener("mousemove", this.onMouseMove, true);
     this.lock();
@@ -329,8 +327,8 @@ export class PointerLockControls extends THREE.PointerLockControls {
       event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
     this.euler.setFromQuaternion(this.getObject().quaternion, "ZYX");
-    this.euler.z -= movementX * 1e-3;
-    this.euler.x -= movementY * 1e-3;
+    this.euler.z -= movementX * 5e-4;
+    this.euler.x -= movementY * 5e-4;
     this.euler.x = Math.max(
       Math.PI * 0.42,
       Math.min(Math.PI * 0.8, this.euler.x)

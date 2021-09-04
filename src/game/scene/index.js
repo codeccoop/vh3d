@@ -6,19 +6,18 @@ import { RelativeScale } from "../geojson2three/components/Scales.js";
 
 const origin = [238580.55031842450262, 5075605.921119668520987];
 
-// var puzzleRotation;
 class Scene extends THREE.Scene {
-  constructor(canvas, isTouch) {
+  constructor(canvas, mode) {
     super(...arguments);
 
     Emitter.asEmitter(this);
 
+    this.done = false;
     this.canvasEl = canvas;
     this.background = null;
-    this.fog = null;
 
     this.state = {
-      _mode: isTouch ? "orbit" : "pointer",
+      _mode: mode === "touch" || mode === "cover" ? "orbit" : "pointer",
       orbit: {
         position: [0, 0, 100],
         rotation: [
@@ -45,24 +44,30 @@ class Scene extends THREE.Scene {
       pointer: new PointerLockControls(this.cameras.pointer, document.body),
     };
 
+    this.controls.pointer.addEventListener("unlock", () => {
+      if (mode === "cover") return;
+      this.controls.pointer.deactivate();
+      if (this.state.mode === "pointer" && !this.done)
+        document.dispatchEvent(new CustomEvent("unlock"));
+    });
+
     Object.defineProperties(this.state, {
       mode: {
         get: () => {
           return this.state._mode;
         },
-        set: (mode) => {
-          if (this.state._mode !== mode) {
+        set: (to) => {
+          if (mode === "cover") return;
+          if (this.state._mode !== to) {
             this.control.deactivate();
-            this.state._mode = mode;
-            this.control.activate(this.state);
+            this.state._mode = to;
+            this.control.activate();
             if (this.state._mode === "pointer") {
-              this.fog = new THREE.Fog(0xffffff, 0, 750);
               this.remove(this.marker);
               this.add(this.legoPiece);
               this.add(this.armRight);
               this.add(this.armLeft);
             } else {
-              this.fog = undefined;
               this.add(this.marker);
               this.remove(this.legoPiece);
               this.remove(this.armRight);
@@ -112,13 +117,6 @@ class Scene extends THREE.Scene {
       this.controls[mode].addEventListener("change", this.onControlChange);
       this.controls[mode].addEventListener("init", this.onControlInit);
     }
-
-    this.controls.pointer.addEventListener("unlock", () => {
-      if (this.state.mode === "pointer") {
-        this.control.deactivate();
-        document.dispatchEvent(new CustomEvent("unlock"));
-      }
-    });
 
     this.controls.pointer.addEventListener("onTatami", (ev) => {
       if (ev.value) {
@@ -210,78 +208,78 @@ class Scene extends THREE.Scene {
   }
 
   onControlChange(ev) {
-    this.state.position = this.camera.position.toArray();
-    this.state.rotation = this.camera.rotation.toArray();
+    if (this.done) return;
 
-    if (this.state.mode === "pointer") {
-      this.marker.position.set(
-        this.state.position[0],
-        this.state.position[1],
-        this.state.position[2] + 20
-      );
-      if (this.legoPiece) {
-        const direction = this.control.getDirection(
-          new THREE.Vector3(0, 0, -1)
-        );
-        const rotation = this.control.getObject().rotation.clone();
-        const reordered = rotation.reorder("ZYX");
-        const pitch = reordered.x;
-        this.legoPiece.position.set(
-          this.state.position[0] + 3.5 * direction.x,
-          this.state.position[1] + 3.5 * direction.y,
-          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
-        );
-        this.armRight.position.set(
-          this.state.position[0] + 3 * direction.x,
-          this.state.position[1] + 3 * direction.y,
-          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
-        );
-        this.armRight.position.x += Math.cos(rotation.z) * 0.7;
-        this.armRight.position.y += Math.sin(rotation.z) * 0.7;
-        this.armLeft.position.set(
-          this.state.position[0] + 3 * direction.x,
-          this.state.position[1] + 3 * direction.y,
-          this.state.position[2] - 1.25 - 2 * Math.cos(pitch)
-        );
-        this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
-        this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
-        this.legoPiece.rotation.copy(rotation);
-        this.armRight.rotation.set(
-          rotation.x - Math.PI * 0.5,
-          rotation.y,
-          rotation.z + Math.PI,
-          "ZYX"
-        );
-        this.armLeft.rotation.set(
-          rotation.x - Math.PI * 0.5,
-          rotation.y,
-          rotation.z + Math.PI,
-          "ZYX"
-        );
-        if (this.control.state.isOnTatami) {
-          const shadowPosition = this.piecesLayer.getNearest(
-            {
-              x: this.state.position[0] + 8 * direction.x,
-              y: this.state.position[1] + 8 * direction.y,
-              z: 0.25,
-            },
-            this.control.getObject().rotation.reorder("ZYX")
-          );
-          this.legoShadow.position.copy(shadowPosition);
-          this.closinesRing.position.copy(shadowPosition);
-          this.closinesRing.position.z = 0.55;
-          reordered.x = Math.PI * 0.5;
-          this.legoShadow.rotation.copy(reordered);
-          this.legoShadow.rotation.z =
-            this.piecesLayer.geometry.shapes[0].rotation.z;
-        }
-      }
-    }
+    if (this.state.mode === "pointer") this.updatePositions();
 
     this.$emit("control:change", {
       control: this.control,
       scene: this,
     });
+  }
+
+  updatePositions() {
+    const position = this.controls.pointer.getObject().position;
+    this.marker.position.copy(position);
+    this.marker.position.z += 20;
+
+    if (this.legoPiece) {
+      const direction = this.controls.pointer.getDirection(
+        new THREE.Vector3(0, 0, 0)
+      );
+      const rotation = this.controls.pointer.getObject().rotation.clone();
+      const reordered = rotation.reorder("ZYX");
+      const pitch = reordered.x;
+      this.legoPiece.position.set(
+        position.x + 3.5 * direction.x,
+        position.y + 3.5 * direction.y,
+        position.z - 1.25 - 2 * Math.cos(pitch)
+      );
+      this.armRight.position.set(
+        position.x + 3 * direction.x,
+        position.y + 3 * direction.y,
+        position.z - 1.25 - 2 * Math.cos(pitch)
+      );
+      this.armRight.position.x += Math.cos(rotation.z) * 0.7;
+      this.armRight.position.y += Math.sin(rotation.z) * 0.7;
+      this.armLeft.position.set(
+        position.x + 3 * direction.x,
+        position.y + 3 * direction.y,
+        position.z - 1.25 - 2 * Math.cos(pitch)
+      );
+      this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
+      this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
+      this.legoPiece.rotation.copy(rotation);
+      this.armRight.rotation.set(
+        rotation.x - Math.PI * 0.5,
+        rotation.y,
+        rotation.z + Math.PI,
+        "ZYX"
+      );
+      this.armLeft.rotation.set(
+        rotation.x - Math.PI * 0.5,
+        rotation.y,
+        rotation.z + Math.PI,
+        "ZYX"
+      );
+      if (this.controls.pointer.state.isOnTatami) {
+        const shadowPosition = this.piecesLayer.getNearest(
+          {
+            x: position.x + 8 * direction.x,
+            y: position.y + 8 * direction.y,
+            z: 0.25,
+          },
+          this.controls.pointer.getObject().rotation.reorder("ZYX")
+        );
+        this.legoShadow.position.copy(shadowPosition);
+        this.closinesRing.position.copy(shadowPosition);
+        this.closinesRing.position.z = 0.55;
+        reordered.x = Math.PI * 0.5;
+        this.legoShadow.rotation.copy(reordered);
+        this.legoShadow.rotation.z =
+          this.piecesLayer.geometry.shapes[0].rotation.z;
+      }
+    }
   }
 
   addLayer(layer) {
@@ -331,7 +329,8 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
-    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    // this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    this.updatePositions();
   }
 }
 
