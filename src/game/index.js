@@ -94,7 +94,9 @@ export default class Game {
 
   onKeyDown(ev) {
     if (this.scene.control.enabled === false || this.mode === "cover") return;
+    console.log("keydown", ev.code);
     if (ev.code === "KeyM") {
+      this.scene.state.manualUnlock = true;
       if (this.scene.state.mode === "pointer") this.scene.state.mode = "orbit";
       else this.scene.state.mode = "pointer";
       document.dispatchEvent(
@@ -196,6 +198,19 @@ export default class Game {
         this.scene.bbox = campus.geometry.bbox;
         this.scene.initPosition();
         if (this.mode !== "pointer") this.scene.camera.centerOn(campus);
+        const canvas = document.getElementById("canvas");
+        this.scene.state.scale =
+          canvas.clientWidth < canvas.clientHeight
+            ? canvas.clientWidth / canvas.clientHeight
+            : canvas.clientHeight / canvas.clientWidth;
+
+        if (this.scene.legoPiece) {
+          const args = Array.apply(null, Array(3)).map((d) =>
+            Math.sqrt(this.scene.state.scale)
+          );
+          this.scene.legoPiece.scale.set(...args);
+          this.scene.legoShadow.scale.set(...args);
+        }
 
         Promise.all([
           buildings.load(),

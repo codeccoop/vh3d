@@ -35,8 +35,8 @@ class Scene extends THREE.Scene {
     };
 
     this.cameras = {
-      orbit: new Camera(55, window.innerWidth / window.innerHeight, 1, 4000),
-      pointer: new Camera(35, window.innerWidth / window.innerHeight, 0.1, 400),
+      orbit: new Camera(45, window.innerWidth / window.innerHeight, 1, 4000),
+      pointer: new Camera(56, window.innerWidth / window.innerHeight, 0.1, 400),
     };
 
     this.controls = {
@@ -46,9 +46,16 @@ class Scene extends THREE.Scene {
 
     this.controls.pointer.addEventListener("unlock", () => {
       if (mode === "cover") return;
+      console.log("unlock", this.state.mode, this.state.manualUnlock);
       this.controls.pointer.deactivate();
-      if (this.state.mode === "pointer" && !this.done)
+      if (
+        this.state.mode === "pointer" &&
+        !this.done &&
+        !this.state.manualUnlock
+      ) {
         document.dispatchEvent(new CustomEvent("unlock"));
+      }
+      if (this.state.manualUnlock) this.state.manualUnlock = false;
     });
 
     Object.defineProperties(this.state, {
@@ -245,34 +252,34 @@ class Scene extends THREE.Scene {
       const reordered = rotation.reorder("ZYX");
       const pitch = reordered.x;
       this.legoPiece.position.set(
-        position.x + 3.5 * direction.x,
-        position.y + 3.5 * direction.y,
+        position.x + 2.4 * direction.x,
+        position.y + 2.4 * direction.y,
         position.z - 1.25 - 2 * Math.cos(pitch)
       );
       this.armRight.position.set(
-        position.x + 3 * direction.x,
-        position.y + 3 * direction.y,
+        position.x + 2 * direction.x,
+        position.y + 2 * direction.y,
         position.z - 1.25 - 2 * Math.cos(pitch)
       );
       this.armRight.position.x += Math.cos(rotation.z) * 0.7;
       this.armRight.position.y += Math.sin(rotation.z) * 0.7;
       this.armLeft.position.set(
-        position.x + 3 * direction.x,
-        position.y + 3 * direction.y,
+        position.x + 2 * direction.x,
+        position.y + 2 * direction.y,
         position.z - 1.25 - 2 * Math.cos(pitch)
       );
       this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
       this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
       this.legoPiece.rotation.copy(rotation);
       this.armRight.rotation.set(
-        rotation.x - Math.PI * 0.5,
-        rotation.y,
+        -rotation.x + Math.PI * 0.3,
+        -rotation.y,
         rotation.z + Math.PI,
         "ZYX"
       );
       this.armLeft.rotation.set(
-        rotation.x - Math.PI * 0.5,
-        rotation.y,
+        -rotation.x + Math.PI * 0.3,
+        -rotation.y,
         rotation.z + Math.PI,
         "ZYX"
       );

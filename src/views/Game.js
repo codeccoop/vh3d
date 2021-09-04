@@ -180,6 +180,7 @@ export default {
               this.coverMap.bind();
             });
             window.audioObj.pause();
+            window.audioObj.currentTime = 0;
           }
           this.game.unbind();
         }
