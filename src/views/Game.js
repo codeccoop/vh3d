@@ -98,9 +98,9 @@ export default {
   computed: {
     isTouch() {
       return (
-        "touchstart" in window ||
-        navigator.maxTouchPoints > 0 ||
-        navigator.msMaxTouchPoints > 0 ||
+        ("touchstart" in window ||
+          navigator.maxTouchPoints > 0 ||
+          navigator.msMaxTouchPoints > 0) &&
         window.innerWidth < window.innerHeight
       );
     },
@@ -168,7 +168,7 @@ export default {
             window.audioObj.play();
           }
           this.game.bind();
-          this.game.scene.state.mode = "pointer";
+          this.game.scene.state.mode = this.isTouch ? "orbit" : "pointer";
         } else {
           if (!this.isTouch) {
             this.$nextTick(() => {
