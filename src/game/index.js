@@ -96,9 +96,10 @@ export default class Game {
     if (this.scene.control.enabled === false || this.mode === "cover") return;
     console.log("keydown", ev.code);
     if (ev.code === "KeyM") {
-      this.scene.state.manualUnlock = true;
-      if (this.scene.state.mode === "pointer") this.scene.state.mode = "orbit";
-      else this.scene.state.mode = "pointer";
+      if (this.scene.state.mode === "pointer") {
+        this.scene.state.mode = "orbit";
+        this.scene.state.manualUnlock = true;
+      } else this.scene.state.mode = "pointer";
       document.dispatchEvent(
         new CustomEvent("help", {
           detail: this.scene.state.mode,
