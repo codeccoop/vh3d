@@ -181,15 +181,29 @@ class Scene extends THREE.Scene {
     });
 
     this.$on("bbox:update", (ev) => {
+      const bbox = ev.detail.bbox;
       const canvas = document.getElementById("canvas");
-      const domain = [
-        0,
-        canvas.clientWidth < canvas.clientHeight
-          ? canvas.clientWidth
-          : canvas.clientHeight,
-      ];
-      this.xScale = new RelativeScale(ev.detail.bbox.lngs, domain);
-      this.yScale = new RelativeScale(ev.detail.bbox.lats, domain);
+      if (canvas.clientWidth < canvas.clientHeight) {
+        const percent = canvas.clientHeight / canvas.clientWidth - 1;
+        const delta = bbox.lats[1] - bbox.lats[0];
+        const xRange = bbox.lngs;
+        const yRange = [
+          bbox.lats[0] - delta * percent * 0.5,
+          bbox.lats[1] + delta * percent * 0.5,
+        ];
+        this.xScale = new RelativeScale(xRange, [0, canvas.clientWidth]);
+        this.yScale = new RelativeScale(yRange, [0, canvas.clientHeight]);
+      } else {
+        const percent = canvas.clientWidth / canvas.clientHeight - 1;
+        const delta = bbox.lngs[1] - bbox.lngs[0];
+        const xRange = [
+          bbox.lngs[0] - delta * percent * 0.5,
+          bbox.lngs[1] + delta * percent * 0.5,
+        ];
+        const yRange = bbox.lats;
+        this.xScale = new RelativeScale(xRange, [0, canvas.clientWidth]);
+        this.yScale = new RelativeScale(yRange, [0, canvas.clientHeight]);
+      }
 
       this.build();
       this.render();

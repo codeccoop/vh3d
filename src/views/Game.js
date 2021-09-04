@@ -97,18 +97,15 @@ export default {
   },
   computed: {
     isTouch() {
-      return (
-        ("touchstart" in window ||
-          navigator.maxTouchPoints > 0 ||
-          navigator.msMaxTouchPoints > 0) &&
-        window.innerWidth < window.innerHeight
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
       );
     },
     pieceId() {
       return this.$route.query.pieceId;
     },
     menuTitle() {
-      return this.gameOver ? "Game Over" : "Menu";
+      return this.gameOver ? "Game Over" : "Menú";
     },
     carouselImageWidth() {
       return Math.min(window.innerHeight, window.innerWidth) + "px";
@@ -135,6 +132,7 @@ export default {
       );
       this.started = false;
       this.gameOver = false;
+      this.gameLock = true;
     },
     onGameOver() {
       this.gameOver = true;

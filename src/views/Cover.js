@@ -11,7 +11,7 @@ export default {
     <div id="disclaimer" v-if="showDisclaimer">
       <div class="text">
         <h1 class="centered">Avís</h1>
-        <p>Sembla que has accedit al joc des d'un dispositiu mòbil o tauleta. El joc no està preparat per aquest tipus de dispositius i només ofereix funcionalitats limitades, com poder navegar pel mapa. Si vols participar del joc et convidem a visitar de nou el joc des d'un ordinador. Si només vols fer un vol pel mapa, pots continuar sense problemes.</p>
+        <p>Sembla que has accedit al joc des d'un dispositiu tàctil. En cas que sigui un mòbil o una tauleta, t'informem que el joc no està preparat per aquest tipus de dispositius i només ofereix funcionalitats limitades, com poder navegar pel mapa. Si vols participar del joc et convidem a visitar de nou el joc des d'un ordinador. Si només vols fer un vol pel mapa, pots continuar sense problemes.</p>
         <p class="centered"><button @click="showDisclaimer = false" class="button black">Acceptar</button></p>
       </div>
     </div>

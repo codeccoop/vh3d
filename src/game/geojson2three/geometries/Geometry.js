@@ -14,20 +14,33 @@ function Geometry(json, settings) {
   this.settings = { ..._settings, ...settings };
 
   this.bbox = new BBox(json.features, settings.z, settings.projection);
+  const bbox = this.bbox.get();
   const canvas = document.getElementById("canvas");
-  const domain = [
-    0,
-    canvas.clientWidth < canvas.clientHeight
-      ? canvas.clientWidth
-      : canvas.clientHeight,
-  ];
-  this.xScale =
-    this.xScale ||
-    new RelativeScale(this.bbox.get().lngs, settings.xDomain || domain);
-  this.yScale =
-    this.yScale ||
-    new RelativeScale(this.bbox.get().lats, settings.yDomain || domain);
-
+  if (canvas.clientWidth < canvas.clientHeight) {
+    const percent = canvas.clientHeight / canvas.clientWidth - 1;
+    const delta = bbox.lats[1] - bbox.lats[0];
+    const xRange = bbox.lngs;
+    const yRange = [
+      bbox.lats[0] - delta * percent * 0.5,
+      bbox.lats[1] - delta * percent * 0.5,
+    ];
+    this.xScale =
+      this.xScale || new RelativeScale(xRange, [0, canvas.clientWidth]);
+    this.yScale =
+      this.yScale || new RelativeScale(yRange, [0, canvas.clientHeight]);
+  } else {
+    const percent = canvas.clientWidth / canvas.clientHeight - 1;
+    const delta = bbox.lngs[1] - bbox.lngs[0];
+    const xRange = [
+      bbox.lngs[0] - delta * percent * 0.5,
+      bbox.lngs[1] + delta * percent * 0.5,
+    ];
+    const yRange = bbox.lngs;
+    this.xScale =
+      this.xScale || new RelativeScale(xRange, [0, canvas.clientWidth]);
+    this.yScale =
+      this.yScale || new RelativeScale(yRange, [0, canvas.clientHeight]);
+  }
   this.material = this.Material(settings);
 
   const _build = this.build;
