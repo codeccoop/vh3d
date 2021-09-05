@@ -15,10 +15,7 @@ Point.prototype.build = function () {
     let height =
       (feat.properties[this.settings.z] || this.settings.z) * zFactor - base;
 
-    let coord = [
-      this.xScale(feat.geometry.coordinates[0]),
-      this.yScale(feat.geometry.coordinates[1]),
-    ];
+    let coord = feat.geometry.coordinates;
     let geometry;
     if (this.settings.geom_primitive === "cylinder") {
       geometry = new this.CylinderGeometry(this.settings.radius, height, 8);

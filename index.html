@@ -5,22 +5,28 @@
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-		<link href="statics/css/index.css" rel="stylesheet" type="text/css"/>
+		<link href="/static/css/index.css" rel="stylesheet" type="text/css"/>
 
     <script src="/node_modules/vue/dist/vue.min.js"></script>
     <script src="/node_modules/vue-router/dist/vue-router.min.js"></script>
+    <script src="/node_modules/vue-carousel/dist/vue-carousel.min.js"></script>
+    <script src="/node_modules/@turf/turf/turf.min.js"></script>
     <script src="/node_modules/proj4/dist/proj4.js"></script>
     <script src="/node_modules/three/build/three.min.js"></script>
     <script src="/node_modules/three/examples/js/controls/OrbitControls.js"></script>
     <script src="/node_modules/three/examples/js/controls/PointerLockControls.js"></script>
-    <script src="/node_modules/three/examples/js/utils/BufferGeometryUtils.js"></script>
     <script src="/node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+
+    <link rel="shortcut icon" type="image/png" href="static/images/vh-icon.png"/>
 	</head>
 	<body>
     <div id="app">
       <router-view></router-view>
     </div>
 
-    <script type="module" src="src/index.js" ></script>
+    <script type="module" src="/dist/index.js" ></script>
+    <script>
+     window.audioObj = new Audio("/static/soundtrack.mp3");
+    </script>
 	</body>
 </html>

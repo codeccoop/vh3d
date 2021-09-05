@@ -9,6 +9,7 @@ import SphericCanopies from "./layers/SphericCanopies.js";
 import TallTrees from "./layers/TallTrees.js";
 import TallCanopies from "./layers/TallCanopies.js";
 import Lego from "./layers/Lego.js";
+import Pieces from "./layers/Pieces.js";
 
 function throttle(ms, fn, context) {
   let lastTime = Date.now();
@@ -22,41 +23,44 @@ function throttle(ms, fn, context) {
 }
 
 export default class Game {
-  constructor(isTouch) {
+  constructor(canvas, piece, mode) {
     const self = this;
-    this.isTouch = isTouch;
-    this.canvas = document.getElementById("canvas");
+    this.focus = false;
+    this.done = false;
+    this.mode = mode;
+    this.playerData = piece;
+    this.mode = mode;
+    this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
       canvas: this.canvas,
       pixelRatio: window.devicePixelRatio,
       antialias: true,
     });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setClearColor(0, 0);
 
-    this.scene = new Scene(this.canvas, isTouch);
-    if (isTouch) {
-      this.scene.state.mode = "orbit";
-    } else {
-      this.scene.state.mode = "pointer";
-    }
+    this.scene = new Scene(this.canvas, mode);
 
-    this.paint = throttle(50, this.paint, this);
+    this.paint = throttle(75, this.paint, this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onResize = this.onResize.bind(this);
-
-    this.scene.$on("control:change", this.paint);
-    document.addEventListener("keydown", this.onKeyDown);
-    window.addEventListener("resize", this.onResize);
 
     this.initialize();
   }
 
+  bind() {
+    this.onControlsChange = this.onControlsChange.bind(this);
+    this.scene.$on("control:change", this.onControlsChange);
+    document.addEventListener("keydown", this.onKeyDown, true);
+    window.addEventListener("resize", this.onResize);
+    this.scene.bind();
+  }
+
   unbind() {
-    this.scene.$off("control:change", this.paint);
-    document.removeEventListener("keydown", this.onKeyDown);
+    this.scene.$off("control:change", this.onControlsChange);
+    document.removeEventListener("keydown", this.onKeyDown, true);
     window.removeEventListener("resize", this.onResize);
+    this.scene.unbind();
   }
 
   lock(to) {
@@ -78,10 +82,7 @@ export default class Game {
     const canvas = this.renderer.domElement;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
-    if (
-      canvas.height !== window.innerHeight ||
-      canvas.width !== window.innerWidth
-    ) {
+    if (canvas.height !== height || canvas.width !== width) {
       this.renderer.setSize(width, height, false);
       return true;
     }
@@ -89,16 +90,54 @@ export default class Game {
   }
 
   onResize() {
-    this.canvas.style.height = window.innerHeight + "px";
-    this.canvas.style.width = window.innerWidth + "px";
+    this.scene.onResize();
     this.paint();
   }
 
   onKeyDown(ev) {
-    if (this.isTouch) return;
+    if (this.scene.control.enabled === false || this.mode === "cover") return;
     if (ev.code === "KeyM") {
-      if (this.scene.state.mode === "orbit") this.scene.state.mode = "pointer";
-      else this.scene.state.mode = "orbit";
+      if (this.scene.state.mode === "pointer") {
+        this.scene.state.manualUnlock = true;
+        console.log("keydown M", this.scene.state.mode);
+        this.scene.state.mode = "orbit";
+      } else this.scene.state.mode = "pointer";
+      document.dispatchEvent(
+        new CustomEvent("help", {
+          detail: this.scene.state.mode,
+        })
+      );
+    }
+
+    if (ev.code === "KeyH") {
+      document.dispatchEvent(
+        new CustomEvent("help", {
+          detail: this.scene.state.mode,
+        })
+      );
+    } else if (ev.code === "Escape") {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      this.scene.control.deactivate();
+      if (this.scene.state.mode === "orbit") {
+        document.dispatchEvent(new CustomEvent("unlock"));
+      }
+    } else if (ev.code === "Enter" || ev.code === "NumpadEnter") {
+      if (!this.isOnTarget) return;
+      this.scene.state.manualUnlock = true;
+      this.done = true;
+      this.scene.done = true;
+      this.scene.legoShadow.children.forEach((child) => {
+        child.material = new THREE.MeshLambertMaterial({
+          color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+        });
+      });
+      this.scene.remove(this.scene.legoPiece);
+      this.scene.legoShadow.position.z = -0.3 * this.scene.state.scale;
+      this.paint();
+      document.dispatchEvent(new CustomEvent("done"));
+      this.scene.control.deactivate();
     }
   }
 
@@ -112,21 +151,78 @@ export default class Game {
     const tallTrees = new TallTrees();
     const tallCanopies = new TallCanopies();
     const lego = new Lego();
+    const pieces = new Pieces();
 
-    const gltfLoader = new THREE.GLTFLoader();
-    gltfLoader.load("/statics/gltf/pieza.gltf", (gltf) => {
-      const root = gltf.scene;
-      root.position.fromArray(this.scene.camera.position.toArray());
-      root.position.z = 1;
-      root.rotation.x = Math.PI * 0.5;
-      if (!this.isTouch) {
-        this.scene.add(root);
-        this.scene.legoPiece = root;
-      }
+    const markerGeom = new THREE.ConeGeometry(10, 50, 32);
+    const markerMat = new THREE.MeshToonMaterial({ color: 0xff0000 });
+    const marker = new THREE.Mesh(markerGeom, markerMat);
+    marker.rotation.x = -Math.PI * 0.5;
 
+    if (this.mode === "cover") {
+      const loader = new THREE.FontLoader();
+      loader.load(
+        "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeom = new THREE.TextGeometry("Sortida", {
+            size: 15,
+            font: font,
+            height: 2,
+            curveSegments: 12,
+            bevelEnabled: false,
+          });
+          const text = new THREE.Mesh(textGeom, markerMat);
+          text.rotation.x = Math.PI * 0.8;
+          text.position.y -= 45;
+          text.position.x -= 30;
+          marker.add(text);
+        }
+      );
+    }
+    this.scene.marker = marker;
+
+    const closinesGeom = new THREE.RingGeometry(
+      1.3,
+      1.4,
+      20,
+      1,
+      -Math.PI * 0.25,
+      Math.PI * 0.5
+    );
+    const closinesMat = new THREE.MeshLambertMaterial({
+      transparent: true,
+      opacity: 0.8,
+      color: 0xfdff85,
+      shininess: 150,
+    });
+    const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
+    this.scene.closinesRing = closinesRing;
+
+    this.loadGltfs(() => {
       campus.load().then((campus) => {
         this.scene.bbox = campus.geometry.bbox;
-        if (this.isTouch) this.scene.camera.centerOn(campus);
+        this.scene.initPosition();
+        if (this.mode !== "pointer") this.scene.camera.centerOn(campus);
+        const canvas = document.getElementById("canvas");
+
+        if (canvas.clientWidth < canvas.clientHeight) {
+          this.scene.state.scale = Math.min(
+            1,
+            (campus.yScale(1) - campus.yScale(0)) / 1
+          );
+        } else {
+          this.scene.state.scale = Math.min(
+            1,
+            (campus.xScale(1) - campus.xScale(0)) / 1
+          );
+        }
+
+        if (this.scene.legoPiece) {
+          const args = Array.apply(null, Array(3)).map(
+            (d) => this.scene.state.scale
+          );
+          this.scene.legoPiece.scale.set(...args);
+          this.scene.legoShadow.scale.set(...args);
+        }
 
         Promise.all([
           buildings.load(),
@@ -135,13 +231,14 @@ export default class Game {
           sphericTrees.load(),
           tallTrees.load(),
           lego.load(),
+          pieces.load(this.playerData.id),
         ]).then((layers) => {
           sphericCanopies.parse(sphericTrees.json);
           tallCanopies.parse(tallTrees.json);
           this.scene.build();
           this.scene.render();
-          lego.geometry.shapes[0].rotateZ(-0.12);
           this.paint();
+          this.target = pieces.getTargetLocation(this.playerData);
         });
       });
     });
@@ -155,5 +252,116 @@ export default class Game {
     this.scene.addLayer(tallTrees);
     this.scene.addLayer(tallCanopies);
     this.scene.addLayer(lego);
+    this.scene.addLayer(pieces);
+  }
+
+  loadGltfs(callback) {
+    if (this.mode === "pointer") {
+      const gltfLoader = new THREE.GLTFLoader();
+      gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
+        const piece = gltf.scene;
+        gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
+          const armRight = gltf.scene;
+          armRight.rotation.reorder("ZYX");
+          armRight.rotation.x = Math.PI * 0.3;
+          armRight.scale.set(1.3, 1.3, 1.3);
+          piece.position.fromArray(this.scene.camera.position.toArray());
+          piece.position.z = 1;
+          piece.rotation.x = Math.PI * 0.5;
+          const pieceShadow = piece.clone();
+
+          piece.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshLambertMaterial({
+                color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
+              });
+            }
+          });
+          pieceShadow.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                opacity: 0.3,
+                transparent: true,
+              });
+            }
+          });
+          armRight.children.forEach((child) => {
+            if (child.type === "Mesh") {
+              child.material = new THREE.MeshToonMaterial({
+                color: "rgb(240, 200, 160)",
+                side: THREE.DoubleSide,
+              });
+            }
+          });
+          const armLeft = armRight.clone();
+          armLeft.scale.x = armLeft.scale.x * -1;
+          this.scene.add(piece);
+          this.scene.add(armRight);
+          this.scene.add(armLeft);
+          this.scene.legoPiece = piece;
+          this.scene.legoShadow = pieceShadow;
+          this.scene.armRight = armRight;
+          this.scene.armLeft = armLeft;
+
+          callback.call(this);
+        });
+      });
+    } else {
+      if (this.mode === "cover") this.scene.add(this.scene.marker);
+      callback.call(this);
+    }
+  }
+
+  distanceToTarget(target) {
+    this.scene.legoShadow.updateMatrixWorld();
+    const position = this.scene.legoShadow.position;
+    const distance = position.distanceTo(target);
+    return distance;
+  }
+
+  onControlsChange(ev) {
+    if (
+      !this.done &&
+      this.scene.state.mode === "pointer" &&
+      this.scene.control.state.isOnTatami
+    ) {
+      const distance = this.distanceToTarget(this.target);
+
+      const xDelta = this.scene.closinesRing.position.x - this.target.x;
+      const yDelta = this.scene.closinesRing.position.y - this.target.y;
+
+      let targetBearing;
+      if (yDelta > 0) {
+        targetBearing = Math.atan(xDelta / yDelta);
+        if (xDelta < 0) {
+          targetBearing = Math.PI * 1.5 - targetBearing;
+        } else {
+          targetBearing = Math.PI * 1.5 - targetBearing;
+        }
+      } else {
+        targetBearing = Math.atan(yDelta / xDelta);
+        if (xDelta > 0) {
+          targetBearing += Math.PI;
+        }
+      }
+
+      this.scene.closinesRing.rotation.z = targetBearing;
+
+      if (distance <= 0.4) {
+        this.scene.legoShadow.children.forEach((child) => {
+          child.material.color.setHex(0x00ff00);
+        });
+        this.isOnTarget = true;
+        this.paint();
+      } else {
+        this.scene.legoShadow.children.forEach((child) => {
+          child.material.color.setHex(0xff0000);
+        });
+        this.paint();
+        this.isOnTarget = false;
+      }
+    }
+    this.paint();
   }
 }

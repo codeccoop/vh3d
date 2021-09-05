@@ -17,6 +17,7 @@ function Layer(settings) {
   delete this.settings.data;
   this.name = this.settings.name;
   delete this.settings.name;
+  this.settings.side = THREE.DoubleSide;
 
   Emitter.asEmitter(this);
 
@@ -121,6 +122,38 @@ Layer.prototype.build = function () {
 
 Layer.prototype.render = function () {
   if (this.built) this.geometry.render();
+};
+
+Layer.prototype.localToWorld = function () {
+  const width = this.bbox.get().lngs[1] - this.bbox.get().lngs[0];
+  const height = this.bbox.get().lats[1] - this.bbox.get().lngs[1];
+  const center = {
+    x: this.bbox.get().center[0],
+    y: this.bbox.get().center[1],
+  };
+  const origin = {
+    x: center[0] - width / 2,
+    y: center[1] - height / 2,
+  };
+  const target = {
+    x: origin.x + vector.x,
+    y: origin.y + vector.y,
+  };
+  const distance = {
+    x: target.x - center[0],
+    y: target.y - center[1],
+  };
+  if (distance.x === 0 && distance.y === 0) return new THREE.Vector2(...center);
+
+  const bearing = Math.atan(distance.y / distance.x);
+  const radius =
+    Math.abs(distance.y) > 0
+      ? distance.y / Math.sin(bearing)
+      : Math.abs(distance.x) > 0
+      ? distance.x / Math.cos(bearing)
+      : 0;
+
+  return new THREE.Vector2(center[0]);
 };
 
 export default Layer;

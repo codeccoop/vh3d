@@ -26,9 +26,12 @@ function AbsoluteScale(domain) {
 function RelativeScale(range, domain) {
   const _domain = domain[1] - domain[0];
   const _range = range[1] - range[0];
-  return function (val) {
+  const scale = function (val) {
     return ((val - range[0]) / _range) * _domain;
   };
+  scale._domain = _domain;
+  scale._range = _range;
+  return scale;
 }
 
 function ProjectedScale(projection, range, domain) {

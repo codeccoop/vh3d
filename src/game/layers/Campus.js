@@ -4,6 +4,7 @@ function Campus(settings) {
   settings = settings || {};
   settings.color = 0xaaaaaa;
   settings.name = "campus";
+  settings.side = THREE.DoubleSide;
 
   Layer.call(this, settings);
 }

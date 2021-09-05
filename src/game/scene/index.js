@@ -4,20 +4,23 @@ import { OrbitControls, PointerLockControls } from "./Controls.js";
 import Emitter from "../mixins/Emitter.js";
 import { RelativeScale } from "../geojson2three/components/Scales.js";
 
+const origin = [238580.55031842450262, 5075605.921119668520987];
+
 class Scene extends THREE.Scene {
-  constructor(canvas, isTouch) {
+  constructor(canvas, mode) {
     super(...arguments);
 
     Emitter.asEmitter(this);
 
+    this.done = false;
     this.canvasEl = canvas;
     this.background = null;
-    this.fog = null;
+    this.gameMode = mode;
 
     this.state = {
-      _mode: isTouch ? "orbit" : "pointer",
+      _mode: mode === "touch" || mode === "cover" ? "orbit" : "pointer",
       orbit: {
-        position: [1279.1460223999, -612.0267163797657, 576.7102234202409],
+        position: [0, 0, 100],
         rotation: [
           1.0833975202556443,
           0.5779279158585705,
@@ -26,20 +29,15 @@ class Scene extends THREE.Scene {
         ],
       },
       pointer: {
-        position: [798.7106505288187, 309.94521294983355, 2.0],
-        // rotation: [1.2569447071003694, 1.0917005085438625, 0.0, "XYZ"],
-        rotation: [1.5, Math.PI * 0.5, 0.0, "XYZ"],
+        // position: [830, 310, 2],
+        position: [175, 254, 2.5],
+        rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
 
-    const markerGeom = new THREE.ConeGeometry(10, 30, 32);
-    const markerMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-    this.marker = new THREE.Mesh(markerGeom, markerMaterial);
-    this.marker.rotation.x = -Math.PI * 0.5;
-
     this.cameras = {
-      orbit: new Camera(50, window.innerWidth / window.innerHeight, 1, 4000),
-      pointer: new Camera(35, window.innerWidth / window.innerHeight, 0.1, 400),
+      orbit: new Camera(45, window.innerWidth / window.innerHeight, 1, 4000),
+      pointer: new Camera(60, window.innerWidth / window.innerHeight, 0.1, 400),
     };
 
     this.controls = {
@@ -52,19 +50,22 @@ class Scene extends THREE.Scene {
         get: () => {
           return this.state._mode;
         },
-        set: (mode) => {
-          if (this.state._mode !== mode) {
+        set: (to) => {
+          if (mode === "cover") return;
+          if (this.state._mode !== to) {
             this.control.deactivate();
-            this.state._mode = mode;
-            this.control.activate(this.state);
+            this.state._mode = to;
+            this.control.activate();
             if (this.state._mode === "pointer") {
-              this.fog = new THREE.Fog(0xffffff, 0, 750);
               this.remove(this.marker);
               this.add(this.legoPiece);
+              this.add(this.armRight);
+              this.add(this.armLeft);
             } else {
-              this.fog = undefined;
               this.add(this.marker);
               this.remove(this.legoPiece);
+              this.remove(this.armRight);
+              this.remove(this.armLeft);
             }
             this.control.dispatchEvent({ type: "init" });
           }
@@ -100,23 +101,11 @@ class Scene extends THREE.Scene {
       },
     });
 
-    this.onControlInit = this.onControlInit.bind(this);
-    this.onControlChange = this.onControlChange.bind(this);
     for (let mode of ["orbit", "pointer"]) {
       this.cameras[mode].position.set(...this.state[mode].position);
       this.cameras[mode].rotation.set(...this.state[mode].rotation);
       this.cameras[mode].parentControl = this.controls[mode];
-
-      this.controls[mode].addEventListener("change", this.onControlChange);
-      this.controls[mode].addEventListener("init", this.onControlInit);
     }
-
-    this.controls.pointer.addEventListener("unlock", () => {
-      if (this.state.mode === "pointer") {
-        this.control.deactivate();
-        document.dispatchEvent(new CustomEvent("unlock"));
-      }
-    });
 
     this.lights = new Lights();
     this.add(this.lights);
@@ -167,21 +156,32 @@ class Scene extends THREE.Scene {
     });
 
     this.$on("bbox:update", (ev) => {
-      this.xScale = new RelativeScale(ev.detail.bbox.lngs, [
-        0,
-        Math.min(window.innerHeight, window.innerWidth),
-      ]);
-      this.yScale = new RelativeScale(ev.detail.bbox.lats, [
-        0,
-        Math.min(window.innerHeight, window.innerWidth),
-      ]);
-
-      let layer;
-      for (let layerName in this.geojsonLayers) {
-        layer = this.geojsonLayers[layerName];
-        layer.xScale = this.xScale;
-        layer.yScale = this.yScale;
+      const bbox = ev.detail.bbox;
+      const canvas = document.getElementById("canvas");
+      if (canvas.clientWidth < canvas.clientHeight) {
+        const percent = canvas.clientHeight / canvas.clientWidth - 1;
+        const delta = bbox.lats[1] - bbox.lats[0];
+        const xRange = bbox.lngs;
+        const yRange = [
+          bbox.lats[0] - delta * percent * 0.5,
+          bbox.lats[1] + delta * percent * 0.5,
+        ];
+        this.xScale = new RelativeScale(xRange, [0, canvas.clientWidth]);
+        this.yScale = new RelativeScale(yRange, [0, canvas.clientHeight]);
+      } else {
+        const percent = canvas.clientWidth / canvas.clientHeight - 1;
+        const delta = bbox.lngs[1] - bbox.lngs[0];
+        const xRange = [
+          bbox.lngs[0] - delta * percent * 0.5,
+          bbox.lngs[1] + delta * percent * 0.5,
+        ];
+        const yRange = bbox.lats;
+        this.xScale = new RelativeScale(xRange, [0, canvas.clientWidth]);
+        this.yScale = new RelativeScale(yRange, [0, canvas.clientHeight]);
       }
+
+      this.build();
+      this.render();
     });
   }
 
@@ -193,36 +193,86 @@ class Scene extends THREE.Scene {
     ) {
       this.control.object.centerOn(this.geojsonLayers.campus);
     }
-    this.control.dispatchEvent({ type: "change" });
+    setTimeout(() => this.control.dispatchEvent({ type: "change" }), 100);
   }
 
   onControlChange(ev) {
-    this.state.position = this.camera.position.toArray();
-    this.state.rotation = this.camera.rotation.toArray();
+    if (this.done || !this.control.enabled) return;
 
-    if (this.state.mode === "pointer") {
-      this.marker.position.set(
-        this.state.position[0],
-        this.state.position[1],
-        this.state.position[2] + 20
-      );
-      if (this.legoPiece) {
-        const direction = this.control.getDirection(
-          new THREE.Vector3(0, -1, 0)
-        );
-        this.legoPiece.position.set(
-          this.state.position[0] + 2 * direction.x,
-          this.state.position[1] + 2 * direction.y,
-          1
-        );
-        this.legoPiece.rotation.fromArray(this.state.rotation);
-      }
-    }
+    if (this.state.mode === "pointer") this.updatePositions();
 
     this.$emit("control:change", {
       control: this.control,
       scene: this,
     });
+  }
+
+  updatePositions() {
+    const position = this.controls.pointer.getObject().position;
+    this.marker.position.copy(position);
+    this.marker.position.z += 20;
+
+    if (this.legoPiece) {
+      const direction = this.controls.pointer.getDirection(
+        new THREE.Vector3(0, 0, 0)
+      );
+      const rotation = this.controls.pointer.getObject().rotation.clone();
+      const reordered = rotation.reorder("ZYX");
+      const pitch = reordered.x;
+      const s = this.state.scale;
+      this.legoPiece.position.set(
+        position.x + 2 * direction.x * s,
+        position.y + 2 * direction.y * s,
+        position.z - 1.5 * s - 2 * Math.cos(pitch) * 0.5
+      );
+      this.armRight.position.set(
+        position.x + 1.5 * direction.x * s,
+        position.y + 1.5 * direction.y * s,
+        position.z - 1.2 * s - 2 * Math.cos(pitch) * 0.5
+      );
+      this.armRight.position.x += Math.cos(rotation.z) * 0.7 * s;
+      this.armRight.position.y += Math.sin(rotation.z) * 0.7 * s;
+      this.armLeft.position.set(
+        position.x + 1.5 * direction.x * s,
+        position.y + 1.5 * direction.y * s,
+        position.z - 1.2 * s - 2 * Math.cos(pitch) * 0.5
+      );
+      this.armLeft.position.x -= Math.cos(rotation.z) * 0.7 * s;
+      this.armLeft.position.y -= Math.sin(rotation.z) * 0.7 * s;
+      this.legoPiece.rotation.copy(rotation);
+      this.armRight.rotation.set(
+        -rotation.x + Math.PI * 0.8,
+        -rotation.y,
+        rotation.z + Math.PI,
+        "ZYX"
+      );
+      this.armLeft.rotation.set(
+        -rotation.x + Math.PI * 0.8,
+        -rotation.y,
+        rotation.z + Math.PI,
+        "ZYX"
+      );
+      if (this.controls.pointer.state.isOnTatami) {
+        this.legoPiece.position.z -= 0.25;
+        this.armLeft.position.z -= 0.25;
+        this.armRight.position.z -= 0.25;
+        const shadowPosition = this.piecesLayer.getNearest(
+          {
+            x: position.x + 9 * direction.x * s,
+            y: position.y + 9 * direction.y * s,
+            z: 0.25 * s,
+          },
+          this.controls.pointer.getObject().rotation.reorder("ZYX")
+        );
+        this.legoShadow.position.copy(shadowPosition);
+        this.closinesRing.position.copy(shadowPosition);
+        this.closinesRing.position.z = 0.55 * s;
+        reordered.x = Math.PI * 0.5;
+        this.legoShadow.rotation.copy(reordered);
+        this.legoShadow.rotation.z =
+          this.piecesLayer.geometry.shapes[0].rotation.z;
+      }
+    }
   }
 
   addLayer(layer) {
@@ -246,10 +296,84 @@ class Scene extends THREE.Scene {
 
   render() {
     let layer;
+    this.controls.trees = [];
     for (let layerName in this.geojsonLayers) {
       layer = this.geojsonLayers[layerName];
+      if (layerName === "campus" && layer.built) {
+        this.controls.pointer.floor = layer.geometry.shapes;
+      } else if (layerName === "buildings" && layer.built) {
+        this.controls.pointer.buildings = layer.geometry.json;
+      } else if (layerName.toLowerCase().match(/trees/) && layer.built) {
+        this.controls.pointer.trees = this.controls.pointer.trees.concat(
+          layer.geometry.shapes
+        );
+      } else if (layerName === "pieces" && layer.built) {
+        this.piecesLayer = layer;
+        this.controls.pointer.tatami = layer.geometry.shapes[0];
+      }
       if (layer.built) layer.render();
     }
+  }
+
+  onResize() {
+    this.$emit("bbox:update", { bbox: this.bbox });
+    this.controls.orbit.update();
+  }
+
+  onUnlock() {
+    if (this.gameMode === "cover") return;
+    console.log("unlock", this.state.mode, this.state.manualUnlock);
+    this.controls.pointer.deactivate();
+    if (
+      this.state.mode === "pointer" &&
+      !this.done &&
+      !this.state.manualUnlock
+    ) {
+      document.dispatchEvent(new CustomEvent("unlock"));
+    }
+    if (this.state.manualUnlock) this.state.manualUnlock = false;
+  }
+
+  onTatami(ev) {
+    if (ev.value) {
+      if (!this.getObjectById(this.legoShadow.id)) {
+        this.add(this.legoShadow);
+        this.add(this.closinesRing);
+      }
+    } else {
+      if (this.getObjectById(this.legoShadow.id)) {
+        this.remove(this.legoShadow);
+        this.remove(this.closinesRing);
+      }
+    }
+  }
+
+  initPosition() {
+    const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
+    this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+    this.updatePositions();
+  }
+
+  bind() {
+    this.onUnlock = this.onUnlock.bind(this);
+    this.onControlChange = this.onControlChange.bind(this);
+    this.onControlInit = this.onControlInit.bind(this);
+    this.onTatami = this.onTatami.bind(this);
+    this.controls.pointer.addEventListener("unlock", this.onUnlock);
+    this.controls.pointer.addEventListener("change", this.onControlChange);
+    this.controls.pointer.addEventListener("init", this.onControlInit);
+    this.controls.orbit.addEventListener("change", this.onControlChange);
+    this.controls.orbit.addEventListener("init", this.onControlInit);
+    this.controls.pointer.addEventListener("onTatami", this.onTatami);
+  }
+
+  unbind() {
+    this.controls.pointer.removeEventListener("unlock", this.onUnlock);
+    this.controls.pointer.removeEventListener("change", this.onControlChange);
+    this.controls.pointer.removeEventListener("init", this.onControlInit);
+    this.controls.orbit.removeEventListener("change", this.onControlChange);
+    this.controls.orbit.removeEventListener("init", this.onControlInit);
+    this.controls.pointer.removeEventListener("onTatami", this.onTatami);
   }
 }
 

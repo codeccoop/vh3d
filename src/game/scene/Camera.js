@@ -7,14 +7,22 @@ class Camera extends THREE.PerspectiveCamera {
   centerOn(layer) {
     const bbox = layer.geometry.bbox.get();
 
-    const x = (layer.xScale(bbox.lngs[1]) - layer.xScale(bbox.lngs[0])) / 2;
-    const y = (layer.yScale(bbox.lats[1]) - layer.yScale(bbox.lats[0])) / 2;
-    const z = 0;
+    const x =
+      (layer.xScale(bbox.center[0] + layer.xScale._range / 2) -
+        layer.xScale(bbox.center[0] - layer.xScale._range / 2)) /
+      2;
+    const y =
+      (layer.yScale(bbox.center[1] + layer.yScale._range / 2) -
+        layer.yScale(bbox.center[1] - layer.yScale._range / 2)) /
+      2;
 
-    this.position.set(x, -1000, 2000);
-    this.lookAt(x, y, z);
+    const span = Math.max(layer.xScale._range, layer.yScale._range);
+    const fov = (this.fov / 360) * Math.PI * 2;
+    const z = Math.sin((Math.PI - fov) / 2) / (Math.sin(fov) / span);
+    this.position.set(x * 1.4, y * -1.5, z * 0.3);
+    this.lookAt(x, y, 0);
     if (this.parentControl && this.parentControl.target) {
-      this.parentControl.target.set(x, y, z);
+      this.parentControl.target.set(x, y, 0);
       this.parentControl.update();
     }
   }

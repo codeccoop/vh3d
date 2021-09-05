@@ -1,0 +1,332 @@
+#game {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+#coverMap {
+    width: 100%;
+}
+
+.game-cover {
+    position: absolute;
+    z-index: 10;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background-color: #283583;
+}
+
+.game-cover__loader {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 3em;
+    flex: 1;
+}
+
+.game-cover__menu-wrapper {
+    color: white;
+    height: 100%;
+    display: flex;
+    flex: 1;
+}
+
+.game-cover__menu {
+    padding: 1em 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-cover__map {
+    flex: 1;
+    height: 100%;
+    margin-right: 3em;
+    display: flex;
+    align-items: center;
+}
+
+.game-cover__menu ul {
+    list-style: none;
+    padding: 0px;
+}
+
+.game-cover__menu ul li {
+    padding: .5em 1.2em;
+}
+
+.game-cover__show-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9f9f9;
+    width: 100%;
+}
+
+.game-cover__show-info h2 {
+    padding-top: 3em;
+    color: black;
+}
+
+.game-cover__show-info .carousel {
+    overflow: hidden;
+    flex: 1;
+    width: 80vw;
+    max-width: 900px;
+}
+
+.game-cover__show-info .button {
+    color: black;
+}
+
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .game-cover__menu-wrapper {
+        padding: 1em .5em;
+        flex-direction: column;
+        flex-flow: column-reverse;
+    }
+
+    .game-cover__menu h2,
+    .game-cover__menu ul li {
+        width: 250px;
+    }
+
+    .game-cover__menu h2 {
+        margin: 0px;
+    }
+
+    .game-cover__menu ul {
+        margin-bottom: 50px;
+    }
+
+    .game-cover__menu ul li {
+        padding: 0.3em 1.2em;
+    }
+
+    .game-cover__menu ul li button {
+        padding: .6em .8em;
+    }
+}
+
+#canvas, #coverMap {
+    display: block;
+    width: 100%;
+    background: -webkit-gradient(linear, left top, left bottom, from(#98c8f6), color-stop(0.4, #cbebff), to(#f0f9ff));
+    background: linear-gradient(to bottom, #98c8f6 0%,#cbebff 60%,#f0f9ff 100%);
+}
+
+#canvas {
+    height: 100%;
+}
+
+.is-touch-unlocker {
+    position: absolute;
+    z-index: 50;
+    right: 20px;
+    top: 20px;
+}
+
+.is-touch-unlocker:after {
+    content: "X";
+    width: 30px;
+    height: 35px;
+    font-size: 1.8em;
+    line-height: 37px;
+    text-align: center;
+    text-shadow: 0px 0px 3px #000000cc;
+    color: #fff;
+}
+
+.game-aside,
+.controls-highlights {
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.game-aside {
+    bottom: 0px;
+    width: 150px;
+    height: min-content;
+    display: flex;
+    align-items: center;
+}
+
+.game-aside.left ul.centered {
+    background-color: #fff6;
+    border-radius: 10px;
+    padding: 1em 0 2em;
+    box-shadow: 0px 0px 10px #0005;
+}
+
+.game-aside.right {
+    left: unset;
+    right: 0px;
+    height: 100%;
+}
+
+.controls-highlights {
+    right: 0px;
+    opacity: 1;
+    transition: opacity .5s ease-out;
+}
+
+.controls-highlights.hidden {
+    opacity: 0;
+}
+
+.controls-highlights ul {
+    display: flex;
+    box-shadow: 0px 0px 10px #0005;
+}
+
+.controls-highlights ul li {
+    background-color: #fff6;
+}
+
+.controls-highlights ul li:first-child {
+    padding-left: 2em;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.controls-highlights ul li:last-child {
+    padding-right: 2em;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.game-aside .icon,
+.controls-highlights .icon {
+    width: 100px;
+    height: 200px;
+    padding-top: 105px;
+    margin: 0px 1em;
+    background-size: 66.6%;
+    background-position-x: 50%;
+    background-position-y: 25%;
+    background-repeat: no-repeat;
+}
+
+.game-aside .icon {
+    width: 75px;
+    height: 100px;
+    padding-top: 60px;
+}
+
+.game-aside .icon p,
+.controls-highlights .icon p {
+    line-height: 1;
+}
+
+.movement .icon {
+    background-image: url('/static/images/wasd-icon.svg');
+}
+
+.camera .icon,
+.orbit .icon,
+.pan .icon,
+.zoom .icon {
+    background-image: url('/static/images/mouse-icon.svg');
+}
+
+.click .icon {
+    background-image: url('/static/images/action-icon.svg');
+}
+
+.jump .icon {
+    background-image: url('/static/images/space-icon.svg');
+}
+
+.escape .icon {
+    background-image: url('/static/images/esc-icon.svg');
+}
+
+.enter .icon {
+    background-image: url('/static/images/enter-icon.svg');
+}
+
+.map .icon {
+    background-image: url('/static/images/map-icon.svg');
+}
+
+.help .icon {
+    background-image: url('/static/images/help-icon.svg');
+}
+
+.distance-slider {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 50px 10px 100px 0;
+    padding: 1em 2em 3em;
+    background-color: #eeeeee88;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.distance-slider h3 {
+    text-align: right;
+}
+
+.slider {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.slider-position {
+    position: absolute;
+    font-weight: bold;
+    right: -11px;
+    text-indent: -45px;
+}
+
+.slider-position > div {
+    border-top: 4px solid #101010;
+    border-left: 4px solid #101010;
+    transform: rotate(45deg);
+    height: 25px;
+    width: 25px;
+    float: right;
+    margin-top: 7px;
+    margin-left: 17px;
+}
+
+.slider-scrollbar {
+    height: 100%;
+    width: 3px;
+    background-color: white;
+}
+
+.done-modal {
+    z-index: 1000;
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: #28358388;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #0005;
+    opacity: 0;
+    transition: opacity .4s ease-in;
+}
+
+.done-modal.visible {
+    opacity: 1;
+}

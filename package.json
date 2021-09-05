@@ -4,13 +4,17 @@
   "description": "A 3D map of the Vall d'Hebron Hospital Campus",
   "main": "index.js",
   "dependencies": {
-    "@enable3d/ammo-physics": "^0.23.0",
+    "@turf/turf": "^6.5.0",
     "proj4": "^2.7.5",
     "three": "^0.131.2",
     "vue": "^2.6.14",
+    "vue-carousel": "^0.18.0",
     "vue-router": "^3.5.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
