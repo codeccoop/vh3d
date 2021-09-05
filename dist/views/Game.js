@@ -1,5 +1,4 @@
 import Game from "../game/index.js";
-
 var controlsTimeout;
 export default {
   template: `<div id="game">
@@ -48,8 +47,9 @@ export default {
   </div>`,
   components: {
     carousel: VueCarousel.Carousel,
-    slide: VueCarousel.Slide,
+    slide: VueCarousel.Slide
   },
+
   data() {
     return {
       started: false,
@@ -59,32 +59,24 @@ export default {
       waiting: false,
       gameOver: false,
       controls: "pointer",
-      done: false,
+      done: false
     };
   },
+
   beforeMount() {
-    fetch("/piece/" + this.pieceId)
-      .then((res) => res.json())
-      .then((data) => {
-        this.game = new Game(
-          document.getElementById("canvas"),
-          data,
-          this.isTouch ? "touch" : "pointer"
-        );
-        if (!this.isTouch) {
-          this.coverMap = new Game(
-            document.getElementById("coverMap"),
-            data,
-            "cover"
-          );
-          this.coverMap.bind();
-        } else {
-          this.game.bind();
-        }
-      })
-      .catch((err) => console.error("Error while fetching the piece"));
+    fetch("/piece/" + this.pieceId).then(res => res.json()).then(data => {
+      this.game = new Game(document.getElementById("canvas"), data, this.isTouch ? "touch" : "pointer");
+
+      if (!this.isTouch) {
+        this.coverMap = new Game(document.getElementById("coverMap"), data, "cover");
+        this.coverMap.bind();
+      } else {
+        this.game.bind();
+      }
+    }).catch(err => console.error("Error while fetching the piece"));
     this.controls = this.isTouch ? "orbit" : "pointer";
   },
+
   mounted() {
     document.removeEventListener("unlock", this.onGameUnlock);
     document.addEventListener("unlock", this.onGameUnlock);
@@ -95,56 +87,62 @@ export default {
     document.removeEventListener("done", this.onDone);
     document.addEventListener("done", this.onDone);
   },
+
   computed: {
     isTouch() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
+
     pieceId() {
       return this.$route.query.pieceId;
     },
+
     menuTitle() {
       return this.gameOver ? "Game Over" : "Menú";
     },
+
     carouselImageWidth() {
       return Math.min(window.innerHeight, window.innerWidth) + "px";
-    },
+    }
+
   },
   methods: {
     exit() {
-      this.$router.push({ path: "/" });
+      this.$router.push({
+        path: "/"
+      });
     },
+
     onGameUnlock() {
       this.gameLock = false;
     },
+
     onHelp(ev) {
       clearTimeout(controlsTimeout);
       this.controls = ev.detail;
       this.showControls = true;
-      controlsTimeout = setTimeout((_) => (this.showControls = false), 7000);
+      controlsTimeout = setTimeout(_ => this.showControls = false, 7000);
     },
+
     restart() {
       this.game.unbind();
-      this.game = new Game(
-        this.game.canvas,
-        this.game.playerData,
-        this.isTouch ? "orbit" : "pointer"
-      );
+      this.game = new Game(this.game.canvas, this.game.playerData, this.isTouch ? "orbit" : "pointer");
       this.game.bind();
       this.started = false;
       this.gameOver = false;
       this.gameLock = true;
     },
+
     onGameOver() {
       this.gameOver = true;
     },
+
     onDone() {
       this.done = true;
       fetch(`piece/${this.pieceId}`, {
-        method: "POST",
-      }).then((res) => {
-        res.json().then((data) => {
+        method: "POST"
+      }).then(res => {
+        res.json().then(data => {
           if (data["success"]) {
             this.$nextTick(() => {
               this.$refs.modal.classList.add("visible");
@@ -152,7 +150,8 @@ export default {
           }
         });
       });
-    },
+    }
+
   },
   watch: {
     gameLock(to, from) {
@@ -160,40 +159,40 @@ export default {
       self.waiting = true;
       setTimeout(() => {
         self.waiting = false;
+
         if (to) {
           self.started = true;
           self.showControls = true;
-          controlsTimeout = setTimeout(() => (self.showControls = false), 7000);
+          controlsTimeout = setTimeout(() => self.showControls = false, 7000);
+
           if (!self.isTouch) {
             self.coverMap.unbind();
             window.audioObj.play();
           }
+
           self.game.bind();
           self.game.scene.state.mode = self.isTouch ? "orbit" : "pointer";
           self.onHelp({
-            detail: "pointer",
+            detail: "pointer"
           });
         } else {
           if (!self.isTouch) {
             self.$nextTick(() => {
               self.$refs.coverMap.removeChild(self.$refs.coverMap.children[0]);
               self.$refs.coverMap.innerHTML = '<canvas id="coverMap"></canvas>';
-              self.coverMap = new Game(
-                document.getElementById("coverMap"),
-                self.coverMap.playerData,
-                "cover"
-              );
+              self.coverMap = new Game(document.getElementById("coverMap"), self.coverMap.playerData, "cover");
               self.coverMap.bind();
             });
             window.audioObj.pause();
             window.audioObj.currentTime = 0;
           }
+
           self.game.unbind();
         }
       }, 1000);
-
       if (!self.isTouch) self.coverMap.lock(!to);
       self.game.lock(to);
-    },
-  },
+    }
+
+  }
 };
