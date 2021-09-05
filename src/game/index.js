@@ -94,8 +94,8 @@ export default class Game {
 
   onKeyDown(ev) {
     if (this.scene.control.enabled === false || this.mode === "cover") return;
-    console.log("keydown", ev.code);
     if (ev.code === "KeyM") {
+      console.log("keydown M");
       if (this.scene.state.mode === "pointer") {
         this.scene.state.mode = "orbit";
         this.scene.state.manualUnlock = true;
@@ -200,14 +200,22 @@ export default class Game {
         this.scene.initPosition();
         if (this.mode !== "pointer") this.scene.camera.centerOn(campus);
         const canvas = document.getElementById("canvas");
-        this.scene.state.scale =
-          canvas.clientWidth < canvas.clientHeight
-            ? canvas.clientWidth / canvas.clientHeight
-            : canvas.clientHeight / canvas.clientWidth;
+
+        if (canvas.clientWidth < canvas.clientHeight) {
+          this.scene.state.scale = Math.min(
+            1,
+            (campus.yScale(1) - campus.yScale(0)) / 1
+          );
+        } else {
+          this.scene.state.scale = Math.min(
+            1,
+            (campus.xScale(1) - campus.xScale(0)) / 1
+          );
+        }
 
         if (this.scene.legoPiece) {
-          const args = Array.apply(null, Array(3)).map((d) =>
-            Math.sqrt(this.scene.state.scale)
+          const args = Array.apply(null, Array(3)).map(
+            (d) => this.scene.state.scale
           );
           this.scene.legoPiece.scale.set(...args);
           this.scene.legoShadow.scale.set(...args);
@@ -251,7 +259,9 @@ export default class Game {
         const piece = gltf.scene;
         gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
           const armRight = gltf.scene;
-          armRight.scale.set(1.5, 1.5, 1.5);
+          armRight.rotation.reorder("ZYX");
+          armRight.rotation.x = Math.PI * 0.3;
+          armRight.scale.set(1.3, 1.3, 1.3);
           piece.position.fromArray(this.scene.camera.position.toArray());
           piece.position.z = 1;
           piece.rotation.x = Math.PI * 0.5;
@@ -279,6 +289,7 @@ export default class Game {
             if (child.type === "Mesh") {
               child.material = new THREE.MeshToonMaterial({
                 color: "rgb(240, 200, 160)",
+                side: THREE.DoubleSide,
               });
             }
           });

@@ -15,6 +15,7 @@ class Scene extends THREE.Scene {
     this.done = false;
     this.canvasEl = canvas;
     this.background = null;
+    this.gameMode = mode;
 
     this.state = {
       _mode: mode === "touch" || mode === "cover" ? "orbit" : "pointer",
@@ -36,7 +37,7 @@ class Scene extends THREE.Scene {
 
     this.cameras = {
       orbit: new Camera(45, window.innerWidth / window.innerHeight, 1, 4000),
-      pointer: new Camera(56, window.innerWidth / window.innerHeight, 0.1, 400),
+      pointer: new Camera(60, window.innerWidth / window.innerHeight, 0.1, 400),
     };
 
     this.controls = {
@@ -44,19 +45,9 @@ class Scene extends THREE.Scene {
       pointer: new PointerLockControls(this.cameras.pointer, document.body),
     };
 
-    this.controls.pointer.addEventListener("unlock", () => {
-      if (mode === "cover") return;
-      console.log("unlock", this.state.mode, this.state.manualUnlock);
-      this.controls.pointer.deactivate();
-      if (
-        this.state.mode === "pointer" &&
-        !this.done &&
-        !this.state.manualUnlock
-      ) {
-        document.dispatchEvent(new CustomEvent("unlock"));
-      }
-      if (this.state.manualUnlock) this.state.manualUnlock = false;
-    });
+    this.onUnlock = this.onUnlock.bind(this);
+    this.controls.pointer.removeEventListener("unlock", this.onUnlock);
+    this.controls.pointer.addEventListener("unlock", this.onUnlock);
 
     Object.defineProperties(this.state, {
       mode: {
@@ -121,23 +112,15 @@ class Scene extends THREE.Scene {
       this.cameras[mode].rotation.set(...this.state[mode].rotation);
       this.cameras[mode].parentControl = this.controls[mode];
 
+      this.controls[mode].removeEventListener("change", this.onControlChange);
       this.controls[mode].addEventListener("change", this.onControlChange);
+      this.controls[mode].removeEventListener("init", this.onControlInit);
       this.controls[mode].addEventListener("init", this.onControlInit);
     }
 
-    this.controls.pointer.addEventListener("onTatami", (ev) => {
-      if (ev.value) {
-        if (!this.getObjectById(this.legoShadow.id)) {
-          this.add(this.legoShadow);
-          this.add(this.closinesRing);
-        }
-      } else {
-        if (this.getObjectById(this.legoShadow.id)) {
-          this.remove(this.legoShadow);
-          this.remove(this.closinesRing);
-        }
-      }
-    });
+    this.onTatami = this.onTatami.bind(this);
+    this.controls.pointer.removeEventListener("onTatami", this.onTatami);
+    this.controls.pointer.addEventListener("onTatami", this.onTatami);
 
     this.lights = new Lights();
     this.add(this.lights);
@@ -225,11 +208,11 @@ class Scene extends THREE.Scene {
     ) {
       this.control.object.centerOn(this.geojsonLayers.campus);
     }
-    this.control.dispatchEvent({ type: "change" });
+    setTimeout(() => this.control.dispatchEvent({ type: "change" }), 100);
   }
 
   onControlChange(ev) {
-    if (this.done) return;
+    if (this.done || !this.control.enabled) return;
 
     if (this.state.mode === "pointer") this.updatePositions();
 
@@ -252,33 +235,33 @@ class Scene extends THREE.Scene {
       const reordered = rotation.reorder("ZYX");
       const pitch = reordered.x;
       this.legoPiece.position.set(
-        position.x + 2.4 * direction.x,
-        position.y + 2.4 * direction.y,
-        position.z - 1.25 - 2 * Math.cos(pitch)
-      );
-      this.armRight.position.set(
         position.x + 2 * direction.x,
         position.y + 2 * direction.y,
-        position.z - 1.25 - 2 * Math.cos(pitch)
+        position.z - 1.5 - 2 * Math.cos(pitch) * 0.5
+      );
+      this.armRight.position.set(
+        position.x + 1.5 * direction.x,
+        position.y + 1.5 * direction.y,
+        position.z - 1.2 - 2 * Math.cos(pitch) * 0.5
       );
       this.armRight.position.x += Math.cos(rotation.z) * 0.7;
       this.armRight.position.y += Math.sin(rotation.z) * 0.7;
       this.armLeft.position.set(
-        position.x + 2 * direction.x,
-        position.y + 2 * direction.y,
-        position.z - 1.25 - 2 * Math.cos(pitch)
+        position.x + 1.5 * direction.x,
+        position.y + 1.5 * direction.y,
+        position.z - 1.2 - 2 * Math.cos(pitch) * 0.5
       );
       this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
       this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
       this.legoPiece.rotation.copy(rotation);
       this.armRight.rotation.set(
-        -rotation.x + Math.PI * 0.3,
+        -rotation.x + Math.PI * 0.8,
         -rotation.y,
         rotation.z + Math.PI,
         "ZYX"
       );
       this.armLeft.rotation.set(
-        -rotation.x + Math.PI * 0.3,
+        -rotation.x + Math.PI * 0.8,
         -rotation.y,
         rotation.z + Math.PI,
         "ZYX"
@@ -349,6 +332,34 @@ class Scene extends THREE.Scene {
   onResize() {
     this.$emit("bbox:update", { bbox: this.bbox });
     this.controls.orbit.update();
+  }
+
+  onUnlock() {
+    if (this.gameMode === "cover") return;
+    console.log("unlock", this.state.mode, this.state.manualUnlock);
+    this.controls.pointer.deactivate();
+    if (
+      this.state.mode === "pointer" &&
+      !this.done &&
+      !this.state.manualUnlock
+    ) {
+      document.dispatchEvent(new CustomEvent("unlock"));
+    }
+    if (this.state.manualUnlock) this.state.manualUnlock = false;
+  }
+
+  onTatami(ev) {
+    if (ev.value) {
+      if (!this.getObjectById(this.legoShadow.id)) {
+        this.add(this.legoShadow);
+        this.add(this.closinesRing);
+      }
+    } else {
+      if (this.getObjectById(this.legoShadow.id)) {
+        this.remove(this.legoShadow);
+        this.remove(this.closinesRing);
+      }
+    }
   }
 
   initPosition() {
