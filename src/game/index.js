@@ -131,7 +131,7 @@ export default class Game {
         });
       });
       this.scene.remove(this.scene.legoPiece);
-      this.scene.legoShadow.position.z = -0.3;
+      this.scene.legoShadow.position.z = -0.3 * this.scene.state.scale;
       this.paint();
       document.dispatchEvent(new CustomEvent("done"));
       this.scene.control.deactivate();
@@ -265,9 +265,7 @@ export default class Game {
           piece.position.fromArray(this.scene.camera.position.toArray());
           piece.position.z = 1;
           piece.rotation.x = Math.PI * 0.5;
-          piece.scale.set(0.9, 0.85, 0.9);
           const pieceShadow = piece.clone();
-          pieceShadow.scale.set(0.9, 0.85, 0.9);
 
           piece.children.forEach((child) => {
             if (child.type === "Mesh") {
