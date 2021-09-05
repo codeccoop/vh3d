@@ -30,7 +30,7 @@ class Scene extends THREE.Scene {
       },
       pointer: {
         // position: [830, 310, 2],
-        position: [175, 254, 2],
+        position: [175, 254, 2.5],
         rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
       },
     };
@@ -234,25 +234,26 @@ class Scene extends THREE.Scene {
       const rotation = this.controls.pointer.getObject().rotation.clone();
       const reordered = rotation.reorder("ZYX");
       const pitch = reordered.x;
+      const s = this.state.scale;
       this.legoPiece.position.set(
-        position.x + 2 * direction.x,
-        position.y + 2 * direction.y,
-        position.z - 1.5 - 2 * Math.cos(pitch) * 0.5
+        position.x + 2 * direction.x * s,
+        position.y + 2 * direction.y * s,
+        position.z - 1.5 * s - 2 * Math.cos(pitch) * 0.5
       );
       this.armRight.position.set(
-        position.x + 1.5 * direction.x,
-        position.y + 1.5 * direction.y,
-        position.z - 1.2 - 2 * Math.cos(pitch) * 0.5
+        position.x + 1.5 * direction.x * s,
+        position.y + 1.5 * direction.y * s,
+        position.z - 1.2 * s - 2 * Math.cos(pitch) * 0.5
       );
-      this.armRight.position.x += Math.cos(rotation.z) * 0.7;
-      this.armRight.position.y += Math.sin(rotation.z) * 0.7;
+      this.armRight.position.x += Math.cos(rotation.z) * 0.7 * s;
+      this.armRight.position.y += Math.sin(rotation.z) * 0.7 * s;
       this.armLeft.position.set(
-        position.x + 1.5 * direction.x,
-        position.y + 1.5 * direction.y,
-        position.z - 1.2 - 2 * Math.cos(pitch) * 0.5
+        position.x + 1.5 * direction.x * s,
+        position.y + 1.5 * direction.y * s,
+        position.z - 1.2 * s - 2 * Math.cos(pitch) * 0.5
       );
-      this.armLeft.position.x -= Math.cos(rotation.z) * 0.7;
-      this.armLeft.position.y -= Math.sin(rotation.z) * 0.7;
+      this.armLeft.position.x -= Math.cos(rotation.z) * 0.7 * s;
+      this.armLeft.position.y -= Math.sin(rotation.z) * 0.7 * s;
       this.legoPiece.rotation.copy(rotation);
       this.armRight.rotation.set(
         -rotation.x + Math.PI * 0.8,
@@ -272,15 +273,15 @@ class Scene extends THREE.Scene {
         this.armRight.position.z -= 0.25;
         const shadowPosition = this.piecesLayer.getNearest(
           {
-            x: position.x + 9 * direction.x,
-            y: position.y + 9 * direction.y,
-            z: 0.25,
+            x: position.x + 9 * direction.x * s,
+            y: position.y + 9 * direction.y * s,
+            z: 0.25 * s,
           },
           this.controls.pointer.getObject().rotation.reorder("ZYX")
         );
         this.legoShadow.position.copy(shadowPosition);
         this.closinesRing.position.copy(shadowPosition);
-        this.closinesRing.position.z = 0.55;
+        this.closinesRing.position.z = 0.55 * s;
         reordered.x = Math.PI * 0.5;
         this.legoShadow.rotation.copy(reordered);
         this.legoShadow.rotation.z =
