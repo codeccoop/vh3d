@@ -3,8 +3,8 @@ var controlsTimeout;
 export default {
   template: `<div id="game">
     <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
-      <div v-if="waiting" class="game-cover__loader">Carregant...</div>
-      <div v-else class="game-cover__menu-wrapper">
+      <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
+      <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
           <h2 class="centered">{{ menuTitle }}</h2>
           <ul class="centered">
