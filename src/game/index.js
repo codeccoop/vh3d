@@ -99,7 +99,7 @@ export default class Game {
     if (ev.code === "KeyM") {
       if (this.scene.state.mode === "pointer") {
         this.scene.state.manualUnlock = true;
-        console.log("keydown M", this.scene.state.mode);
+        // console.log("keydown M", this.scene.state.mode);
         this.scene.state.mode = "orbit";
       } else this.scene.state.mode = "pointer";
       document.dispatchEvent(

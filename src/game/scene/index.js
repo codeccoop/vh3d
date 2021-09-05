@@ -20,18 +20,12 @@ class Scene extends THREE.Scene {
     this.state = {
       _mode: mode === "touch" || mode === "cover" ? "orbit" : "pointer",
       orbit: {
-        position: [0, 0, 100],
-        rotation: [
-          1.0833975202556443,
-          0.5779279158585705,
-          0.2818529890514449,
-          "XYZ",
-        ],
+        position: new THREE.Vector3(0, 0, 100),
+        rotation: new THREE.Euler(1.08, 0.57, 0.28, "XYZ"),
       },
       pointer: {
-        // position: [830, 310, 2],
-        position: [175, 254, 2.5],
-        rotation: [Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"],
+        position: new THREE.Vector3(175, 254, 2.5),
+        rotation: new THREE.Euler(Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"),
       },
     };
 
@@ -102,8 +96,8 @@ class Scene extends THREE.Scene {
     });
 
     for (let mode of ["orbit", "pointer"]) {
-      this.cameras[mode].position.set(...this.state[mode].position);
-      this.cameras[mode].rotation.set(...this.state[mode].rotation);
+      this.cameras[mode].position.copy(this.state[mode].position);
+      this.cameras[mode].rotation.copy(this.state[mode].rotation);
       this.cameras[mode].parentControl = this.controls[mode];
     }
 
@@ -199,8 +193,8 @@ class Scene extends THREE.Scene {
   onControlChange(ev) {
     if (this.done || !this.control.enabled) return;
 
-    this.state.position = this.camera.position.toArray();
-    this.state.rotation = this.camera.rotation.toArray();
+    this.state.position.copy(this.camera.position);
+    this.state.rotation.copy(this.camera.rotation);
     if (this.state.mode === "pointer") this.updatePositions();
 
     this.$emit("control:change", {
@@ -324,7 +318,7 @@ class Scene extends THREE.Scene {
 
   onUnlock() {
     if (this.gameMode === "cover") return;
-    console.log("unlock", this.state.mode, this.state.manualUnlock);
+    // console.log("unlock", this.state.mode, this.state.manualUnlock);
     this.controls.pointer.deactivate();
     if (
       this.state.mode === "pointer" &&

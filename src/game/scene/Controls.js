@@ -311,7 +311,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
   }
 
   activate(state) {
-    this.getObject().rotation.fromArray(state.rotation);
+    this.getObject().rotation.copy(state.rotation);
     this.enabled = true;
     document.addEventListener("mousemove", this.onMouseMove, true);
     document.addEventListener("keydown", this.onKeyDown);
