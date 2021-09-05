@@ -55,7 +55,7 @@ class Scene extends THREE.Scene {
           if (this.state._mode !== to) {
             this.control.deactivate();
             this.state._mode = to;
-            this.control.activate();
+            this.control.activate(this.state);
             if (this.state._mode === "pointer") {
               this.remove(this.marker);
               this.add(this.legoPiece);
@@ -199,6 +199,8 @@ class Scene extends THREE.Scene {
   onControlChange(ev) {
     if (this.done || !this.control.enabled) return;
 
+    this.state.position = this.camera.position.toArray();
+    this.state.rotation = this.camera.rotation.toArray();
     if (this.state.mode === "pointer") this.updatePositions();
 
     this.$emit("control:change", {

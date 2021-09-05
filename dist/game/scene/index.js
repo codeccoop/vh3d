@@ -32,10 +32,7 @@ class Scene extends THREE.Scene {
     this.controls = {
       orbit: new OrbitControls(this.cameras.orbit, this.canvasEl),
       pointer: new PointerLockControls(this.cameras.pointer, document.body)
-    }; // this.onUnlock = this.onUnlock.bind(this);
-    // this.controls.pointer.removeEventListener("unlock", this.onUnlock);
-    // this.controls.pointer.addEventListener("unlock", this.onUnlock);
-
+    };
     Object.defineProperties(this.state, {
       mode: {
         get: () => {
@@ -47,7 +44,7 @@ class Scene extends THREE.Scene {
           if (this.state._mode !== to) {
             this.control.deactivate();
             this.state._mode = to;
-            this.control.activate();
+            this.control.activate(this.state);
 
             if (this.state._mode === "pointer") {
               this.remove(this.marker);
@@ -93,20 +90,13 @@ class Scene extends THREE.Scene {
       get: () => {
         return this.controls[this.state.mode];
       }
-    }); // this.onControlInit = this.onControlInit.bind(this);
-    // this.onControlChange = this.onControlChange.bind(this);
+    });
 
     for (let mode of ["orbit", "pointer"]) {
       this.cameras[mode].position.set(...this.state[mode].position);
       this.cameras[mode].rotation.set(...this.state[mode].rotation);
-      this.cameras[mode].parentControl = this.controls[mode]; // this.controls[mode].removeEventListener("change", this.onControlChange);
-      // this.controls[mode].addEventListener("change", this.onControlChange);
-      // this.controls[mode].removeEventListener("init", this.onControlInit);
-      // this.controls[mode].iaddEventListener("init", this.onControlInit);
-    } // this.onTatami = this.onTatami.bind(this);
-    // this.controls.pointer.removeEventListener("onTatami", this.onTatami);
-    // this.controls.pointer.addEventListener("onTatami", this.onTatami);
-
+      this.cameras[mode].parentControl = this.controls[mode];
+    }
 
     this.lights = new Lights();
     this.add(this.lights);
@@ -205,6 +195,8 @@ class Scene extends THREE.Scene {
 
   onControlChange(ev) {
     if (this.done || !this.control.enabled) return;
+    this.state.position = this.camera.position.toArray();
+    this.state.rotation = this.camera.rotation.toArray();
     if (this.state.mode === "pointer") this.updatePositions();
     this.$emit("control:change", {
       control: this.control,

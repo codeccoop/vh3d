@@ -112,9 +112,6 @@ export class PointerLockControls extends THREE.PointerLockControls {
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.update = this.update.bind(this);
-    document.addEventListener("keydown", this.onKeyDown);
-    document.addEventListener("keyup", this.onKeyUp);
-    document.addEventListener("pointerlockchange", this.onPointerLockChange);
     this.lastTime = performance.now();
     this.lastPosition = this.getObject().position;
     this.buildings = [];
@@ -273,15 +270,22 @@ export class PointerLockControls extends THREE.PointerLockControls {
     }
   }
 
-  activate() {
+  activate(state) {
+    this.getObject().rotation.fromArray(state.rotation);
     this.enabled = true;
     document.addEventListener("mousemove", this.onMouseMove, true);
+    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keyup", this.onKeyUp);
+    document.addEventListener("pointerlockchange", this.onPointerLockChange);
     this.lock();
   }
 
   deactivate() {
     this.enabled = false;
     document.removeEventListener("mousemove", this.onMouseMove, true);
+    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("keyup", this.onKeyUp);
+    document.removeEventListener("pointerlockchange", this.onPointerLockChange);
     this.unlock();
   }
 

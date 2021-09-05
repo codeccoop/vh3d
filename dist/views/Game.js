@@ -127,7 +127,6 @@ export default {
     restart() {
       this.game.unbind();
       this.game = new Game(this.game.canvas, this.game.playerData, this.isTouch ? "orbit" : "pointer");
-      this.game.bind();
       this.started = false;
       this.gameOver = false;
       this.gameLock = true;
@@ -139,6 +138,7 @@ export default {
 
     onDone() {
       this.done = true;
+      this.game.unbind();
       fetch(`piece/${this.pieceId}`, {
         method: "POST"
       }).then(res => {
