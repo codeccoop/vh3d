@@ -134,7 +134,7 @@ export default class Game {
         });
       });
       this.scene.remove(this.scene.legoPiece);
-      this.scene.legoShadow.position.z = -0.3 * this.scene.state.scale;
+      this.scene.legoShadow.position.z = -0.3 * this.scene.state.worldScale;
       this.paint();
       document.dispatchEvent(new CustomEvent("done"));
       this.scene.control.deactivate();
@@ -205,12 +205,12 @@ export default class Game {
         const canvas = document.getElementById("canvas");
 
         if (canvas.clientWidth < canvas.clientHeight) {
-          this.scene.state.scale = Math.min(
+          this.scene.state.worldScale = Math.min(
             1,
             (campus.yScale(1) - campus.yScale(0)) / 1
           );
         } else {
-          this.scene.state.scale = Math.min(
+          this.scene.state.worldScale = Math.min(
             1,
             (campus.xScale(1) - campus.xScale(0)) / 1
           );
@@ -218,7 +218,7 @@ export default class Game {
 
         if (this.scene.legoPiece) {
           const args = Array.apply(null, Array(3)).map(
-            (d) => this.scene.state.scale
+            (d) => this.scene.state.worldScale
           );
           this.scene.legoPiece.scale.set(...args);
           this.scene.legoShadow.scale.set(...args);

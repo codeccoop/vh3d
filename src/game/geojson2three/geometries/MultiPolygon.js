@@ -7,7 +7,7 @@ function MultiPolygon(json, settings) {
 MultiPolygon.prototype = Object.create(Geometry.prototype);
 
 MultiPolygon.prototype.build = function () {
-  const zFactor = this.settings.zFactor || 1;
+  const zFactor = (this.settings.zFactor || 1) * this.worldScale;
   for (let feat of this.json.features) {
     let base = (feat.properties[this.settings.base] || 0) * zFactor;
     let depth =

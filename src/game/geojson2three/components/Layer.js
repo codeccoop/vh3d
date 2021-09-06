@@ -117,7 +117,10 @@ Layer.prototype.parse = function (data) {
 };
 
 Layer.prototype.build = function () {
-  if (this.geometry && !this.built) this.geometry.build();
+  if (this.geometry && !this.built) {
+    this.geometry.worldScale = this.worldScale;
+    this.geometry.build();
+  }
 };
 
 Layer.prototype.render = function () {

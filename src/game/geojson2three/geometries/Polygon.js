@@ -10,7 +10,7 @@ Polygon.prototype = Object.create(Geometry.prototype);
 
 Polygon.prototype.build = function () {
   for (let feat of this.json.features) {
-    let zFactor = this.settings.zFactor || 1;
+    let zFactor = (this.settings.zFactor || 1) * this.worldScale;
     let base =
       (feat.properties[this.settings.base] || this.settings.base || 0) *
       zFactor;

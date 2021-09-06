@@ -215,7 +215,7 @@ class Scene extends THREE.Scene {
       const rotation = this.controls.pointer.getObject().rotation.clone();
       const reordered = rotation.reorder("ZYX");
       const pitch = reordered.x;
-      const s = this.state.scale;
+      const s = this.state.worldScale;
       this.legoPiece.position.set(
         position.x + 2 * direction.x * s,
         position.y + 2 * direction.y * s,
@@ -286,6 +286,7 @@ class Scene extends THREE.Scene {
 
   build() {
     for (let layerName in this.geojsonLayers) {
+      this.geojsonLayers[layerName].worldScale = this.state.worldScale || 1;
       this.geojsonLayers[layerName].build();
     }
   }
