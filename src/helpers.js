@@ -1,4 +1,4 @@
-export function throttle(ms, fn, context) {
+/* export function throttle(ms, fn, context) {
   let lastTime = Date.now();
   const wrapper = function () {
     fn.apply(context);
@@ -16,4 +16,45 @@ export function throttle(ms, fn, context) {
       delayed = setTimeout(wrapper, ms - (now - lastTime));
     }
   };
+} */
+
+export function throttle(wait, func, options) {
+  var timeout, context, args, result;
+  var previous = 0;
+  if (!options) options = {};
+
+  var later = function () {
+    previous = options.leading === false ? 0 : Date.now();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) context = args = null;
+  };
+
+  var throttled = function () {
+    var _now = Date.now();
+    if (!previous && options.leading === false) previous = _now;
+    var remaining = wait - (_now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = _now;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    } else if (!timeout && options.trailing !== false) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
+
+  throttled.cancel = function () {
+    clearTimeout(timeout);
+    previous = 0;
+    timeout = context = args = null;
+  };
+
+  return throttled;
 }
