@@ -13,11 +13,20 @@ import Pieces from "./layers/Pieces.js";
 
 function throttle(ms, fn, context) {
   let lastTime = Date.now();
+  const wrapper = function () {
+    fn.apply(context);
+  };
+  let delayed;
 
   return function () {
-    if (Date.now() - lastTime > ms) {
-      fn.apply(context, arguments);
+    clearTimeout(delayed);
+    const now = Date.now();
+    if (now - lastTime > ms) {
+      // fn.apply(context, arguments);
+      fn.call(context);
       lastTime = Date.now();
+    } else {
+      delayed = setTimeout(wrapper, ms - (now - lastTime));
     }
   };
 }
