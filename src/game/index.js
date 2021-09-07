@@ -50,7 +50,7 @@ export default class Game {
 
     this.scene = new Scene(this.canvas, mode);
 
-    this.paint = throttle(75, this.paint, this);
+    this.paint = throttle(100, this.paint, this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onResize = this.onResize.bind(this);
 
