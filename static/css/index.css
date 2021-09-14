@@ -3,6 +3,13 @@
 
 * {
     box-sizing: border-box;
+    font-family: 'Raleway', sans-serif;
+}
+
+:root {
+    --cover-bg-color: #ffe600;
+    --vh-dark-blue: #0429be;
+    --vh-blue: #264EFA;
 }
 
 html, body {
@@ -10,8 +17,7 @@ html, body {
     padding: 0px;
     height: 100%;
     box-sizing: border-box;
-    font-family: Lato, sans-serif;
-    font-weight: 17px;
+    font-size: 18px;
     line-height: 1.7;
 }
 

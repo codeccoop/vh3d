@@ -41,14 +41,7 @@
     padding: 1em 2em;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    width: 530px;
-}
-
-@media screen and (max-height: 800px), screen and (max-width: 1000px) {
-    .game-cover__menu {
-        width: 400px;
-    }
+    width: 600px;
 }
 
 .game-cover__map {
@@ -61,154 +54,20 @@
 
 .game-cover__menu .instructions {
     font-size: 0.85em;
-    line-height: 1.1;
+    line-height: 1;
 }
 
 .game-cover__menu .instructions .bold {
     font-weight: bold;
-    line-height: 1.2;
 }
 
-.game-cover__menu .instructions h5 {
-    text-align: center;
-}
-
-.game-cover__menu .instructions .controls {
-    border: 1px solid white;
-    border-radius: 8px;
-    padding: .7em;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 150px);
-    grid-template-rows: 150px 20px 130px 20px 130px;
-}
-
-@media screen and (max-height: 800px), screen and (max-width: 1000px) {
-    .game-cover__menu .instructions h5,
-    .game-cover__menu .instructions .controls {
-        display: none;
-    }
-}
-
-.game-cover__menu .instructions .controls p {
-    margin: 0;
-    text-align: center;
-    font-size: .9em;
-    height: 50px;
-    padding: 0 .2em;
-}
-
-.game-cover__menu .instructions .controls .icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80px;
-}
-
-.game-cover__menu .instructions .controls label {
-    text-align: center;
-    font-weight: 500;
-}
-
-.game-cover__menu .instructions .controls .icon img {
-    height: 80px;
-    width: auto;
-}
-
-.game-cover__menu .instructions .control img {
-    filter: invert(1);
-}
-
-.game-cover__menu .instructions .control.move {
-    grid-column: 1 / 3;
-    grid-row: 1;
-}
-
-.game-cover__menu .instructions .control.move .icon {
-    display: flex;
-    justify-content: space-around;
-}
-
-.game-cover__menu .instructions .control.action {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-.game-cover__menu .instructions label.general {
-    grid-column: 1 / 4;
-    grid-row: 2;
-}
-
-.game-cover__menu .instructions .control.map {
-    grid-column: 1 / 2;
-    grid-row: 3;
-}
-
-.game-cover__menu .instructions .control.menu {
-    grid-column: 2 / 3;
-    grid-row: 3;
-}
-
-.game-cover__menu .instructions .control.help {
-    grid-column: 3 / 4;
-    grid-row: 3;
-}
-
-.game-cover__menu .instructions .control.action .icon img,
-.game-cover__menu .instructions .control.menu .icon img {
-    height: 70px;
-}
-
-.game-cover__menu .instructions .control.map .icon img,
-.game-cover__menu .instructions .control.help .icon img {
-    height: 60px;
-}
-
-.game-cover__menu .instructions label.map {
-    grid-column: 1 / 4;
-    grid-row: 4;
-}
-
-.game-cover__menu .instructions .control.orbit {
-    grid-column: 1 / 2;
-    grid-row: 5;
-}
-
-.game-cover__menu .instructions .control.pan {
-    grid-column: 2 / 3;
-    grid-row: 5;
-}
-
-.game-cover__menu .instructions .control.zoom {
-    grid-column: 3 / 4;
-    grid-row: 5;
-}
-
-.game-cover__menu .instructions .control.orbit .icon,
-.game-cover__menu .instructions .control.pan .icon,
-.game-cover__menu .instructions .control.zoom .icon {
-    margin: .5em 0;
-}
-
-.game-cover__menu .menu-title {
-    margin-bottom: 0px;
-}
-
-.game-cover__menu .menu-list {
+.game-cover__menu ul {
     list-style: none;
     padding: 0px;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0;
 }
 
 .game-cover__menu ul li {
-    padding: .3em .6em;
-}
-
-.game-cover__menu ul li .button {
-    width: 160px;
-    padding: .4em;
+    padding: .5em 1.2em;
 }
 
 .game-cover__show-info {
@@ -242,13 +101,25 @@
         flex-flow: column-reverse;
     }
 
-    .game-cover__map {
-        margin-right: 1em;
-        margin-left: 1em;
+    .game-cover__menu h2,
+    .game-cover__menu ul li {
+        width: 250px;
     }
 
-    .game-cover__menu {
-        width: 100%;
+    .game-cover__menu h2 {
+        margin: 0px;
+    }
+
+    .game-cover__menu ul {
+        margin-bottom: 50px;
+    }
+
+    .game-cover__menu ul li {
+        padding: 0.3em 1.2em;
+    }
+
+    .game-cover__menu ul li button {
+        padding: .6em .8em;
     }
 }
 
@@ -365,54 +236,99 @@
 .game-aside .icon p,
 .controls-highlights .icon p {
     line-height: 1;
-    font-size: .9em;
 }
 
-.controls-highlights .movement .icon {
+.movement .icon {
     background-image: url('/static/images/arrows-icon.svg');
     background-size: 80%;
 }
 
-.controls-highlights .camera .icon {
+.camera .icon {
     background-image: url('/static/images/mouse-icon.svg');
 }
 
-.controls-highlights .orbit .icon {
+.orbit .icon {
     background-image: url('/static/images/left-click-icon.svg');
 }
 
-.controls-highlights .pan .icon {
+.pan .icon {
     background-image: url('/static/images/right-click-icon.svg');
 }
 
-.controls-highlights .zoom .icon {
+.zoom .icon {
     background-image: url('/static/images/zoom-icon.svg');
 }
 
-.controls-highlights .click .icon {
+.click .icon {
     background-image: url('/static/images/action-icon.svg');
 }
 
-.controls-highlights .jump .icon {
+.jump .icon {
     background-image: url('/static/images/space-icon.svg');
     background-size: 80%;
 }
 
-.controls-highlights .enter .icon {
-    background-image: url('/static/images/enter-icon.svg');
-}
-
-.game-aside .escape .icon {
+.escape .icon {
     background-image: url('/static/images/esc-icon.svg');
     background-size: 80%;
 }
 
-.game-aside .map .icon {
+.enter .icon {
+    background-image: url('/static/images/enter-icon.svg');
+}
+
+.map .icon {
     background-image: url('/static/images/map-icon.svg');
 }
 
-.game-aside .help .icon {
+.help .icon {
     background-image: url('/static/images/help-icon.svg');
+}
+
+.distance-slider {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 50px 10px 100px 0;
+    padding: 1em 2em 3em;
+    background-color: #eeeeee88;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.distance-slider h3 {
+    text-align: right;
+}
+
+.slider {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.slider-position {
+    position: absolute;
+    font-weight: bold;
+    right: -11px;
+    text-indent: -45px;
+}
+
+.slider-position > div {
+    border-top: 4px solid #101010;
+    border-left: 4px solid #101010;
+    transform: rotate(45deg);
+    height: 25px;
+    width: 25px;
+    float: right;
+    margin-top: 7px;
+    margin-left: 17px;
+}
+
+.slider-scrollbar {
+    height: 100%;
+    width: 3px;
+    background-color: white;
 }
 
 .done-modal {

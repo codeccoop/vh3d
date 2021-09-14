@@ -1,12 +1,13 @@
 export default {
-  template: `<div id="cover" >
-    <header><h3>Vall d'Hebron 3D</h3></header>
+  template: `<div id="cover">
+    <header><img src="/static/images/logo-vh.png" class="logo"></header>
     <main class="text">
       <h1>Beinvingut/da</h1>
-      <p>A continuació et presentem un petit joc que només podrem completar si tots i totes hi participem. Es tracta d'un puzzle col·laboratiu. Tu, com a membre de la familia de la Vall d'Hebrón, tens una peça, la resta de peces són en mans de les teves companyes. Ajudales a completar el puzzle i desentrallem l'enigma: Quina serà l'imàtge que s'hi recull amagada entre les peces?</p>
-      <h3>Instruccions</h3>
-      <p>Al entrar al joc apareixeras al campus de la Vall d'Hebron, amb una peça entre les mans. El primer que hauràs de fer es trobar, dins del campus, on es que s'està montant el puzzle. A continuació hauràs d'esbrinar el lloc de la teva peça i col·locar-la correctament. Tens, a la teva disposició, un mapa del campús, el teu coneixiement de les instal·lacions, i el teu enginy. Tens llibertat per passejar-te i explorar sense límits, a través del mon, o a través del mapa, per completar la teva missió. I recorda, necessitem la teva peça!</p>
-      <p><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
+      <p>Fer el nou Vall d'Hebron és una cosa molt seria. Per això, la millor forma de començar és jugant. Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots. Es tracta d'un puzzle. Tu, com a membre de la familia de Vall d'Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots hi posem la nostra peça aconseguirem descobrir la imatge que s'amaga en el puzzle.</p>
+      <h3>Juguem?</h3>
+      <p>La forma de participar és molt senzilla. Quan cliquis en el botó de jugar t'apareixerà una imatge virtual aèria del campus de la Vall d'Hebron. El reconeixeràs de seguida. Al costat vueràs les instruccions del joc i els comandaments o "tecles" que et permetran moure't pel campus.</p>
+      <p v-if="pieceId" class="enter-btn"><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
+      <img src="/static/images/piece-blue.png" class="piece" />
     </main>
     <div id="disclaimer" v-if="showDisclaimer">
       <div class="text">
@@ -24,15 +25,14 @@ export default {
   },
   computed: {
     isTouch() {
-      return (
-        "touchstart" in window ||
-        navigator.maxTouchPoints > 0 ||
-        navigator.msMaxTouchPoints > 0 ||
-        window.innerWidth < window.innerHeight
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
       );
     },
     pieceId() {
-      return Math.round(Math.random() * 9000);
+      return this.$route.query.pieceId > 0 && this.$route.query.pieceId <= 9000
+        ? this.$route.query.pieceId
+        : null;
     },
   },
   watch: {
