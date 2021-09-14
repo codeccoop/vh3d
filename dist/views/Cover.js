@@ -18,31 +18,33 @@ export default {
     </div>
     <footer></footer>
   </div>`,
+
   data() {
     return {
-      showDisclaimer: false,
+      showDisclaimer: false
     };
   },
+
   computed: {
     isTouch() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
+
     pieceId() {
-      return this.$route.query.pieceId > 0 && this.$route.query.pieceId <= 9000
-        ? this.$route.query.pieceId
-        : null;
-    },
+      return this.$route.query.pieceId > 0 && this.$route.query.pieceId <= 9000 ? this.$route.query.pieceId : null;
+    }
+
   },
   watch: {
     isTouch: {
       immediate: true,
+
       handler(to, from) {
         if (to) {
           this.showDisclaimer = true;
         }
-      },
-    },
-  },
+      }
+
+    }
+  }
 };
