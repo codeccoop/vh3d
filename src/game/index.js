@@ -150,26 +150,42 @@ export default class Game {
     marker.rotation.x = -Math.PI * 0.5;
 
     if (this.mode === "cover") {
+      const self = this;
       const loader = new THREE.FontLoader();
       loader.load(
         "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
         function (font) {
-          const textGeom = new THREE.TextGeometry("Sortida", {
-            size: 15,
+          const exitGeom = new THREE.TextGeometry("Sortida", {
+            size: 14,
             font: font,
-            height: 2,
+            height: 0.5,
             curveSegments: 12,
             bevelEnabled: false,
           });
-          const text = new THREE.Mesh(textGeom, markerMat);
-          text.rotation.x = Math.PI * 0.8;
-          text.position.y -= 45;
-          text.position.x -= 30;
-          marker.add(text);
+          const targetGeom = new THREE.TextGeometry("Arrivada", {
+            size: 13,
+            font: font,
+            height: 0.5,
+            curveSegments: 12,
+            bevelEnabled: false,
+          });
+          const exitLabel = new THREE.Mesh(exitGeom, markerMat);
+          const targetLabel = new THREE.Mesh(targetGeom, markerMat);
+          self.scene.add(exitLabel);
+          self.scene.add(targetLabel);
+          exitLabel.rotation.z -= Math.PI * 0.11;
+          targetLabel.rotation.z += Math.PI * 0.11;
+          self.scene.exitLabel = exitLabel;
+          self.scene.targetLabel = targetLabel;
+          // text.rotation.x = Math.PI * 0.8;
+          // text.position.y -= 45;
+          // text.position.x -= 30;
+          // marker.add(text);
         }
       );
+    } else {
+      this.scene.marker = marker;
     }
-    this.scene.marker = marker;
 
     const closinesGeom = new THREE.RingGeometry(
       1.3,
@@ -190,8 +206,6 @@ export default class Game {
     arrowShape.moveTo(-0.5, 0);
     arrowShape.lineTo(0, 1);
     arrowShape.lineTo(0.5, 0);
-    // arrowShape.bezierCurveTo(-0.6, 0.5, -0.3, 0.6, 0, 1);
-    // arrowShape.bezierCurveTo(0.3, 0.6, 0.5, 0.6, 0.5, 0);
     arrowShape.bezierCurveTo(0.4, 0.175, -0.4, 0.175, -0.5, 0);
     const arrowGeom = new THREE.ShapeGeometry(arrowShape);
     arrowGeom.rotateZ(-Math.PI * 0.48);
@@ -311,7 +325,7 @@ export default class Game {
         });
       });
     } else {
-      if (this.mode === "cover") this.scene.add(this.scene.marker);
+      // if (this.mode === "cover") this.scene.add(this.scene.marker);
       callback.call(this);
     }
   }
