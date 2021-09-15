@@ -89,25 +89,25 @@ export default {
       </aside>
     </div>
     <div ref="modal" v-if="done" class="done-modal">
-       <form>
-         <fieldset>
+       <div class="form">
+         <div class="fieldset">
            <p>
              <label>Nom i cognoms</label>
-             <input v-model="userName" type="text" name="name" id="nameInput"/>
+             <input v-model="userName" type="text" id="nameInput"/>
            </p>
            <p>
              <label>A quina direcció/unitat/servei pertanys?</label>
-             <input v-model="userArea" type="text" name="name" id="nameInput"/>
+             <input v-model="userArea" type="text" id="areaInput"/>
            </p>
            <p>
              <label>Mira el video que hi ha en aquest enllaç</label>
              <a @click="showVideo"><button id="videoBtn" class="button">VIDEO</button></a>
              <label>I diga'ns en quínes línies estratègiques creus que la teva aportació és més important.</label
            </p>
-           <p><textarea name="opinion" v-model="userOpinion"></textarea></p>
+           <p><textarea v-model="userOpinion"></textarea></p>
            <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
-         </fieldset>
-       </form>
+         </div>
+       </div>
        <div class="done-modal__image">
           <div class="img-wrapper">
             <img :src="doneImageSrc" />
@@ -249,6 +249,14 @@ export default {
       }, 500);
     },
     showVideo() {
+      window.addEventListener("popstate", (event) => {
+        console.log(
+          "location: " +
+            document.location +
+            ", state: " +
+            JSON.stringify(event.state)
+        );
+      });
       window.open("https://www.vallhebron.com/ca");
     },
   },

@@ -453,12 +453,12 @@
     }
 }
 
-.done-modal form {
+.done-modal .form {
     height: 100%;
     flex: 1;
 }
 
-.done-modal fieldset {
+.done-modal .fieldset {
     border: none;
 }
 
@@ -571,7 +571,7 @@
 }
 
 @media screen and (min-height: 700px) and (min-width: 800px) {
-    .done-modal fieldset .restart-btn {
+    .done-modal .fieldset .restart-btn {
         display: none;
     }
 }

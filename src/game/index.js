@@ -186,6 +186,18 @@ export default class Game {
       shininess: 150,
     });
     const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
+    const arrowShape = new THREE.Shape();
+    arrowShape.moveTo(-0.5, 0);
+    arrowShape.lineTo(0, 1);
+    arrowShape.lineTo(0.5, 0);
+    // arrowShape.bezierCurveTo(-0.6, 0.5, -0.3, 0.6, 0, 1);
+    // arrowShape.bezierCurveTo(0.3, 0.6, 0.5, 0.6, 0.5, 0);
+    arrowShape.bezierCurveTo(0.4, 0.175, -0.4, 0.175, -0.5, 0);
+    const arrowGeom = new THREE.ShapeGeometry(arrowShape);
+    arrowGeom.rotateZ(-Math.PI * 0.48);
+    const arrow = new THREE.Mesh(arrowGeom, closinesMat);
+    arrow.position.x += 1.4;
+    closinesRing.add(arrow);
     this.scene.closinesRing = closinesRing;
 
     this.loadGltfs(() => {

@@ -4,8 +4,8 @@ import { OrbitControls, PointerLockControls } from "./Controls.js";
 import Emitter from "../mixins/Emitter.js";
 import { RelativeScale } from "../geojson2three/components/Scales.js";
 
-// const origin = [238580.55031842450262, 5075605.921119668520987];
-const origin = [238050.0, 5075600.0];
+const origin = [238580.55031842450262, 5075605.921119668520987];
+// const origin = [238050.0, 5075600.0];
 
 class Scene extends THREE.Scene {
   constructor(canvas, mode) {
