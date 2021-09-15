@@ -29,12 +29,15 @@ def piece (piece_id):
     cur = conn.cursor()
 
     if request.method == "GET":
-        cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?", (piece_id,))
-        piece = cur.fetchone()
-        if not piece:
-            return abort(401)
-
-        res = format_piece(piece)
+        if piece_id == 0:
+            cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces")
+            res = [format_piece(piece) for piece in cur.fetchall()]
+        else:
+            cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?", (piece_id,))
+            piece = cur.fetchone()
+            if not piece:
+                return abort(401)
+            res = format_piece(piece)
     elif request.method == "POST":
         cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID = ?", (piece_id,))
         conn.commit()
@@ -42,16 +45,6 @@ def piece (piece_id):
     else:
         abort(405)
 
-    conn.close()
-    return jsonify(res)
-
-@app.route("/pieces")
-def pieces ():
-    conn = sqlite3.connect("data/vh3d.db")
-    cur = conn.cursor()
-    cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE done IS FALSE")
-    pieces = cur.fetchall()
-    res = [format_piece(piece) for piece in pieces]
     conn.close()
     return jsonify(res)
 
@@ -77,6 +70,16 @@ def puzzle (piece_id):
         response = make_response(cur.read())
         response.headers.set("Content-Type", "image/png")
         return response
+
+
+@app.route("/puzzle/fullfill/<int:quantity>", methods=["GET"])
+def fullfill (quantity):
+    conn = sqlite3.connect("data/vh3d.db")
+    cur = conn.cursor()
+    cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID IN (SELECT ROWID FROM pieces WHERE done IS FALSE ORDER BY RANDOM() LIMIT ?)", (quantity,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
 
 
 @app.route("/form/<int:piece_id>", methods=["GET", "POST"])
