@@ -5,6 +5,7 @@ var submitTimeout;
 export default {
   template: `<div id="game">
     <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
+      <img src="/static/images/logo-vh--white.png" class="logo"/>
       <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
       <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
