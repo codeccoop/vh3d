@@ -52,12 +52,14 @@ class Scene extends THREE.Scene {
             this.state._mode = to;
             this.control.activate(this.state);
             if (this.state._mode === "pointer") {
-              this.marker && this.remove(this.marker);
+              this.remove(this.marker);
+              this.remove(this.targetLabel);
               this.add(this.legoPiece);
               this.add(this.armRight);
               this.add(this.armLeft);
             } else {
-              this.marker && this.add(this.marker);
+              this.add(this.marker);
+              this.add(this.targetLabel);
               this.remove(this.legoPiece);
               this.remove(this.armRight);
               this.remove(this.armLeft);

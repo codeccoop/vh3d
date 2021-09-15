@@ -149,44 +149,46 @@ export default class Game {
     const marker = new THREE.Mesh(markerGeom, markerMat);
     marker.rotation.x = -Math.PI * 0.5;
 
-    if (this.mode === "cover") {
-      const self = this;
-      const loader = new THREE.FontLoader();
-      loader.load(
-        "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
-        function (font) {
-          const exitGeom = new THREE.TextGeometry("Sortida", {
-            size: 14,
-            font: font,
-            height: 0.5,
-            curveSegments: 12,
-            bevelEnabled: false,
-          });
-          const targetGeom = new THREE.TextGeometry("Arrivada", {
-            size: 13,
-            font: font,
-            height: 0.5,
-            curveSegments: 12,
-            bevelEnabled: false,
-          });
-          const exitLabel = new THREE.Mesh(exitGeom, markerMat);
-          const targetLabel = new THREE.Mesh(targetGeom, markerMat);
+    // if (this.mode === "cover") {
+    const self = this;
+    const loader = new THREE.FontLoader();
+    loader.load(
+      "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
+      function (font) {
+        const exitGeom = new THREE.TextGeometry("Sortida", {
+          size: 14,
+          font: font,
+          height: 0.5,
+          curveSegments: 12,
+          bevelEnabled: false,
+        });
+        const targetGeom = new THREE.TextGeometry("Arrivada", {
+          size: 13,
+          font: font,
+          height: 0.5,
+          curveSegments: 12,
+          bevelEnabled: false,
+        });
+        const exitLabel = new THREE.Mesh(exitGeom, markerMat);
+        const targetLabel = new THREE.Mesh(targetGeom, markerMat);
+        exitLabel.rotation.z += Math.PI * 0.41;
+        targetLabel.rotation.z += Math.PI * 0.11;
+        self.scene.exitLabel = exitLabel;
+        self.scene.targetLabel = targetLabel;
+        if (self.mode === "cover") {
           self.scene.add(exitLabel);
           self.scene.add(targetLabel);
-          exitLabel.rotation.z += Math.PI * 0.41;
-          targetLabel.rotation.z += Math.PI * 0.11;
-          self.scene.exitLabel = exitLabel;
-          self.scene.targetLabel = targetLabel;
-          try {
-            if (self.scene.bbox) {
-              self.scene.initPosition();
-            }
-          } catch (err) {}
         }
-      );
-    } else {
-      this.scene.marker = marker;
-    }
+        try {
+          if (self.scene.bbox) {
+            self.scene.initPosition();
+          }
+        } catch (err) {}
+      }
+    );
+    // } else {
+    this.scene.marker = marker;
+    // }
 
     const closinesGeom = new THREE.RingGeometry(
       1.3,
