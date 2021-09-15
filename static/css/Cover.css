@@ -5,6 +5,7 @@
     min-height: 100vh;
     position: relative;
     color: var(--vh-dark-blue);
+    line-height: 1.4;
 }
 
 #cover h1,
@@ -13,7 +14,9 @@
 }
 
 #cover p {
-    margin-top: 0.5em;
+    margin-top: 0.1em;
+    font-size: 1.05em;
+    text-align: justify;
 }
 
 #cover header {
@@ -48,7 +51,7 @@
     height: auto;
     left: calc(calc(100vw - 500px) / 2 - 210px);
     top: calc(110px + 3em);
-    filter: drop-shadow(-23px -10px 9px #0005);
+    /* filter: drop-shadow(-23px -10px 9px #0005); */
 }
 
 @media screen and (max-width: 1000px) {

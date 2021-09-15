@@ -55,7 +55,8 @@
 
 @media screen and (max-height: 800px), screen and (max-width: 1000px) {
     .game-cover__menu {
-        width: 400px;
+        width: 500px;
+        font-size: .9em;
     }
 }
 
@@ -70,6 +71,10 @@
 .game-cover__menu .instructions {
     font-size: 0.85em;
     line-height: 1.1;
+}
+
+.game-cover__menu .instructions > p {
+    text-align: justify;
 }
 
 .game-cover__menu .instructions .bold {
@@ -94,7 +99,11 @@
 @media screen and (max-height: 800px), screen and (max-width: 1000px) {
     .game-cover__menu .instructions h5,
     .game-cover__menu .instructions .controls {
-        display: none;
+        /* display: none; */
+    }
+
+    .game-cover__menu .instructions .controls {
+        grid-template-rows: 130px 15px 120px 15px 120px;
     }
 }
 
@@ -200,6 +209,12 @@
 
 .game-cover__menu .menu-title {
     margin-bottom: 0px;
+}
+
+@media screen and (max-height: 800px), screen and (max-width: 1000px) {
+    h1, h2, h3, h4, h5 {
+        margin: .2em;
+    }
 }
 
 .game-cover__menu .menu-list {
