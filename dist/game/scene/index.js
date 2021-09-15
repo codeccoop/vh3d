@@ -3,7 +3,8 @@ import Lights from "./Lights.js";
 import { OrbitControls, PointerLockControls } from "./Controls.js";
 import Emitter from "../mixins/Emitter.js";
 import { RelativeScale } from "../geojson2three/components/Scales.js";
-const origin = [238580.55031842450262, 5075605.921119668520987]; // const origin = [238050.0, 5075600.0];
+const origin = [238580.0, 5075606.0];
+const target = [238007.0, 5075560.0];
 
 class Scene extends THREE.Scene {
   constructor(canvas, mode) {
@@ -46,12 +47,12 @@ class Scene extends THREE.Scene {
             this.control.activate(this.state);
 
             if (this.state._mode === "pointer") {
-              this.remove(this.marker);
+              this.marker && this.remove(this.marker);
               this.add(this.legoPiece);
               this.add(this.armRight);
               this.add(this.armLeft);
             } else {
-              this.add(this.marker);
+              this.marker && this.add(this.marker);
               this.remove(this.legoPiece);
               this.remove(this.armRight);
               this.remove(this.armLeft);
@@ -205,8 +206,11 @@ class Scene extends THREE.Scene {
 
   updatePositions() {
     const position = this.controls.pointer.getObject().position;
-    this.marker.position.copy(position);
-    this.marker.position.z += 20;
+
+    if (this.marker) {
+      this.marker.position.copy(position);
+      this.marker.position.z += 20;
+    }
 
     if (this.legoPiece) {
       const direction = this.controls.pointer.getDirection(new THREE.Vector3(0, 0, 0));
@@ -320,7 +324,16 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
+    const rescaledTarget = [this.xScale(target[0]), this.yScale(target[1])];
     this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
+
+    if (this.exitLabel) {
+      this.exitLabel.position.set(...rescaledOrigin, 0);
+      this.exitLabel.position.x -= 50;
+      this.exitLabel.position.y += 2;
+      this.targetLabel.position.set(...rescaledTarget, 0);
+    }
+
     this.updatePositions();
   }
 
