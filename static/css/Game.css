@@ -77,6 +77,18 @@
     text-align: justify;
 }
 
+@media screen and (max-height: 700px) {
+    .game-cover__menu .instructions > p {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .game-cover__menu .instructions {
+        display: none;
+    }
+}
+
 .game-cover__menu .instructions .bold {
     font-weight: bold;
     line-height: 1.2;
