@@ -177,10 +177,11 @@ export default class Game {
           targetLabel.rotation.z += Math.PI * 0.11;
           self.scene.exitLabel = exitLabel;
           self.scene.targetLabel = targetLabel;
-          // text.rotation.x = Math.PI * 0.8;
-          // text.position.y -= 45;
-          // text.position.x -= 30;
-          // marker.add(text);
+          try {
+            if (self.scene.bbox) {
+              self.scene.initPosition();
+            }
+          } catch (err) {}
         }
       );
     } else {
