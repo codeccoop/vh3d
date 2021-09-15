@@ -173,7 +173,7 @@ export default class Game {
           const targetLabel = new THREE.Mesh(targetGeom, markerMat);
           self.scene.add(exitLabel);
           self.scene.add(targetLabel);
-          exitLabel.rotation.z -= Math.PI * 0.11;
+          exitLabel.rotation.z += Math.PI * 0.41;
           targetLabel.rotation.z += Math.PI * 0.11;
           self.scene.exitLabel = exitLabel;
           self.scene.targetLabel = targetLabel;
