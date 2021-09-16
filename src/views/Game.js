@@ -9,49 +9,9 @@ export default {
       <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
       <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
-          <div v-if="!gameOver" class="instructions">
+          <div v-if="!gameOver" class="introduction">
             <p>Com veus, la posició de sortida està clarament indicada. És el lloc on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR. També està indicat el lloc d'arribada. És on està el puzzle i és on has de portar la teva peça movent-te pel campus.</p>
             <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar.</p>
-            <h5>AQUESTS SÓN ELS COMANDAMENTS QUE HAS D'UTILITZAR:</h5>
-            <div class="controls">
-              <div class="control move">
-                <div class="icon">
-                <img src="/static/images/arrows-icon.svg"/>
-                <img src="/static/images/wasd-icon.svg"/>
-                </div>
-                <p>Per moure't pel campus i pel puzzle has d'utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
-              </div>
-              <div class="control action">
-                <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
-                <p>Per col·locar la teva peça quan arribis al lloc que li correspon</p>
-              </div>
-              <label class="general">Durant tot el joc pots utilitzar aquests comandaments:</label>
-              <div class="control map">
-                <div class="icon"><img src="/static/images/map-icon.svg"/></div>
-                <p>Per anar al mapa i veure on ets</p>
-              </div>
-              <div class="control menu">
-                <div class="icon"><img src="/static/images/esc-icon.svg"/></div>
-                <p>Per pausar el joc i tornar al menu</p>
-              </div>
-              <div class="control help">
-                <div class="icon"><img src="/static/images/help-icon.svg"/></div>
-                <p>Per veure un resum dels controls</p>
-              </div>
-              <label class="map">Si surts del joc i vas al mapa hauràs d'utilitzar el ratolí:</label>
-              <div class="control orbit">
-                <div class="icon"><img src="/static/images/left-click-icon.svg"/></div>
-                <p>Per voltejar el mapa</p>
-              </div>
-              <div class="control pan">
-                <div class="icon"><img src="/static/images/right-click-icon.svg"/></div>
-                <p>Per desplaçar el mapa</p>
-              </div>
-              <div class="control zoom">
-                <div class="icon"><img src="/static/images/zoom-icon.svg"/></div>
-                <p>Per apropar o allunyar el mapa</p>
-              </div>
-            </div>
           </div>
           <h2 class="centered menu-title">{{ menuTitle }}</h2>
           <ul class="centered menu-list">
@@ -59,7 +19,50 @@ export default {
             <li v-if="!gameOver && started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Continuar' }}</button></li>
             <li v-if="started && !isTouch"><button @click="restart" class="button">Reiniciar</button></li>
             <li><button @click="exit" class="button">Sortir</button></li>
+            <li><button @click="showInstructions = true" class="button broad">Comandaments</button></li>
           </ul>
+        </div>
+        <div v-if="showInstructions" class="game-cover__instructions">
+          <h5 class="instructions-title">AQUESTS SÓN ELS COMANDAMENTS QUE HAS D'UTILITZAR:<i @click="showInstructions = false"/></h5>
+          <div class="controls">
+            <div class="control move">
+              <div class="icon">
+              <img src="/static/images/arrows-icon.svg"/>
+              <img src="/static/images/wasd-icon.svg"/>
+              </div>
+              <p>Per moure't pel campus i pel puzzle has d'utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
+            </div>
+            <div class="control action">
+              <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
+              <p>Per col·locar la teva peça quan arribis al lloc que li correspon</p>
+            </div>
+            <label class="general">Durant tot el joc pots utilitzar aquests comandaments:</label>
+            <div class="control map">
+              <div class="icon"><img src="/static/images/map-icon.svg"/></div>
+              <p>Per anar al mapa i veure on ets</p>
+            </div>
+            <div class="control menu">
+              <div class="icon"><img src="/static/images/esc-icon.svg"/></div>
+              <p>Per pausar el joc i tornar al menu</p>
+            </div>
+            <div class="control help">
+              <div class="icon"><img src="/static/images/help-icon.svg"/></div>
+              <p>Per veure un resum dels controls</p>
+            </div>
+            <label class="map">Si surts del joc i vas al mapa hauràs d'utilitzar el ratolí:</label>
+            <div class="control orbit">
+              <div class="icon"><img src="/static/images/left-click-icon.svg"/></div>
+              <p>Per voltejar el mapa</p>
+            </div>
+            <div class="control pan">
+              <div class="icon"><img src="/static/images/right-click-icon.svg"/></div>
+              <p>Per desplaçar el mapa</p>
+            </div>
+            <div class="control zoom">
+              <div class="icon"><img src="/static/images/zoom-icon.svg"/></div>
+              <p>Per apropar o allunyar el mapa</p>
+            </div>
+          </div>
         </div>
         <div v-if="!isTouch" class="game-cover__map" ref="coverMap">
           <canvas id="coverMap"></canvas>
@@ -131,6 +134,7 @@ export default {
       started: false,
       gameLock: undefined,
       showControls: false,
+      showInstructions: false,
       game: null,
       waiting: false,
       gameOver: false,
