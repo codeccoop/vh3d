@@ -1,9 +1,9 @@
 export default {
   template: `<div id="cover">
-    <header><img src="/static/images/logo-vh.png" class="logo"></header>
+    <header><img src="/static/images/logo-vh--blue.png" class="logo"></header>
     <main class="text">
       <h1>Benvingut/da</h1>
-      <p>Fer el nou Vall d'Hebron és una cosa molt seria. Per això, la millor forma de començar és jugant. Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots. Es tracta d'un puzzle. Tu, com a membre de la familia de Vall d'Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots hi posem la nostra peça aconseguirem descobrir la imatge que s'amaga en el puzzle.</p>
+      <p>Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots. Es tracta d'un puzzle. Tu, com a membre de Vall d'Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots i totes hi posem la nostra peça aconseguirem descobrir la imatge que s'amaga en el puzzle.</p>
       <h3>Juguem?</h3>
       <p>La forma de participar és molt senzilla. Quan cliquis en el botó de jugar t'apareixerà una imatge virtual aèria del campus de la Vall d'Hebron. El reconeixeràs de seguida. Al costat veuràs les instruccions del joc i els comandaments o "tecles" que et permetran moure't pel campus.</p>
       <p v-if="pieceId" class="enter-btn"><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
