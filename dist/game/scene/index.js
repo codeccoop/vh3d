@@ -330,11 +330,11 @@ class Scene extends THREE.Scene {
     this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
 
     if (this.exitLabel) {
-      this.exitLabel.position.set(...rescaledOrigin, 0);
-      this.exitLabel.position.x += 10;
-      this.exitLabel.position.y -= 15;
-      this.targetLabel.position.set(...rescaledTarget, 0);
-      this.targetLabel.position.x += 5;
+      this.exitLabel.position.set(...rescaledOrigin, 0.5);
+      this.exitLabel.position.x += 15;
+      this.exitLabel.position.y -= 0;
+      this.targetLabel.position.set(...rescaledTarget, 0.5);
+      this.targetLabel.position.x += 35;
       this.targetLabel.position.y -= 5;
     }
 
