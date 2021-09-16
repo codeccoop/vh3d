@@ -74,3 +74,12 @@
     z-index: 100;
     background-color: var(--cover-bg-color);
 }
+
+#disclaimer p.centered {
+    text-align: center;
+}
+
+#disclaimer .button {
+    color: var(--vh-dark-blue);
+    font-weight: bold;
+}

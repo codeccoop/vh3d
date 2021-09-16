@@ -47,9 +47,6 @@ function Buildings(settings) {
       case 13:
         return 0x80151b;
         break;
-      case 14:
-        return 0x730080;
-        break;
       default:
         return 0x888888;
         break;
