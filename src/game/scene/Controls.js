@@ -272,7 +272,9 @@ export class PointerLockControls extends THREE.PointerLockControls {
         if (!this.state.canJump) this.velocity.z -= 9.8 * 55 * delta;
         else this.velocity.z = 0;
 
-        const acceleration = this.state.isOnTatami ? 50 : 200;
+        const acceleration = this.state.isOnTatami
+          ? 50 - Math.min(25, 100 / this.distance)
+          : 200;
         if (this.state.moveForward || this.state.moveBackward) {
           this.velocity.y -= this.direction.y * acceleration * delta;
         }

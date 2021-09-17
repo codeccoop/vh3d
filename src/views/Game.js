@@ -208,9 +208,12 @@ export default {
     },
     onHelp(ev) {
       clearTimeout(controlsTimeout);
-      this.controls = ev.detail;
+      this.controls = ev.detail.target;
       this.showControls = true;
-      controlsTimeout = setTimeout((_) => (this.showControls = false), 7000);
+      controlsTimeout = setTimeout(
+        (_) => (this.showControls = false),
+        ev.detail.timeout || 7000
+      );
     },
     restart() {
       this.game.unbind();
@@ -274,7 +277,10 @@ export default {
         if (to) {
           self.started = true;
           self.showControls = true;
-          controlsTimeout = setTimeout(() => (self.showControls = false), 7000);
+          /* controlsTimeout = setTimeout(
+            () => (self.showControls = false),
+            10000
+          ); */
           if (!self.isTouch) {
             self.coverMap.unbind();
             window.audioObj.play();
@@ -282,7 +288,10 @@ export default {
           self.game.bind();
           self.game.scene.state.mode = self.isTouch ? "orbit" : "pointer";
           self.onHelp({
-            detail: "pointer",
+            detail: {
+              target: "pointer",
+              timeout: 14000,
+            },
           });
         } else {
           if (!self.isTouch) {

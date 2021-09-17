@@ -95,7 +95,9 @@ export default class Game {
       } else this.scene.state.mode = "pointer";
       document.dispatchEvent(
         new CustomEvent("help", {
-          detail: this.scene.state.mode,
+          detail: {
+            target: this.scene.state.mode,
+          },
         })
       );
     }
@@ -103,7 +105,9 @@ export default class Game {
     if (ev.code === "KeyH") {
       document.dispatchEvent(
         new CustomEvent("help", {
-          detail: this.scene.state.mode,
+          detail: {
+            target: this.scene.state.mode,
+          },
         })
       );
     } else if (ev.code === "Escape") {
@@ -347,6 +351,7 @@ export default class Game {
       this.scene.control.state.isOnTatami
     ) {
       const distance = this.distanceToTarget(this.target);
+      this.scene.controls.pointer.distance = distance;
 
       const xDelta = this.scene.closinesRing.position.x - this.target.x;
       const yDelta = this.scene.closinesRing.position.y - this.target.y;
@@ -381,6 +386,8 @@ export default class Game {
         this.paint();
         this.isOnTarget = false;
       }
+    } else {
+      this.scene.controls.pointer.distance = 1e3;
     }
     this.paint();
   }
