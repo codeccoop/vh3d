@@ -24,14 +24,23 @@
 }
 
 #cover header {
-    padding: 2.5em 3.5em 0;
+    padding: 1.5em 3.5em 1.5em;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
-#cover header .logo {
-    width: 230px;
+#cover header .logo-pla {
+    width: 165px;
     height: auto;
+}
+
+#cover header .logo-vh {
+    width: 210px;
+    height: auto;
+}
+
+#cover main.text {
+    padding-top: 2em;
 }
 
 #cover main p.enter-btn {
@@ -50,7 +59,7 @@
     width: 200px;
     height: auto;
     left: calc(calc(100vw - 500px) / 2 - 210px);
-    top: calc(110px + 3em);
+    top: calc(110px + 5em);
     /* filter: drop-shadow(-23px -10px 9px #0005); */
 }
 

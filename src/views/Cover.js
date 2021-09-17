@@ -1,6 +1,9 @@
 export default {
   template: `<div id="cover">
-    <header><img src="/static/images/logo-vh--blue.png" class="logo"></header>
+    <header>
+      <img src="/static/images/pla-estrategic.svg" class="logo-pla">
+      <img src="/static/images/logo-vh--blue.png" class="logo-vh">
+    </header>
     <main class="text">
       <h1>Benvingut/da</h1>
       <p>Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots. Es tracta d'un puzzle. Tu, com a membre de Vall d'Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots i totes hi posem la nostra peça aconseguirem descobrir la imatge que s'amaga en el puzzle.</p>
