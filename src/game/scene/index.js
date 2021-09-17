@@ -352,6 +352,7 @@ class Scene extends THREE.Scene {
 
   initPosition() {
     const rescaledOrigin = [this.xScale(origin[0]), this.yScale(origin[1])];
+    // const rescaledOrigin = [this.xScale(target[0]), this.yScale(target[1])];
     const rescaledTarget = [this.xScale(target[0]), this.yScale(target[1])];
     this.controls.pointer.getObject().position.set(...rescaledOrigin, 2);
     if (this.exitLabel) {
