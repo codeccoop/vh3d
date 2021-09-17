@@ -5,6 +5,7 @@
     overflow: hidden;
 }
 
+#resume,
 #coverMap {
     width: 100%;
 }
@@ -20,11 +21,19 @@
     background-color: var(--vh-dark-blue);
 }
 
-.game-cover .logo {
+.game-cover .logo-pla {
     position: absolute;
-    top: 2.5em;
+    top: 1.5em;
+    left: 2em;
+    width: 165px;
+    height: auto;
+}
+
+.game-cover .logo-vh {
+    position: absolute;
+    top: 1.5em;
     right: 3.5em;
-    width: 230px;
+    width: 210px;
     height: auto;
 }
 
@@ -568,8 +577,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* padding-bottom: 2.2em; */
-    padding-left: 1.5em;
+    padding: 2.2em 2em 2.2em 4em;
 }
 
 @media screen and (max-height: 700px), screen and (max-width: 800px) {
@@ -623,6 +631,11 @@
     padding: .3em;
     outline: none;
     display: block;
+}
+
+.done-modal .submit-btn.disabled {
+    opacity: .5;
+    cursor: default;
 }
 
 .done-modal .restart-btn {

@@ -5,22 +5,33 @@ var submitTimeout;
 export default {
   template: `<div id="game">
     <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
-      <img src="/static/images/logo-vh--white.png" class="logo"/>
+      <img src="/static/images/pla-estrategic.svg" class="logo-pla"/>
+      <img src="/static/images/logo-vh--white.png" class="logo-vh"/>
       <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
       <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
-          <div v-if="!gameOver" class="introduction">
-            <p>Com veus, la posició de sortida està clarament indicada. És el lloc on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR. També està indicat el lloc d'arribada. És on està el puzzle i és on has de portar la teva peça movent-te pel campus.</p>
-            <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar.</p>
-          </div>
-          <h2 class="centered menu-title">{{ menuTitle }}</h2>
-          <ul class="centered menu-list">
-            <li v-if="!gameOver && !started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
-            <li v-if="!gameOver && started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Continuar' }}</button></li>
-            <li v-if="started && !isTouch"><button @click="restart" class="button">Reiniciar</button></li>
-            <li><button @click="exit" class="button">Sortir</button></li>
-            <li><button @click="showInstructions = true" class="button broad">Comandaments</button></li>
-          </ul>
+          <template v-if="!isResume">
+            <div v-if="!gameOver" class="introduction">
+              <p>Com veus, la posició de sortida està clarament indicada. És el lloc on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR. També està indicat el lloc d'arribada. És on està el puzzle i és on has de portar la teva peça movent-te pel campus.</p>
+              <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar.</p>
+            </div>
+            <h2 class="centered menu-title">{{ menuTitle }}</h2>
+            <ul class="centered menu-list">
+              <li v-if="!gameOver && !started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
+              <li v-if="!gameOver && started"><button @click="gameLock = true" class="button">{{ isTouch ? 'Explorar' : 'Continuar' }}</button></li>
+              <li v-if="started && !isTouch"><button @click="restart" class="button">Reiniciar</button></li>
+              <li><button @click="exit" class="button">Sortir</button></li>
+              <li><button @click="showInstructions = true" class="button broad">Comandaments</button></li>
+            </ul>
+          </template>
+          <template v-else>
+            <h2 class="centered menu-title">Així ha quedat el puzzle. L'hem fet entre tots i totes</h2>
+            <p class="centered">Aquí tens un video on t'expliquem el nou Pla Estratègic 21/25</p>
+            <ul class="centered menu-list">
+              <li><button @click="showVideo" class="button">Veure Video</button></li>
+              <li><button @click="goToGame" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
+            </ul>
+          </template>
         </div>
         <div v-if="showInstructions" class="game-cover__instructions">
           <h5 class="instructions-title">AQUESTS SÓN ELS COMANDAMENTS QUE HAS D'UTILITZAR:<i @click="showInstructions = false"/></h5>
@@ -65,7 +76,11 @@ export default {
           </div>
         </div>
         <div v-if="!isTouch" class="game-cover__map" ref="coverMap">
-          <canvas id="coverMap"></canvas>
+          <video ref="resume" v-if="isResume" id="resume">
+            <source src="/static/resume.mp4"></source>
+            El teu navegador no pot reproduir videos amb HTML.
+          </video>
+          <canvas v-else id="coverMap"></canvas>
         </div>
       </div>
     </div>
@@ -109,7 +124,6 @@ export default {
              <label>I diga'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
            <p><textarea v-model="userOpinion"></textarea></p>
-           <button class="submit-btn button">Enviar</button>
            <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
          </div>
        </div>
@@ -121,6 +135,7 @@ export default {
               <div class="radio-btn" :class="{active: doneImage}" @click="doneImage = true"></div>
             </div>
           </div>
+          <button class="submit-btn button" :class="{disabled: !(userName && userArea && userOpinion)}">Enviar</button>
           <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
        </div>
     </div>
@@ -156,7 +171,7 @@ export default {
           data,
           this.isTouch ? "touch" : "pointer"
         );
-        if (!this.isTouch) {
+        if (!(this.isTouch || this.isResume)) {
           this.coverMap = new Game(
             document.getElementById("coverMap"),
             data,
@@ -179,12 +194,27 @@ export default {
     document.addEventListener("gameover", this.onGameOver);
     document.removeEventListener("done", this.onDone);
     document.addEventListener("done", this.onDone);
+    if (this.isResume) {
+      if (this.$refs.resume.readyState >= 3) {
+        this.$refs.resume.play();
+      } else {
+        const self = this;
+        this.$refs.resume.onloadeddata = function () {
+          if (self.$refs.resume.readyState >= 3) {
+            self.$refs.resume.play();
+          }
+        };
+      }
+    }
   },
   computed: {
     isTouch() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       );
+    },
+    isResume() {
+      return this.$route.name === "resume";
     },
     pieceId() {
       return this.$route.query.pieceId;
@@ -269,6 +299,9 @@ export default {
       });
       window.open("https://www.vallhebron.com/ca");
     },
+    goToGame() {
+      window.open("/#/game/?pieceId=" + this.pieceId);
+    },
   },
   watch: {
     gameLock(to, from) {
@@ -283,7 +316,7 @@ export default {
             () => (self.showControls = false),
             10000
           ); */
-          if (!self.isTouch) {
+          if (!(self.isTouch || self.isResume)) {
             self.coverMap.unbind();
             window.audioObj.play();
           }
@@ -296,7 +329,7 @@ export default {
             },
           });
         } else {
-          if (!self.isTouch) {
+          if (!(self.isTouch || self.isResume)) {
             self.$nextTick(() => {
               self.$refs.coverMap.removeChild(self.$refs.coverMap.children[0]);
               self.$refs.coverMap.innerHTML = '<canvas id="coverMap"></canvas>';
@@ -314,7 +347,7 @@ export default {
         }
       }, 1000);
 
-      if (!self.isTouch) self.coverMap.lock(!to);
+      if (!(self.isTouch || self.isResume)) self.coverMap.lock(!to);
       self.game.lock(to);
     },
     userName(to) {
