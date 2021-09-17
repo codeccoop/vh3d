@@ -105,9 +105,10 @@ export default {
            <p>
              <label>Mira el video que hi ha en aquest enllaç</label>
              <a @click="showVideo"><button id="videoBtn" class="button">VIDEO</button></a>
-             <label>I diga'ns en quínes línies estratègiques creus que la teva aportació és més important.</label
+             <label>I diga'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
            <p><textarea v-model="userOpinion"></textarea></p>
+           <button class="submit-btn button">Enviar</button>
            <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
          </div>
        </div>
@@ -221,6 +222,7 @@ export default {
       this.game = new Game(this.game.canvas, this.game.playerData, this.isTouch ? "orbit" : "pointer");
       this.started = false;
       this.gameOver = false;
+      this.showInstructions = false;
       this.gameLock = true;
     },
 
