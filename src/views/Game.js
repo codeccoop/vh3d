@@ -13,7 +13,7 @@ export default {
           <template v-if="!isResume">
             <div v-if="!gameOver" class="introduction">
               <p>Com veus, la posició de sortida està clarament indicada. És el lloc on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR. També està indicat el lloc d'arribada. És on està el puzzle i és on has de portar la teva peça movent-te pel campus.</p>
-              <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar.</p>
+              <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar. Sabràs que has trobat el lloc de la teva peça quan aquesta es posi de color verd.</p>
             </div>
             <h2 class="centered menu-title">{{ menuTitle }}</h2>
             <ul class="centered menu-list">
