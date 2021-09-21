@@ -76,7 +76,7 @@ export default {
         </div>
         <div v-if="!isTouch" class="game-cover__map" ref="coverMap">
           <video ref="resume" v-if="isResume" id="resume">
-            <source src="/static/resume.mp4"></source>
+            <source src="/static/resume.mp4" autoplay mute playsinline></source>
             El teu navegador no pot reproduir videos amb HTML.
           </video>
           <canvas v-else id="coverMap"></canvas>
@@ -188,17 +188,8 @@ export default {
     document.addEventListener("done", this.onDone);
 
     if (this.isResume) {
-      if (this.$refs.resume.readyState >= 3) {
-        this.$refs.resume.play();
-      } else {
-        const self = this;
-
-        this.$refs.resume.onloadeddata = function () {
-          if (self.$refs.resume.readyState >= 3) {
-            self.$refs.resume.play();
-          }
-        };
-      }
+      this.$refs.resume.autoplay = true;
+      this.$refs.resume.load();
     }
   },
 
