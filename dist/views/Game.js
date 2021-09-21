@@ -294,7 +294,7 @@ export default {
     },
 
     goToGame() {
-      window.open("/#/game/?pieceId=" + this.pieceId);
+      window.open("/#/game/?pieceId=" + this.pieceId || Math.ceil(Math.random() * 9000));
     }
 
   },
