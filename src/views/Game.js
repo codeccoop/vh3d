@@ -5,15 +5,15 @@ var submitTimeout;
 export default {
   template: `<div id="game">
     <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
-      <img src="/static/images/pla-estrategic.svg" class="logo-pla"/>
+      <img src="/static/images/pla-estrategic--white.svg" class="logo-pla"/>
       <img src="/static/images/logo-vh--white.png" class="logo-vh"/>
       <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
       <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
           <template v-if="!isResume">
             <div v-if="!gameOver" class="introduction">
-              <p>Com veus, la posició de sortida està clarament indicada. És el lloc on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR. També està indicat el lloc d'arribada. És on està el puzzle i és on has de portar la teva peça movent-te pel campus.</p>
-              <p class="bold">La teva missió és anar fins al puzzle i, allà, buscar el lloc on va la teva peça seguint les indicacions de la brúixola que veuràs al voltant de la peça. Fins que no trobis el lloc exacte no la podràs col·locar. Sabràs que has trobat el lloc de la teva peça quan aquesta es posi de color verd.</p>
+              <p>El lloc indicat com a “sortida” és on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR.</p>
+              <p>La teva missió és portar la peça fins al puzle on està la paraula “arribada” i, allà, buscar el lloc que li correspon. Per fer-ho, hauràs de seguir l’ombra vermella de la teva peça que t’indicarà el camí. Quan l’ombra es torni verda hauràs trobat el lloc i podràs col·locar la peça.</p>
             </div>
             <h2 class="centered menu-title">{{ menuTitle }}</h2>
             <ul class="centered menu-list">
@@ -25,10 +25,9 @@ export default {
             </ul>
           </template>
           <template v-else>
-            <h2 class="centered menu-title">Així ha quedat el puzzle. L'hem fet entre tots i totes</h2>
-            <p class="centered">Aquí tens un video on t'expliquem el nou Pla Estratègic 21/25</p>
+            <h2 class="centered video-call">Mira aquest vídeo per conèixer el nou Pla Estratègic 21/25.</h2>
             <ul class="centered menu-list">
-              <li><button @click="showVideo" class="button">Veure Video</button></li>
+              <li><button @click="showVideo" class="button yellow">Veure Video</button></li>
               <li><button @click="goToGame" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
             </ul>
           </template>
@@ -41,7 +40,7 @@ export default {
               <img src="/static/images/arrows-icon.svg"/>
               <img src="/static/images/wasd-icon.svg"/>
               </div>
-              <p>Per moure't pel campus i pel puzzle has d'utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
+              <p>Per moure't pel campus i pel puzle has d'utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
             </div>
             <div class="control action">
               <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
@@ -75,12 +74,15 @@ export default {
             </div>
           </div>
         </div>
-        <div v-if="!isTouch" class="game-cover__map" ref="coverMap">
+        <div v-if="!(isTouch || isResume)" class="game-cover__map" ref="coverMap">
+          <canvas id="coverMap"></canvas>
+        </div>
+        <div v-else class="game-cover__video" ref="gameVideo">
+          <h3 v-if="isResume === true">Així ha quedat el puzle que hem fet entre tots i totes.</h3>
           <video ref="resume" v-if="isResume" id="resume" autoplay muted playsinline>
             <source src="/static/resume.mp4"></source>
             El teu navegador no pot reproduir videos amb HTML.
           </video>
-          <canvas v-else id="coverMap"></canvas>
         </div>
       </div>
     </div>

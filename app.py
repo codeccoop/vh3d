@@ -72,6 +72,16 @@ def puzzle (piece_id):
         return response
 
 
+@app.route("/puzzle/reset")
+def reset ():
+    conn = sqlite3.connect("data/vh3d.db")
+    cur = conn.cursor()
+    cur.execute("UPDATE pieces SET done = FALSE")
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+
 @app.route("/puzzle/fullfill/<int:quantity>", methods=["GET"])
 def fullfill (quantity):
     conn = sqlite3.connect("data/vh3d.db")

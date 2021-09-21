@@ -37,6 +37,17 @@
     height: auto;
 }
 
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .game-cover .logo-pla {
+        width: 150px;
+    }
+
+    .game-cover .logo-vh {
+        width: 185px;
+        right: 2em;
+    }
+}
+
 .game-cover__loader {
     height: 100%;
     display: flex;
@@ -59,25 +70,26 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 430px;
+    width: 530px;
 }
 
 @media screen and (max-height: 800px), screen and (max-width: 1000px) {
     .game-cover__menu {
-        width: 350px;
+        width: 420px;
         font-size: .9em;
     }
 }
 
-.game-cover__map {
+.game-cover__map,
+.game-cover__video {
     flex: 1;
     height: 100%;
     margin-right: 3em;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.game-cover__menu .introduction,
 .game-cover__instructions {
     font-size: 0.85em;
     line-height: 1.1;
@@ -87,7 +99,7 @@
     text-align: justify;
 }
 
-@media only screen and (max-width: 700px) and (orientation: portrait) {
+@media only screen and (max-width: 700px) and (orientation: portrait), screen and (max-height: 600px) {
     .game-cover__menu .introduction {
         display: none;
     }
@@ -249,6 +261,19 @@
     margin: .5em 0;
 }
 
+.game-cover__menu .video-call {
+    max-width: 300px;
+    margin: 0 auto 1em;
+    text-align: end;
+    line-height: 1.5;
+}
+
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .game-cover__menu .video-call {
+        text-align: center;
+    }
+}
+
 .game-cover__menu .menu-title {
     margin-bottom: 0px;
 }
@@ -270,9 +295,16 @@
     padding: .4em;
 }
 
-/* .game-cover__menu ul li .button.broad {
-    width: calc(300px + .8em);
-} */
+.game-cover__menu ul li .button.yellow {
+    background-color: var(--cover-bg-color);
+    color: var(--vh-dark-blue);
+    border-color: white;
+    font-weight: bold;
+}
+
+.game-cover__menu ul li .button.yellow:hover {
+    background-color: #f9ed7a;
+}
 
 .game-cover__show-info {
     display: flex;
@@ -305,9 +337,16 @@
         flex-flow: column-reverse;
     }
 
+    .game-cover__video,
     .game-cover__map {
+        font-size: .7em;
+        margin-top: 7vh;
         margin-right: 1em;
         margin-left: 1em;
+    }
+
+    .game-cover__video h3 {
+        text-align: center;
     }
 
     .game-cover__menu {
