@@ -292,7 +292,9 @@ export default {
       window.open("https://www.vallhebron.com/ca");
     },
     goToGame() {
-      window.open("/#/game/?pieceId=" + this.pieceId);
+      window.open(
+        "/#/game/?pieceId=" + this.pieceId || Math.ceil(Math.random() * 9000)
+      );
     },
   },
   watch: {
