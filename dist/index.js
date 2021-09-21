@@ -11,6 +11,10 @@ const router = new VueRouter({
     path: "/game",
     name: "game",
     component: Game
+  }, {
+    path: "/game/resume",
+    name: "resume",
+    component: Game
   }]
 });
 const vm = new Vue({
