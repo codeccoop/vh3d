@@ -28,7 +28,7 @@ export default {
             <h2 class="centered video-call">Si vols conèixer el Pla Estratègic, clica en el botó de VÍDEO d'aquí sota.</h2>
             <ul class="centered menu-list">
               <li><button @click="showVideo" class="button yellow">VÍDEO</button></li>
-              <li><button @click="goToGame" class="button">VOLS JUGAR?</button></li>
+              <li><button @click="goToGame" class="button">Vols jugar?</button></li>
             </ul>
           </template>
         </div>
