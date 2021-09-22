@@ -12,7 +12,7 @@ export default {
           <template v-if="!isResume">
             <div v-if="!gameOver" class="introduction">
               <p>El lloc indicat com a “sortida” és on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR.</p>
-              <p>La teva missió és portar la peça fins al puzle on està la paraula “arribada” i, allà, buscar el lloc que li correspon. Per fer-ho, hauràs de seguir l’ombra vermella de la teva peça que t’indicarà el camí. Quan l’ombra es torni verda hauràs trobat el lloc i podràs col·locar la peça.</p>
+              <p>La teva missió és portar la peça fins al puzle on està la paraula “arribada” i, allà, buscar el lloc que li correspon. Per fer-ho, hauràs de seguir l’ombra vermella de la teva peça que t’indicarà el camí. Quan l’ombra es torni verda hauràs trobat el lloc. Clica la tecla "Enter" per col·locar la peça.</p>
             </div>
             <h2 class="centered menu-title">{{ menuTitle }}</h2>
             <ul class="centered menu-list">
@@ -24,10 +24,10 @@ export default {
             </ul>
           </template>
           <template v-else>
-            <h2 class="centered video-call">Mira aquest vídeo per conèixer el nou Pla Estratègic 21/25.</h2>
+            <h2 class="centered video-call">Si vols coneixer el Pla Estratègic, clica en el botó de VIDEO d'aquí sota.</h2>
             <ul class="centered menu-list">
-              <li><button @click="showVideo" class="button yellow">Veure Video</button></li>
-              <li><button @click="goToGame" class="button">{{ isTouch ? 'Explorar' : 'Jugar' }}</button></li>
+              <li><button @click="showVideo" class="button yellow">VIDEO</button></li>
+              <li><button @click="goToGame" class="button">VOLS JUGAR?</button></li>
             </ul>
           </template>
         </div>
