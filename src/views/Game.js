@@ -25,9 +25,8 @@ export default {
             </ul>
           </template>
           <template v-else>
-            <h2 class="centered video-call">Si vols conèixer el Pla Estratègic, clica en el botó de VÍDEO d'aquí sota.</h2>
+            <h3 class="overview-message">Així ha quedat el puzle que hem fet entre tots i totes.</h3>
             <ul class="centered menu-list">
-              <li><button @click="showVideo" class="button yellow">VÍDEO</button></li>
               <li><button @click="goToGame" class="button">Vols jugar?</button></li>
             </ul>
           </template>
@@ -78,7 +77,6 @@ export default {
           <canvas id="coverMap"></canvas>
         </div>
         <div v-else class="game-cover__video" ref="gameVideo">
-          <h3 v-if="isResume === true">Així ha quedat el puzle que hem fet entre tots i totes.</h3>
           <video ref="resume" v-if="isResume" id="resume" autoplay muted playsinline>
             <source src="/static/resume.mp4"></source>
             El teu navegador no pot reproduir videos amb HTML.
