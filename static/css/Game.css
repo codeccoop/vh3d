@@ -8,6 +8,7 @@
 #resume,
 #coverMap {
     width: 100%;
+    max-height: calc(100vh - calc(200px + 1.5em));
 }
 
 .game-cover {
@@ -262,15 +263,14 @@
     margin: .5em 0;
 }
 
-.game-cover__menu .video-call {
+.game-cover__menu .overview-message {
     max-width: 300px;
     margin: 0 auto 1em;
-    text-align: end;
     line-height: 1.5;
 }
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
-    .game-cover__menu .video-call {
+    .game-cover__menu .overview-message {
         text-align: center;
     }
 }
