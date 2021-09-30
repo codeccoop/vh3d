@@ -11,8 +11,8 @@ export default {
         <div class="game-cover__menu">
           <template v-if="!isResume">
             <div v-if="!gameOver" class="introduction">
-              <p>El lloc indicat com a “sortida” és on apareixeràs amb la teva peça quan cliquis en el botó de JUGAR.</p>
-              <p>La teva missió és portar la peça fins al puzle on està la paraula “arribada” i, allà, buscar el lloc que li correspon. Per fer-ho, hauràs de seguir l’ombra vermella de la teva peça que t’indicarà el camí. Quan l’ombra es torni verda hauràs trobat el lloc. Clica la tecla "Enter" per col·locar la peça.</p>
+              <p>El lloc indicat com a “sortida” és on apareixeràs amb la teva peça quan cliquis al botó de JUGAR.</p>
+              <p>La teva missió és portar la peça fins al puzle on hi ha la paraula “arribada” i, allà, buscar el lloc que li correspon. Per fer-ho, hauràs de seguir l’ombra vermella de la teva peça, que t’indicarà el camí. Quan l’ombra es torni verda, hauràs trobat el lloc. Clica la tecla “Enter” per col·locar la peça.</p>
             </div>
             <h2 class="centered menu-title">{{ menuTitle }}</h2>
             <ul class="centered menu-list">
@@ -38,37 +38,37 @@ export default {
               <img src="/static/images/arrows-icon.svg"/>
               <img src="/static/images/wasd-icon.svg"/>
               </div>
-              <p>Per moure't pel campus i pel puzle has d'utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
+              <p>Per moure’t pel campus i pel puzle, has d’utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
             </div>
             <div class="control action">
               <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
-              <p>Per col·locar la teva peça quan arribis al lloc que li correspon</p>
+              <p>Per col·locar la teva peça quan arribis al lloc que li correspon.</p>
             </div>
             <label class="general">Durant tot el joc pots utilitzar aquests comandaments:</label>
             <div class="control map">
               <div class="icon"><img src="/static/images/map-icon.svg"/></div>
-              <p>Per anar al mapa i veure on ets</p>
+              <p>Per anar al mapa i veure on ets.</p>
             </div>
             <div class="control menu">
               <div class="icon"><img src="/static/images/esc-icon.svg"/></div>
-              <p>Per pausar el joc i tornar al menu</p>
+              <p>Per aturar el joc i tornar al menu.</p>
             </div>
             <div class="control help">
               <div class="icon"><img src="/static/images/help-icon.svg"/></div>
-              <p>Per veure un resum dels controls</p>
+              <p>Per veure un resum dels controls.</p>
             </div>
-            <label class="map">Si surts del joc i vas al mapa hauràs d'utilitzar el ratolí:</label>
+            <label class="map">Si surts del joc i vas al mapa, hauràs d’utilitzar el ratolí:</label>
             <div class="control orbit">
               <div class="icon"><img src="/static/images/left-click-icon.svg"/></div>
-              <p>Per voltejar el mapa</p>
+              <p>Per voltejar el mapa.</p>
             </div>
             <div class="control pan">
               <div class="icon"><img src="/static/images/right-click-icon.svg"/></div>
-              <p>Per desplaçar el mapa</p>
+              <p>Per desplaçar el mapa.</p>
             </div>
             <div class="control zoom">
               <div class="icon"><img src="/static/images/zoom-icon.svg"/></div>
-              <p>Per apropar o allunyar el mapa</p>
+              <p>Per apropar o allunyar el mapa.</p>
             </div>
           </div>
         </div>
@@ -87,15 +87,15 @@ export default {
       <div v-if="gameLock && isTouch" @click="gameLock = false" class="is-touch-unlocker"></div>
       <div v-if="!isTouch" class="controls-highlights" :class="{'hidden': !showControls}">
         <ul v-if="controls === 'pointer'" class="centered">
-          <li class="movement"><div class="icon"><p><strong>Fletxes</strong><br/>per desplaçar-se</p></div></li>
-          <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar</p></div></li>
-          <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara</p></div></li>
-          <li class="enter"><div class="icon"><p><strong>Enter</strong><br/>per col·locar la peça</p></div></li>
+          <li class="movement"><div class="icon"><p><strong>Fletxes</strong><br/>per desplaçar-se.</p></div></li>
+          <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar.</p></div></li>
+          <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara.</p></div></li>
+          <li class="enter"><div class="icon"><p><strong>“Enter”</strong><br/>per col·locar la peça.</p></div></li>
         </ul>
         <ul v-else="controls === 'orbit'" class="centered">
-          <li class="orbit"><div class="icon"><p><strong>Click esquerra</strong><br/>per rotar</p></div></li>
-          <li class="pan"><div class="icon"><p><strong>Click dret</strong><br/>per desplaçar</p></div></li>
-          <li class="zoom"><div class="icon"><p><strong>Scroll</strong><br/>pel zoom</p></div></li>
+          <li class="orbit"><div class="icon"><p><strong>Click esquerra</strong><br/>per rotar.</p></div></li>
+          <li class="pan"><div class="icon"><p><strong>Click dret</strong><br/>per desplaçar.</p></div></li>
+          <li class="zoom"><div class="icon"><p><strong>Scroll</strong><br/>pel zoom.</p></div></li>
         </ul>
       </div>
       <aside v-if="gameLock && !isTouch" class="game-aside left">
@@ -118,9 +118,9 @@ export default {
              <input v-model="userArea" type="text" id="areaInput"/>
            </p>
            <p>
-             <label>Mira el video que hi ha en aquest enllaç</label>
+             <label>Mira el video que hi ha en aquest enllaç.</label>
              <a @click="showVideo"><button id="videoBtn" class="button">VIDEO</button></a>
-             <label>I diga'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
+             <label>I digue'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
            <p><textarea v-model="userOpinion"></textarea></p>
            <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>

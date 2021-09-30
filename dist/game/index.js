@@ -149,7 +149,7 @@ export default class Game {
 
     const self = this;
     const loader = new THREE.FontLoader();
-    loader.load("/node_modules/three/examples/fonts/helvetiker_bold.typeface.json", function (font) {
+    loader.load("/vendor/helvetiker_bold.typeface.json", function (font) {
       const textMat = new THREE.MeshToonMaterial({
         color: 0xffffff
       });
