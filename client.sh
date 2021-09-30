@@ -32,7 +32,6 @@ function bootstrap_dist() {
     cp node_modules/three/examples/js/loaders/GLTFLoader.js dist/vendor/GLTFLoader.js
     cp node_modules/three/examples/fonts/helvetiker_bold.typeface.json dist/vendor/helvetiker_bold.typeface.json
 
-    cp -r static dist/
     cp -r data dist/
 
     cp index.html dist/
