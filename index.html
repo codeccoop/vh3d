@@ -7,15 +7,15 @@
 
 		<link href="/static/css/index.css" rel="stylesheet" type="text/css"/>
 
-    <script src="/node_modules/vue/dist/vue.min.js"></script>
-    <script src="/node_modules/vue-router/dist/vue-router.min.js"></script>
-    <script src="/node_modules/vue-carousel/dist/vue-carousel.min.js"></script>
-    <script src="/node_modules/@turf/turf/turf.min.js"></script>
-    <script src="/node_modules/proj4/dist/proj4.js"></script>
-    <script src="/node_modules/three/build/three.min.js"></script>
-    <script src="/node_modules/three/examples/js/controls/OrbitControls.js"></script>
-    <script src="/node_modules/three/examples/js/controls/PointerLockControls.js"></script>
-    <script src="/node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="/vendor/vue.min.js"></script>
+    <script src="/vendor/vue-router.min.js"></script>
+    <script src="/vendor/vue-carousel.min.js"></script>
+    <script src="/vendor/turf.min.js"></script>
+    <script src="/vendor/proj4.js"></script>
+    <script src="/vendor/three.min.js"></script>
+    <script src="/vendor/OrbitControls.js"></script>
+    <script src="/vendor/PointerLockControls.js"></script>
+    <script src="/vendor/GLTFLoader.js"></script>
 
     <link rel="shortcut icon" type="image/png" href="static/images/vh-icon.png"/>
 
@@ -28,7 +28,7 @@
       <router-view></router-view>
     </div>
 
-    <script type="module" src="/dist/index.js" ></script>
+    <script type="module" src="/index.js" ></script>
     <script>
      window.audioObj = new Audio("/static/soundtrack.mp3");
     </script>

@@ -16,7 +16,8 @@
     "@babel/core": "^7.15.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "develop": "client.sh develop",
+    "build": "client.sh build"
   },
   "repository": {
     "type": "git",

@@ -2,3 +2,7 @@ vendor
 node_modules
 dist
 puzzle.png
+__pycache__
+log
+secret.py
+process.pid
