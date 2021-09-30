@@ -156,54 +156,51 @@ export default class Game {
     // if (this.mode === "cover") {
     const self = this;
     const loader = new THREE.FontLoader();
-    loader.load(
-      "/node_modules/three/examples/fonts/helvetiker_bold.typeface.json",
-      function (font) {
-        const textMat = new THREE.MeshToonMaterial({ color: 0xffffff });
-        const exitGeom = new THREE.PlaneGeometry(100, 30);
-        const exitText = new THREE.TextGeometry("Sortida", {
-          size: 14,
-          font: font,
-          height: 0.5,
-          curveSegments: 12,
-          bevelEnabled: false,
-        });
-        const targetGeom = new THREE.PlaneGeometry(100, 30);
-        const targetText = new THREE.TextGeometry("Arribada", {
-          size: 13,
-          font: font,
-          height: 0.5,
-          curveSegments: 12,
-          bevelEnabled: false,
-        });
-        const exit = new THREE.Mesh(exitGeom, markerMat);
-        exit.position.y += 5;
-        const exitLabel = new THREE.Mesh(exitText, textMat);
-        exitLabel.position.x -= 30;
-        exitLabel.position.y -= 7;
-        exit.add(exitLabel);
-        const target = new THREE.Mesh(targetGeom, markerMat);
-        target.position.y += 5;
-        const targetLabel = new THREE.Mesh(targetText, textMat);
-        targetLabel.position.x -= 35;
-        targetLabel.position.y -= 7;
-        target.add(targetLabel);
+    loader.load("/vendor/helvetiker_bold.typeface.json", function (font) {
+      const textMat = new THREE.MeshToonMaterial({ color: 0xffffff });
+      const exitGeom = new THREE.PlaneGeometry(100, 30);
+      const exitText = new THREE.TextGeometry("Sortida", {
+        size: 14,
+        font: font,
+        height: 0.5,
+        curveSegments: 12,
+        bevelEnabled: false,
+      });
+      const targetGeom = new THREE.PlaneGeometry(100, 30);
+      const targetText = new THREE.TextGeometry("Arribada", {
+        size: 13,
+        font: font,
+        height: 0.5,
+        curveSegments: 12,
+        bevelEnabled: false,
+      });
+      const exit = new THREE.Mesh(exitGeom, markerMat);
+      exit.position.y += 5;
+      const exitLabel = new THREE.Mesh(exitText, textMat);
+      exitLabel.position.x -= 30;
+      exitLabel.position.y -= 7;
+      exit.add(exitLabel);
+      const target = new THREE.Mesh(targetGeom, markerMat);
+      target.position.y += 5;
+      const targetLabel = new THREE.Mesh(targetText, textMat);
+      targetLabel.position.x -= 35;
+      targetLabel.position.y -= 7;
+      target.add(targetLabel);
 
-        exit.rotation.z += Math.PI * 0.41;
-        target.rotation.z += Math.PI * 0.11;
-        self.scene.exitLabel = exit;
-        self.scene.targetLabel = target;
-        if (self.mode === "cover") {
-          self.scene.add(exit);
-          self.scene.add(target);
-        }
-        try {
-          if (self.scene.bbox) {
-            self.scene.initPosition();
-          }
-        } catch (err) {}
+      exit.rotation.z += Math.PI * 0.41;
+      target.rotation.z += Math.PI * 0.11;
+      self.scene.exitLabel = exit;
+      self.scene.targetLabel = target;
+      if (self.mode === "cover") {
+        self.scene.add(exit);
+        self.scene.add(target);
       }
-    );
+      try {
+        if (self.scene.bbox) {
+          self.scene.initPosition();
+        }
+      } catch (err) {}
+    });
     // } else {
     this.scene.marker = marker;
     // }

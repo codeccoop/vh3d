@@ -4,6 +4,8 @@ from PIL import Image
 import numpy as np
 import random
 
+from secret import key
+
 app = Flask(__name__)
 
 tables = {
@@ -61,7 +63,6 @@ def puzzle (piece_id):
     for piece in pieces:
         piece = format_piece(piece)
         image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], (piece_id == 0 or piece["id"] != piece_id and piece["done"] == 1) and 255 or 0]
-        # image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], piece["id"] != piece_id and random.randint(0, 1) and 255 or 0]  #piece["done"] and 255 or 0]
 
     img = Image.fromarray(image_array)
     img.save("static/images/puzzle.png")
@@ -74,6 +75,9 @@ def puzzle (piece_id):
 
 @app.route("/puzzle/reset")
 def reset ():
+    if request.args.get("key") != str(key):
+        abort(401)
+
     conn = sqlite3.connect("data/vh3d.db")
     cur = conn.cursor()
     cur.execute("UPDATE pieces SET done = FALSE")
@@ -84,6 +88,9 @@ def reset ():
 
 @app.route("/puzzle/fullfill/<int:quantity>", methods=["GET"])
 def fullfill (quantity):
+    if request.args.get("key") != str(key):
+        abort(401)
+
     conn = sqlite3.connect("data/vh3d.db")
     cur = conn.cursor()
     cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID IN (SELECT ROWID FROM pieces WHERE done IS FALSE ORDER BY RANDOM() LIMIT ?)", (quantity,))
@@ -94,10 +101,10 @@ def fullfill (quantity):
 
 @app.route("/form/<int:piece_id>", methods=["GET", "POST"])
 def form (piece_id):
-
     if request.method == "GET":
-        if piece_id != 0:
-            abort(405)
+        if piece_id != 0 or request.args.get("key") != str(key):
+            abort(401)
+
         conn = sqlite3.connect("data/vh3d.db")
         cur = conn.cursor()
         cur.execute("SELECT ROWID, name, area, opinion FROM form")
@@ -136,8 +143,7 @@ def catch_all(path):
     if not path:
         path = "index.html"
 
-    return send_from_directory(".", path)
-
+    return send_from_directory("dist", path)
 
 
 if __name__ == "__main__":
