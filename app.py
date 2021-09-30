@@ -4,7 +4,10 @@ from PIL import Image
 import numpy as np
 import random
 
-from secret import key
+try:
+    from secret import key
+except ImportError:
+    key = None
 
 app = Flask(__name__)
 
@@ -75,7 +78,7 @@ def puzzle (piece_id):
 
 @app.route("/puzzle/reset")
 def reset ():
-    if request.args.get("key") != str(key):
+    if key is not None and request.args.get("key") != str(key):
         abort(401)
 
     conn = sqlite3.connect("data/vh3d.db")
@@ -88,7 +91,7 @@ def reset ():
 
 @app.route("/puzzle/fullfill/<int:quantity>", methods=["GET"])
 def fullfill (quantity):
-    if request.args.get("key") != str(key):
+    if key is not None and request.args.get("key") != str(key):
         abort(401)
 
     conn = sqlite3.connect("data/vh3d.db")
@@ -102,7 +105,7 @@ def fullfill (quantity):
 @app.route("/form/<int:piece_id>", methods=["GET", "POST"])
 def form (piece_id):
     if request.method == "GET":
-        if piece_id != 0 or request.args.get("key") != str(key):
+        if key is not None and (piece_id != 0 or key and request.args.get("key") != str(key)):
             abort(401)
 
         conn = sqlite3.connect("data/vh3d.db")
