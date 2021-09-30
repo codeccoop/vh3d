@@ -43,7 +43,7 @@ elif [[ "$command" = "run" ]]; then
   if [[ -e process.pid ]]; then
      kill $(cat process.pid)
   fi
-  gunicorn -c gunicorn.conf.py &
+  gunicorn -c config/gunicorn.conf.py &
   echo "server are running inside the gunicorn container"
 elif [[ "$command" = "stop" ]]; then
   if [[ -e process.pid ]]; then
