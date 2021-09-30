@@ -15,11 +15,25 @@ if [[ -z "$arg" ]]; then
   echo -e "   · serve \e[31m\e[3m[development]\e[0m\e[0m"
   echo -e "   · run \e[31m\e[3m[production]\e[0m\e[0m"
   echo -e "   · stop \e[31m\e[3m[production]\e[0m\e[0m"
+  echo -e "   · dist \e[31m\e[3m[production]\e[0m\e[0m"
   echo
   echo "Feed a command:";read command
 else
   command=$arg
 fi
+
+function bundle() {
+  zip vh3d.zip \
+	  dist \
+	  log \
+	  static \
+	  app.py \
+	  gunicorn.conf.py \
+	  init_db.py \
+	  requirements.txt \
+	  secret.py \
+	  server.sh
+}
 
 if [[ "$command" = "install" ]]; then
   pip3 install -r requirements.txt
@@ -41,6 +55,8 @@ elif [[ "$command" = "stop" ]]; then
 elif [[ "$command" = "database" ]]; then
 	python3 init_db.py
 	echo "Database has been initialized"
+elif [[ "$command" = "dist" ]]; then
+	bundle
 else
   echo "Unrecognized command"
 fi
