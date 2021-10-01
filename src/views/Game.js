@@ -39,7 +39,7 @@ export default {
               <img src="/static/images/arrows-icon.svg"/>
               <img src="/static/images/wasd-icon.svg"/>
               </div>
-              <p>Per moure’t pel campus i pel puzle, has d’utilitzar les fletxes o aquestes lletres, el que prefereixis</p>
+              <p>Per moure’t pel campus i pel puzle, has d’utilitzar les fletxes o aquestes lletres, el que prefereixis.</p>
             </div>
             <div class="control action">
               <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
@@ -52,7 +52,7 @@ export default {
             </div>
             <div class="control menu">
               <div class="icon"><img src="/static/images/esc-icon.svg"/></div>
-              <p>Per aturar el joc i tornar al menu.</p>
+              <p>Per aturar el joc i tornar al menú.</p>
             </div>
             <div class="control help">
               <div class="icon"><img src="/static/images/help-icon.svg"/></div>
@@ -89,8 +89,8 @@ export default {
       <div v-if="!isTouch" class="controls-highlights" :class="{'hidden': !showControls}">
         <ul v-if="controls === 'pointer'" class="centered">
           <li class="movement"><div class="icon"><p><strong>Fletxes</strong><br/>per desplaçar-se.</p></div></li>
-          <li class="jump"><div class="icon"><p><strong>Barra espaciadora</strong><br/>per saltar.</p></div></li>
-          <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la camara.</p></div></li>
+          <li class="jump"><div class="icon"><p><strong>Barra espaiadora</strong><br/>per saltar.</p></div></li>
+          <li class="camera"><div class="icon"><p><strong>Ratolí</strong><br/>per moure la càmera.</p></div></li>
           <li class="enter"><div class="icon"><p><strong>“Enter”</strong><br/>per col·locar la peça.</p></div></li>
         </ul>
         <ul v-else="controls === 'orbit'" class="centered">
@@ -119,7 +119,7 @@ export default {
              <input v-model="userArea" type="text" id="areaInput"/>
            </p>
            <p>
-             <label>Mira el video que hi ha en aquest enllaç.</label>
+             <label>Mira el vídeo que hi ha en aquest enllaç.</label>
              <a @click="showVideo"><button id="videoBtn" class="button">VIDEO</button></a>
              <label>I digue'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
