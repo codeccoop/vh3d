@@ -11,7 +11,7 @@ function Grass(settings) {
 Grass.prototype = Object.create(Layer.prototype);
 
 Grass.prototype.load = function () {
-  return fetch("/data/grass.geojson", {
+  return fetch("/static/data/grass.geojson", {
     method: "GET"
   }).then(res => {
     return res.json().then(data => this.parse(data));

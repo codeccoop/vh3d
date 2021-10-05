@@ -15,7 +15,7 @@ function TallCanopies(settings) {
 TallCanopies.prototype = Object.create(Layer.prototype);
 
 TallCanopies.prototype.load = function () {
-  return fetch("/data/trees.tall.geojson", {
+  return fetch("/static/data/trees.tall.geojson", {
     method: "GET"
   }).then(res => {
     return res.json().then(this.parse);

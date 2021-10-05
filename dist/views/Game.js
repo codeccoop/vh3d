@@ -77,7 +77,7 @@ export default {
         </div>
         <div v-else class="game-cover__video" ref="gameVideo">
           <video ref="resume" v-if="isResume" id="resume" autoplay muted playsinline>
-            <source src="/static/resume.mp4"></source>
+            <source src="/static/multimedia/resume.mp4"></source>
             El teu navegador no pot reproduir videos amb HTML.
           </video>
         </div>
@@ -111,30 +111,26 @@ export default {
          <div class="fieldset">
            <p>
              <label>Nom i cognoms</label>
-             <input v-model="userName" type="text" id="nameInput"/>
+             <input v-model="userName" type="text" class="name"/>
            </p>
            <p>
              <label>A quina direcció/unitat/servei pertanys?</label>
-             <input v-model="userArea" type="text" id="areaInput"/>
+             <input v-model="userArea" type="text" class="area"/>
            </p>
            <p>
              <label>Mira el vídeo que hi ha en aquest enllaç.</label>
              <a @click="showVideo"><button id="videoBtn" class="button">VIDEO</button></a>
              <label>I digue'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
-           <p><textarea v-model="userOpinion"></textarea></p>
+           <p><textarea v-model="userOpinion" class="opinion"></textarea></p>
            <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
          </div>
        </div>
        <div class="done-modal__image">
           <div class="img-wrapper">
             <img :src="doneImageSrc" />
-            <div class="image-radio">
-              <div class="radio-btn" :class="{active: !doneImage}" @click="doneImage = false"></div>
-              <div class="radio-btn" :class="{active: doneImage}" @click="doneImage = true"></div>
-            </div>
           </div>
-          <button class="submit-btn button" :class="{disabled: !(userName && userArea && userOpinion)}">Enviar</button>
+          <button class="submit-btn button" @click="sent" :class="{disabled: !(userName && userArea && userOpinion)}">Enviar</button>
           <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
        </div>
     </div>
@@ -210,7 +206,7 @@ export default {
     },
 
     doneImageSrc() {
-      return "/puzzle/" + (this.doneImage === true ? 0 : 9001); // this.pieceId);
+      return "/puzzle/0";
     }
 
   },
@@ -265,7 +261,15 @@ export default {
       });
     },
 
-    submitForm(field, value) {
+    sent() {
+      for (let input of this.$el.querySelectorAll(".form p input")) {
+        input.classList.add("sent");
+      }
+
+      this.$el.querySelector(".form p textarea").classList.add("sent");
+    },
+
+    submitForm(field, value, el) {
       clearTimeout(submitTimeout);
       submitTimeout = setTimeout(() => {
         fetch("/form/" + this.pieceId, {
@@ -279,13 +283,18 @@ export default {
           })
         });
       }, 500);
+      el.classList.remove("sent");
     },
 
     showVideo() {
       window.addEventListener("popstate", event => {
         console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
       });
-      window.open("https://www.vallhebron.com/ca");
+      fetch("/static/resources.json").then(res => {
+        res.json().then(config => {
+          window.open(config.VIDEO_URL);
+        }); // window.open("https://www.vallhebron.com/ca");
+      });
     },
 
     goToGame() {
@@ -341,15 +350,18 @@ export default {
     },
 
     userName(to) {
-      this.submitForm("name", to);
+      const el = this.$el.querySelector(".form p input.name");
+      this.submitForm("name", to, el);
     },
 
     userArea(to) {
-      this.submitForm("area", to);
+      const el = this.$el.querySelector(".form p input.area");
+      this.submitForm("area", to, el);
     },
 
     userOpinion(to) {
-      this.submitForm("opinion", to);
+      const el = this.$el.querySelector(".form p textarea.opinion");
+      this.submitForm("opinion", to, el);
     }
 
   }
