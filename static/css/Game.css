@@ -625,7 +625,17 @@
     padding: 2.2em 2em 2.2em 4em;
 }
 
-@media screen and (max-height: 700px), screen and (max-width: 800px) {
+@media screen and (max-height: 700px), screen and (max-width: 900px) {
+    .done-modal .form {
+        flex: 2;
+    }
+
+    .done-modal .form .fieldset p:first-child {
+        margin-top: 0px;
+    }
+}
+
+@media screen and (max-height: 600px), screen and (max-width: 700px) {
     .done-modal__image {
         display: none;
     }
