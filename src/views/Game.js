@@ -130,10 +130,6 @@ export default {
        <div class="done-modal__image">
           <div class="img-wrapper">
             <img :src="doneImageSrc" />
-            <div class="image-radio">
-              <div class="radio-btn" :class="{active: !doneImage}" @click="doneImage = false"></div>
-              <div class="radio-btn" :class="{active: doneImage}" @click="doneImage = true"></div>
-            </div>
           </div>
           <button class="submit-btn button" :class="{disabled: !(userName && userArea && userOpinion)}">Enviar</button>
           <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
@@ -214,7 +210,7 @@ export default {
       return Math.min(window.innerHeight, window.innerWidth) + "px";
     },
     doneImageSrc() {
-      return "/puzzle/" + (this.doneImage === true ? 0 : 9001); // this.pieceId);
+      return "/puzzle/0";
     },
   },
   methods: {
