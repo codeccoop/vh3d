@@ -575,10 +575,15 @@
     padding: 0.4em .8em;
     font-size: 1em;
     border-radius: 7px;
-    border: none;
+    border: 2px solid #fffd;
     outline: none;
     background-color: #fffd;
     width: 100%;
+}
+
+.done-modal p input.sent,
+.done-modal p textarea.sent {
+    border-color: #1fd613;
 }
 
 .done-modal p textarea {

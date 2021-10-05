@@ -23,7 +23,7 @@ Pieces.prototype.load = function (piece_id) {
       texture.center.set(0.5, 0.5);
       // texture.rotation = Math.PI * 0.5;
       this.settings.map = texture;
-      fetch("/data/lego.base.geojson", {
+      fetch("/static/data/lego.base.geojson", {
         method: "GET",
       })
         .then((res) => res.json().then(this.parse))

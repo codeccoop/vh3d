@@ -22,7 +22,7 @@ Lego.prototype.load = function () {
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(120, 75);
       this.settings.map = texture;
-      fetch("/data/lego.base.geojson", {
+      fetch("/static/data/lego.base.geojson", {
         method: "GET",
       })
         .then((res) => res.json().then(this.parse))
@@ -30,7 +30,7 @@ Lego.prototype.load = function () {
         .catch((err) => rej(err));
     });
   });
-  return fetch("/data/lego.base.geojson", {
+  return fetch("/static/data/lego.base.geojson", {
     method: "GET",
   }).then((res) => {
     return res.json().then(this.parse);

@@ -30,7 +30,7 @@ def format_piece (rec):
 
 @app.route("/piece/<int:piece_id>", methods=["GET", "POST"])
 def piece (piece_id):
-    conn = sqlite3.connect("data/vh3d.db")
+    conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
 
     if request.method == "GET":
@@ -56,7 +56,7 @@ def piece (piece_id):
 
 @app.route("/puzzle/<int:piece_id>")
 def puzzle (piece_id):
-    conn = sqlite3.connect("data/vh3d.db")
+    conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
     cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces")
     pieces = cur.fetchall()
@@ -81,7 +81,7 @@ def reset ():
     if key is not None and request.args.get("key") != str(key):
         abort(401)
 
-    conn = sqlite3.connect("data/vh3d.db")
+    conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
     cur.execute("UPDATE pieces SET done = FALSE")
     conn.commit()
@@ -94,7 +94,7 @@ def fullfill (quantity):
     if key is not None and request.args.get("key") != str(key):
         abort(401)
 
-    conn = sqlite3.connect("data/vh3d.db")
+    conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
     cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID IN (SELECT ROWID FROM pieces WHERE done IS FALSE ORDER BY RANDOM() LIMIT ?)", (quantity,))
     conn.commit()
@@ -108,20 +108,21 @@ def form (piece_id):
         if key is not None and (piece_id != 0 or key and request.args.get("key") != str(key)):
             abort(401)
 
-        conn = sqlite3.connect("data/vh3d.db")
+        conn = sqlite3.connect("vh3d.db")
         cur = conn.cursor()
         cur.execute("SELECT ROWID, name, area, opinion FROM form")
         responses = cur.fetchall()
 
         response = make_response("id,name,area,opinion\n" + "\n".join([
-            ",".join([str(d) for d in res]) for res in responses
+            ",".join(['"' + str(d) + '"' for d in res]) for res in responses
         ]))
         response.headers.set("Content-Type", "text/csv")
+        response.headers.set("Content-Disposition", "attachment; filename=\"respostes.csv\"")
         return response
 
     elif request.method == "POST":
         payload = request.json
-        conn = sqlite3.connect("data/vh3d.db")
+        conn = sqlite3.connect("vh3d.db")
         cur = conn.cursor()
 
         if payload["field"] in ["name", "area", "opinion"]:

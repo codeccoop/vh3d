@@ -23,12 +23,13 @@ else
 fi
 
 function bundle() {
-  zip vh3d.zip \
+  ./client.sh build
+  zip -r vh3d.zip \
 	  dist \
 	  log \
 	  static \
 	  app.py \
-	  gunicorn.conf.py \
+	  config \
 	  init_db.py \
 	  requirements.txt \
 	  secret.py \

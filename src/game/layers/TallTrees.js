@@ -16,7 +16,7 @@ function TallTrees(settings) {
 TallTrees.prototype = Object.create(Layer.prototype);
 
 TallTrees.prototype.load = function () {
-  return fetch("/data/trees.sphere.geojson", {
+  return fetch("/static/data/trees.sphere.geojson", {
     method: "GET",
   }).then((res) => {
     return res.json().then(this.parse);
