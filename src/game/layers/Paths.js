@@ -11,7 +11,7 @@ function Paths(settings) {
 Paths.prototype = Object.create(Layer.prototype);
 
 Paths.prototype.load = function () {
-  return fetch("/data/paths.geojson", {
+  return fetch("/static/data/paths.geojson", {
     method: "GET",
   }).then((res) => {
     return res.json().then(this.parse);

@@ -3,10 +3,10 @@ import numpy as  np
 import sqlite3
 
 
-img = Image.open("data/pieces.jpg")
+img = Image.open("static/images/pieces.jpg")
 pixels = np.asarray(img)
 
-conn = sqlite3.connect("data/vh3d.db")
+conn = sqlite3.connect("vh3d.db")
 cur = conn.cursor()
 
 # TABLE PIECES
