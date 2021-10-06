@@ -15,15 +15,23 @@ function Pieces(settings) {
 Pieces.prototype = Object.create(Layer.prototype);
 
 Pieces.prototype.load = function (piece_id) {
-  return new Promise((res, rej) => {
-    this.loader.load("/puzzle/" + piece_id, texture => {
+  var _this = this;
+
+  return new Promise(function (res, rej) {
+    _this.loader.load("/puzzle/" + piece_id, function (texture) {
       texture.magFilter = THREE.NearestFilter;
       texture.center.set(0.5, 0.5); // texture.rotation = Math.PI * 0.5;
 
-      this.settings.map = texture;
+      _this.settings.map = texture;
       fetch("/static/data/lego.base.geojson", {
         method: "GET"
-      }).then(res => res.json().then(this.parse)).then(_ => res()).catch(err => rej(err));
+      }).then(function (res) {
+        return res.json().then(_this.parse);
+      }).then(function (_) {
+        return res();
+      }).catch(function (err) {
+        return rej(err);
+      });
     });
   });
 };
@@ -33,24 +41,24 @@ Pieces.prototype.render = function () {
 };
 
 Pieces.prototype.localToWorld = function (vector) {
-  const mesh = this.geometry.shapes[0];
+  var mesh = this.geometry.shapes[0];
   mesh.updateWorldMatrix();
-  const geom = mesh.geometry;
-  const width = geom.parameters.width;
-  const height = geom.parameters.height;
-  const center = {
+  var geom = mesh.geometry;
+  var width = geom.parameters.width;
+  var height = geom.parameters.height;
+  var center = {
     x: mesh.position.x,
     y: mesh.position.y
   };
-  const origin = {
+  var origin = {
     x: center.x - width / 2,
     y: center.y + height / 2
   };
-  const target = {
+  var target = {
     x: origin.x + vector.x,
     y: origin.y - vector.y
   };
-  const distance = {
+  var distance = {
     x: target.x - center.x,
     y: target.y - center.y
   };
@@ -59,17 +67,17 @@ Pieces.prototype.localToWorld = function (vector) {
     return new THREE.Vector3(center.x, center.y, 0.5);
   }
 
-  const bearing = Math.atan(distance.y / distance.x);
-  const radius = distance.y !== 0 ? distance.y / Math.sin(bearing) : distance.x !== 0 ? distance.x / Math.cos(bearing) : 0;
+  var bearing = Math.atan(distance.y / distance.x);
+  var radius = distance.y !== 0 ? distance.y / Math.sin(bearing) : distance.x !== 0 ? distance.x / Math.cos(bearing) : 0;
   return new THREE.Vector3(center.x + Math.cos(bearing + mesh.rotation.z) * radius, center.y + Math.sin(bearing + mesh.rotation.z) * radius, 0.5);
 };
 
 Pieces.prototype.getTargetLocation = function (playerData) {
   if (!this.built) return;
-  const xRel = this.geometry.shapes[0].geometry.parameters.width / 120;
-  const yRel = this.geometry.shapes[0].geometry.parameters.height / 75;
-  const x = (playerData.col + 1) * xRel - xRel * 0.5;
-  const y = (playerData.row + 1) * yRel - yRel * 0.5;
+  var xRel = this.geometry.shapes[0].geometry.parameters.width / 120;
+  var yRel = this.geometry.shapes[0].geometry.parameters.height / 75;
+  var x = (playerData.col + 1) * xRel - xRel * 0.5;
+  var y = (playerData.row + 1) * yRel - yRel * 0.5;
   return this.localToWorld({
     x: x,
     y: y
@@ -77,46 +85,46 @@ Pieces.prototype.getTargetLocation = function (playerData) {
 };
 
 Pieces.prototype.getNearest = function (vector, direction) {
-  const mesh = this.geometry.shapes[0];
-  const width = mesh.geometry.parameters.width;
-  const height = mesh.geometry.parameters.height;
-  const rotation = mesh.rotation.reorder("ZYX");
-  let forward = Math.round((direction.z - rotation.z) * (360 / (2 * Math.PI))) % 360;
+  var mesh = this.geometry.shapes[0];
+  var width = mesh.geometry.parameters.width;
+  var height = mesh.geometry.parameters.height;
+  var rotation = mesh.rotation.reorder("ZYX");
+  var forward = Math.round((direction.z - rotation.z) * (360 / (2 * Math.PI))) % 360;
   if (forward < 0) forward = 360 + forward;
   forward = forward > 360 * 0.125 && forward <= 360 * 0.375 ? 1 : forward > 360 * 0.375 && forward <= 360 * 0.625 ? 2 : forward > 360 * 0.625 && forward <= 360 * 0.875 ? 3 : 4;
-  const rel = {
+  var rel = {
     x: width / 120,
     y: height / 75
   };
-  const origin = this.localToWorld({
+  var origin = this.localToWorld({
     x: 0,
     y: 0
   });
-  const lOrigin = {
+  var lOrigin = {
     x: mesh.position.x - width / 2,
     y: mesh.position.y + height / 2
   };
-  const delta = {
+  var delta = {
     x: vector.x - origin.x,
     y: origin.y - vector.y
   };
-  const bearing = Math.atan(delta.x / delta.y);
-  const radius = Math.sqrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2));
-  const local = {
+  var bearing = Math.atan(delta.x / delta.y);
+  var radius = Math.sqrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2));
+  var local = {
     x: lOrigin.x - Math.sin(bearing - rotation.z) * radius,
     y: lOrigin.y + Math.cos(bearing - rotation.z) * radius
   };
-  const lDelta = {
+  var lDelta = {
     x: local.x - lOrigin.x,
     y: lOrigin.y - local.y
   };
-  const lPosition = {
+  var lPosition = {
     x: Math.min(lOrigin.x + rel.x * 120 - rel.x * 0.5, Math.max(lOrigin.x + rel.x * 0.5, lOrigin.x + rel.x * Math.round(lDelta.x / rel.x) + rel.x * 0.5 * (forward == 1 ? -1 : +1))),
     y: Math.min(lOrigin.y - rel.y * 0.5, Math.max(lOrigin.y - rel.y * 75 + rel.y * 0.5, lOrigin.y - rel.y * Math.round(lDelta.y / rel.y) + rel.y * 0.5 * (forward == 2 ? -1 : +1)))
   };
-  const lRadius = Math.sqrt(Math.pow(lPosition.x - lOrigin.x, 2) + Math.pow(lOrigin.y - lPosition.y, 2));
-  const lBearing = Math.PI * 1.5 + Math.atan((lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y));
-  const position = {
+  var lRadius = Math.sqrt(Math.pow(lPosition.x - lOrigin.x, 2) + Math.pow(lOrigin.y - lPosition.y, 2));
+  var lBearing = Math.PI * 1.5 + Math.atan((lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y));
+  var position = {
     x: origin.x + Math.cos(lBearing + rotation.z) * lRadius,
     y: origin.y + Math.sin(lBearing + rotation.z) * lRadius
   };

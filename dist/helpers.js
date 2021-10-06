@@ -22,14 +22,14 @@ export function throttle(wait, func, options) {
   var previous = 0;
   if (!options) options = {};
 
-  var later = function () {
+  var later = function later() {
     previous = options.leading === false ? 0 : Date.now();
     timeout = null;
     result = func.apply(context, args);
     if (!timeout) context = args = null;
   };
 
-  var throttled = function () {
+  var throttled = function throttled() {
     var _now = Date.now();
 
     if (!previous && options.leading === false) previous = _now;

@@ -14,10 +14,12 @@ function ShpericCanopies(settings) {
 ShpericCanopies.prototype = Object.create(Layer.prototype);
 
 ShpericCanopies.prototype.load = function () {
+  var _this = this;
+
   return fetch("/static/data/trees.sphere.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(this.parse);
+  }).then(function (res) {
+    return res.json().then(_this.parse);
   });
 };
 

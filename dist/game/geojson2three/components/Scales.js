@@ -3,7 +3,7 @@ function Scale(range, domain) {
 
   var _domain = Math.abs(domain[0] - domain[1]);
 
-  var fn = function (value) {
+  var fn = function fn(value) {
     return (value - domain[0]) / _domain * _range - _range / 2;
   };
 
@@ -19,7 +19,7 @@ function Scale(range, domain) {
 }
 
 function AbsoluteScale(domain) {
-  const _domain = domain[1] - domain[0];
+  var _domain = domain[1] - domain[0];
 
   return function (val) {
     return val / 180 * _domain;
@@ -27,11 +27,11 @@ function AbsoluteScale(domain) {
 }
 
 function RelativeScale(range, domain) {
-  const _domain = domain[1] - domain[0];
+  var _domain = domain[1] - domain[0];
 
-  const _range = range[1] - range[0];
+  var _range = range[1] - range[0];
 
-  const scale = function (val) {
+  var scale = function scale(val) {
     return (val - range[0]) / _range * _domain;
   };
 
@@ -41,7 +41,7 @@ function RelativeScale(range, domain) {
 }
 
 function ProjectedScale(projection, range, domain) {
-  const transformation = proj4(projection, "EPSG:4326");
+  var transformation = proj4(projection, "EPSG:4326");
   return function (coord) {
     return pixelScale(transformation.forward(coord));
   };

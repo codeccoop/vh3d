@@ -6,9 +6,8 @@ var BBox = require("./components/BBox.js");
 
 var Coordinates = require("./components/Coordinates.js");
 
-var {
-  uid
-} = require("../helpers.js");
+var _require = require("../helpers.js"),
+    uid = _require.uid;
 
 function Geojson2Three(env) {
   if (!env) {
@@ -135,9 +134,9 @@ Geojson2Three.prototype.update = function (geojson, options) {
           return self.project(coord, z_coordinate);
         }), options, feat); // object.geometry = line.geometry;
 
-        for (let from, to, i = 0, len = Math.max(line.geometry.vertices.length, object.geometry.vertices.length); i < len; i++) {
-          from = object.geometry.vertices[i];
-          to = line.geometry.vertices[i];
+        for (var from, to, _i = 0, len = Math.max(line.geometry.vertices.length, object.geometry.vertices.length); _i < len; _i++) {
+          from = object.geometry.vertices[_i];
+          to = line.geometry.vertices[_i];
 
           if (from && to) {
             from.setX(to.x);
@@ -146,7 +145,7 @@ Geojson2Three.prototype.update = function (geojson, options) {
           } else if (to) {
             object.geometry.vertices.push(to);
           } else {
-            object.geometry.vertices.slice(i, 1);
+            object.geometry.vertices.slice(_i, 1);
           }
         }
 
@@ -412,7 +411,7 @@ Geojson2Three.prototype.BasicMaterial = function (options, feature, name) {
 };
 
 Geojson2Three.prototype.clear = function () {
-  const self = this;
+  var self = this;
   this.objects.map(function (obj) {
     obj = self.scene.getObjectByName(obj.name);
     obj.geometry.dispose();

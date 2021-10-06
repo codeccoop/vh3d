@@ -74,10 +74,12 @@ function Buildings(settings) {
 Buildings.prototype = Object.create(Layer.prototype);
 
 Buildings.prototype.load = function () {
+  var _this = this;
+
   return fetch("/static/data/buildings.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(this.parse);
+  }).then(function (res) {
+    return res.json().then(_this.parse);
   });
 };
 

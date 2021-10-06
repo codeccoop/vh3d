@@ -11,10 +11,14 @@ function Grass(settings) {
 Grass.prototype = Object.create(Layer.prototype);
 
 Grass.prototype.load = function () {
+  var _this = this;
+
   return fetch("/static/data/grass.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(data => this.parse(data));
+  }).then(function (res) {
+    return res.json().then(function (data) {
+      return _this.parse(data);
+    });
   });
 };
 

@@ -14,21 +14,29 @@ function Lego(settings) {
 Lego.prototype = Object.create(Layer.prototype);
 
 Lego.prototype.load = function () {
-  return new Promise((res, rej) => {
-    this.loader.load("/static/images/lego.texture--gray.png", texture => {
+  var _this = this;
+
+  return new Promise(function (res, rej) {
+    _this.loader.load("/static/images/lego.texture--gray.png", function (texture) {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(120, 75);
-      this.settings.map = texture;
+      _this.settings.map = texture;
       fetch("/static/data/lego.base.geojson", {
         method: "GET"
-      }).then(res => res.json().then(this.parse)).then(_ => res()).catch(err => rej(err));
+      }).then(function (res) {
+        return res.json().then(_this.parse);
+      }).then(function (_) {
+        return res();
+      }).catch(function (err) {
+        return rej(err);
+      });
     });
   });
   return fetch("/static/data/lego.base.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(this.parse);
+  }).then(function (res) {
+    return res.json().then(_this.parse);
   });
 };
 

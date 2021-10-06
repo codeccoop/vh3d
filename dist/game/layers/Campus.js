@@ -11,10 +11,12 @@ function Campus(settings) {
 Campus.prototype = Object.create(Layer.prototype);
 
 Campus.prototype.load = function () {
+  var _this = this;
+
   return fetch("/static/data/campus.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(this.parse);
+  }).then(function (res) {
+    return res.json().then(_this.parse);
   });
 };
 

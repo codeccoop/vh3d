@@ -76,19 +76,19 @@ Coordinates.prototype.getMidpoint = function (point1, point2) {
 };
 
 Coordinates.getSubVectors = function (p0, p1) {
-  const x = p1[0] - p0[0];
-  const y = p1[1] - p0[1];
+  var x = p1[0] - p0[0];
+  var y = p1[1] - p0[1];
   return [x, y];
 };
 
 Coordinates.getAzimuth = function (p0, p1) {
-  const sub = Coordinates.getSubVectors(p0, p1);
-  const tan = sub[1] / sub[0];
+  var sub = Coordinates.getSubVectors(p0, p1);
+  var tan = sub[1] / sub[0];
   return tan === 0 ? sub[0] < 0 ? Math.PI : 0 : Math.atan(tan);
 };
 
 Coordinates.getDistance = function (p0, p1) {
-  const azimuth = Coordinates.getAzimuth(p0, p1);
+  var azimuth = Coordinates.getAzimuth(p0, p1);
   return (p1[0] - p0[0]) / Math.cos(azimuth);
 };
 

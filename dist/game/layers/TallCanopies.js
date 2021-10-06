@@ -15,10 +15,12 @@ function TallCanopies(settings) {
 TallCanopies.prototype = Object.create(Layer.prototype);
 
 TallCanopies.prototype.load = function () {
+  var _this = this;
+
   return fetch("/static/data/trees.tall.geojson", {
     method: "GET"
-  }).then(res => {
-    return res.json().then(this.parse);
+  }).then(function (res) {
+    return res.json().then(_this.parse);
   });
 };
 

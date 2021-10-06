@@ -21,7 +21,7 @@ Emitter.prototype.$emit = function (event, data) {
 };
 
 Emitter.asEmitter = function (obj) {
-  const emitter = new Emitter(document.createElement("div"));
+  var emitter = new Emitter(document.createElement("div"));
   obj.$on = emitter.$on.bind(emitter);
   obj.$off = emitter.$off.bind(emitter);
   obj.$emit = emitter.$emit.bind(emitter);

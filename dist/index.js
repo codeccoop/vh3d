@@ -2,7 +2,7 @@ import Cover from "./views/Cover.js";
 import Game from "./views/Game.js";
 Vue.use(VueRouter);
 Vue.use(VueCarousel);
-const router = new VueRouter({
+var router = new VueRouter({
   routes: [{
     path: "/",
     name: "cover",
@@ -17,7 +17,7 @@ const router = new VueRouter({
     component: Game
   }]
 });
-const vm = new Vue({
+var vm = new Vue({
   router: router
 }).$mount("#app");
 

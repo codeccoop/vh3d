@@ -8,41 +8,41 @@ function traverseFeatures(features, callback) {
     if (geom.type === "Point") {
       callback(feat, geom.coordinates);
     } else if (geom.type === "MultiPoint") {
-      for (let j = 0; j < geom.coordinates.length; j++) {
+      for (var j = 0; j < geom.coordinates.length; j++) {
         coords = geom.coordinates[j];
         callback(feat, coords, i);
       }
     } else if (geom.type === "LineString") {
-      for (let j = 0; j < geom.coordinates.length; j++) {
-        coords = geom.coordinates[j];
+      for (var _j = 0; _j < geom.coordinates.length; _j++) {
+        coords = geom.coordinates[_j];
         callback(feat, coords, i);
       }
     } else if (geom.type === "MultiLineString") {
-      for (let j = 0; j < geom.coordinates.length; j++) {
-        segment = geom.coordinates[j];
+      for (var _j2 = 0; _j2 < geom.coordinates.length; _j2++) {
+        segment = geom.coordinates[_j2];
 
-        for (let k = 0; k < segment.length; k++) {
+        for (var k = 0; k < segment.length; k++) {
           coords = segment[k];
           callback(feat, coords, i);
         }
       }
     } else if (geom.type === "Polygon") {
-      for (let j = 0; j < geom.coordinates.length; j++) {
-        segment = geom.coordinates[j];
+      for (var _j3 = 0; _j3 < geom.coordinates.length; _j3++) {
+        segment = geom.coordinates[_j3];
 
-        for (let k = 0; k < segment.length; k++) {
-          coords = segment[k];
+        for (var _k = 0; _k < segment.length; _k++) {
+          coords = segment[_k];
           callback(feat, coords, i);
         }
       }
     } else if (geom.type === "MultiPolygon") {
-      for (let j = 0; j < geom.coordinates.length; j++) {
-        polygon = geom.coordinates[j];
+      for (var _j4 = 0; _j4 < geom.coordinates.length; _j4++) {
+        polygon = geom.coordinates[_j4];
 
-        for (let k = 0; k < polygon.length; k++) {
-          segment = polygon[k];
+        for (var _k2 = 0; _k2 < polygon.length; _k2++) {
+          segment = polygon[_k2];
 
-          for (let l = 0; l < segment.length; l++) {
+          for (var l = 0; l < segment.length; l++) {
             coords = segment[l];
             callback(feat, coords, i);
           }
@@ -53,6 +53,8 @@ function traverseFeatures(features, callback) {
 }
 
 function BBox(features, zField, epsgCode) {
+  var _this = this;
+
   this._bbox = {
     SW: [Infinity, Infinity],
     NE: [-Infinity, -Infinity],
@@ -62,14 +64,15 @@ function BBox(features, zField, epsgCode) {
       y: [null, null]
     }
   };
-  traverseFeatures(features, (feat, coord) => {
-    this.updateZ(feat, zField);
-    this.update(coord);
+  traverseFeatures(features, function (feat, coord) {
+    _this.updateZ(feat, zField);
+
+    _this.update(coord);
   });
 }
 
 BBox.prototype.get = function () {
-  const dist = {
+  var dist = {
     sw: this._bbox.SW,
     ne: this._bbox.NE,
     z: this._bbox.Z,
