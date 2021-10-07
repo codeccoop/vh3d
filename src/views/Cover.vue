@@ -6,9 +6,9 @@
     </header>
     <main class="text">
       <h1>Benvingut, Benvinguda</h1>
-      <p>Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots i totes. Es tracta d’un puzle. Tu, com a membre del Vall d’Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots i totes hi posem la nostra peça aconseguirem descobrir la imatge que s’amaga en el puzle.</p>
+      <p>Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots i totes. Es tracta d’un puzle. Tu, com a membre de Vall d’Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots i totes hi posem la nostra peça aconseguirem descobrir la imatge que s’amaga en el puzle.</p>
       <h3>Juguem?</h3>
-      <p>La forma de participar-hi és molt senzilla. Quan cliquis al botó de jugar, t’apareixerà una imatge virtual aèria del campus del Vall d’Hebron. El reconeixeràs de seguida. Al costat veuràs les instruccions del joc i els comandaments o tecles que et permetran moure’t pel campus.</p>
+      <p>La forma de participar-hi és molt senzilla. Quan cliquis al botó de jugar, t’apareixerà una imatge virtual aèria del campus de Vall d’Hebron. El reconeixeràs de seguida. Al costat veuràs les instruccions del joc i els comandaments o tecles que et permetran moure’t pel campus.</p>
       <p v-if="pieceId" class="enter-btn"><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
       <img src="/static/images/piece-blue.png" class="piece" />
     </main>

@@ -168,7 +168,7 @@ Pieces.prototype.getNearest = function (vector, direction) {
     y: origin.y + Math.sin(lBearing + rotation.z) * lRadius,
   };
 
-  return new THREE.Vector3(position.x, position.y, vector.z);
+  return new Vector3(position.x, position.y, vector.z);
 };
 
 export default Pieces;

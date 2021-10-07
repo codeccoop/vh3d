@@ -120,7 +120,7 @@
              <label>I digue'ns en quínes línies estratègiques creus que la teva aportació és més important.</label>
            </p>
            <p><textarea v-model="userOpinion" class="opinion"></textarea></p>
-           <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
+           <button class="restart-btn button" @click="reload">Tornar a jugar</button>
          </div>
        </div>
        <div class="done-modal__image">
@@ -128,7 +128,7 @@
             <img :src="doneImageSrc" />
           </div>
           <button class="submit-btn button" @click="sent" :class="{disabled: !(userName && userArea && userOpinion)}">Enviar</button>
-          <button class="restart-btn button" @click="location.reload()">Tornar a jugar</button>
+          <button class="restart-btn button" @click="reload">Tornar a jugar</button>
        </div>
     </div>
     <canvas id="canvas"></canvas>
@@ -262,11 +262,16 @@ export default {
         });
       });
     },
+    reload() {
+      window.location.reload()
+    },
     sent() {
       for (let input of this.$el.querySelectorAll(".form p input")) {
         input.classList.add("sent");
       }
       this.$el.querySelector(".form p textarea").classList.add("sent");
+      this.$el.querySelector('.submit-btn').classList.add('submitted');
+      this.$el.querySelector('.submit-btn').innerText = 'Enviat';
     },
     submitForm(field, value, el) {
       clearTimeout(submitTimeout);
@@ -285,7 +290,7 @@ export default {
       window.addEventListener("popstate", (event) => {
         console.log(
           "location: " +
-            document.location +
+            window.location +
             ", state: " +
             JSON.stringify(event.state)
         );

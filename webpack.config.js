@@ -27,7 +27,7 @@ module.exports = {
           presets: [
             ['@babel/preset-env', {
               targets: {
-                browsers: 'last 2 versions, > 5%, ie >= 9'
+                browsers: 'last 2 versions, > 5%, ie >= 10'
               },
               modules: false,
               useBuiltIns: 'entry',
