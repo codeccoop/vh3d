@@ -23,17 +23,27 @@ function bootstrap_dist() {
     mkdir -p dist/vendor
     cp node_modules/vue/dist/vue.min.js dist/vendor/vue.min.js
     cp node_modules/vue-router/dist/vue-router.min.js dist/vendor/vue-router.min.js
-    cp node_modules/vue-carousel/dist/vue-carousel.min.js dist/vendor/vue-carousel.min.js
+    # cp node_modules/vue-carousel/dist/vue-carousel.min.js dist/vendor/vue-carousel.min.js
     cp node_modules/@turf/turf/turf.min.js dist/vendor/turf.min.js
-    cp node_modules/proj4/dist/proj4.js dist/vendor/proj4.js
+    # cp node_modules/proj4/dist/proj4.js dist/vendor/proj4.js
     cp node_modules/three/build/three.min.js dist/vendor/three.min.js
     cp node_modules/three/examples/js/controls/OrbitControls.js dist/vendor/OrbitControls.js
     cp node_modules/three/examples/js/controls/PointerLockControls.js dist/vendor/PointerLockControls.js
     cp node_modules/three/examples/js/loaders/GLTFLoader.js dist/vendor/GLTFLoader.js
-    cp node_modules/three/examples/fonts/helvetiker_bold.typeface.json dist/vendor/helvetiker_bold.typeface.json
-
+    
+    cp node_modules/three/examples/fonts/helvetiker_bold.typeface.json static/helvetiker_bold.typeface.json
     cp index.html dist/
 }
+
+function postcss() {
+  cp -rf static/css css
+  npx postcss css/Game.css -o static/css/Game.css -u autoprefixer
+  npx postcss css/Cover.css -o static/css/Cover.css -u autoprefixer
+  npx postcss css/ie.css -o static/css/ie.css -u autoprefixer
+  npx postcss css/index.css -o static/css/index.css -u autoprefixer
+  rm -rf css
+}
+
 if [[ "$command" = "install" ]]; then
     npm install
 elif [[ "$command" = "develop" ]]; then
@@ -41,6 +51,7 @@ elif [[ "$command" = "develop" ]]; then
     npx babel --watch src --out-dir dist
 elif [[ "$command" = "build" ]]; then
     bootstrap_dist
+    postcss
     npx babel src --out-dir dist
 else
   echo "Unrecognized command"

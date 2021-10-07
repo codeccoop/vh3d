@@ -1,13 +1,15 @@
-{presets: [
-    [
-      '@babel/preset-env',
-      {
-        targets: {
-          browsers:   'last 2 versions, > 5%, ie >= 9'
-        },
-        modules:      false,
-        useBuiltIns:  'entry',
-        debug:        true
-      }
-    ]
-  ]}
+{
+  presets: [
+    ['@babel/preset-env', {
+      targets: {
+        browsers: 'last 2 versions, > 5%, ie >= 10'
+      },
+      modules: 'auto',
+      useBuiltIns: 'entry',
+      debug: false,
+      corejs: 3
+    }]
+  ],
+  plugins: ['@babel/plugin-transform-runtime', '@babel/plugin-transform-regenerator'], 
+  sourceType: 'unambiguous'
+}

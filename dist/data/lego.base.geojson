@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "lego",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
-"features": [
-{ "type": "Feature", "properties": { "fid": null, "id": null, "name": null, "alt": null }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 237969.789271320303669, 5075636.999400746077299 ], [ 238006.463845404039603, 5075566.00458347145468 ], [ 238051.001303419528995, 5075589.011788312345743 ], [ 238014.326729335734854, 5075660.00660558603704 ], [ 237969.789271320303669, 5075636.999400746077299 ] ] ] } }
-]
-}
