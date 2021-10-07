@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+    <head>
+        <title>vh3d</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+        <link href="/static/css/index.css" rel="stylesheet" type="text/css"/>
+        <link href="/static/css/ie.css" rel="stylesheet" type="text/css"/>
+
+        <link rel="shortcut icon" type="image/png" href="/static/images/vh-icon.png"/>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="ie">
+            <div class="header">
+                <img src="/static/images/pla-estrategic.png" class="logo-pla" type="image/png" />
+                <img src="/static/images/logo-vh--blue.png" class="logo-vh" type="image/png" />
+            </div>
+            <div class="main text">
+                <h1>Benvingut, Benvinguda</h1>
+                <p>Ens agradaria convidar-te a participar en un joc de construcció que només podrem completar si hi participem tots i totes. Es tracta d’un puzle. Tu, com a membre del Vall d’Hebron, tens una peça. La resta de peces són en mans dels teus companys i companyes. Només si tots i totes hi posem la nostra peça aconseguirem descobrir la imatge que s’amaga en el puzle.</p>
+                <h3>Vols jugar?</h3>
+                <p>Per poder jugar, hauràs d'accedir a l'enllaç del joc des d'un altre navegador del que estàs utilitzant actualment. Pot ser qualsevol dels que trobaràs normalment a un ordinador, ja sigui Chrome, Firefox, Safari o Opera. Si no disposes d'una d'aquestes alternatives, pots enviar-te un correu amb l'enllaç al teu correu personal per dedicar-li una estona en un altre moment. Disculpa les molesties i gràcies per l'interés.</p>
+                <p class="enter-btn">
+                    <a target="_blank" rel="noopener noreferrer" href="">
+                        <button class="button black">Enviar enllaç</button>
+                    </a>
+                    <div id="useruri"></div>
+                </p>
+                <img src="/static/images/piece-blue.png" class="piece" />
+            </div>
+            <div class="footer"></div>
+        </div>
+    </body>
+    <script>
+        var id = location.hash.replace('#', '');
+        var uri = 'https://fem.vallhebron.com/#/pieceId=' + id
+        document.getElementsByTagName('a')[0].setAttribute('href', 'mailto:elteucorreu@electronic.com?subject=Enllaç al joc&body=Que et diverteixis molt!%0D%0A%0D%0A' + uri)
+        document.getElementsByTagName('button')[0].onclick = function () {
+            document.getElementById('useruri').innerHTML = '<b style="margin-top: 10px:">Aquest és el teu enllaç únic</b><br/><a href="' + uri + '">' + uri + '</a>'
+        }
+    </script>
+</html>

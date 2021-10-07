@@ -34,11 +34,4 @@ function RelativeScale(range, domain) {
   return scale;
 }
 
-function ProjectedScale(projection, range, domain) {
-  const transformation = proj4(projection, "EPSG:4326");
-  return function (coord) {
-    return pixelScale(transformation.forward(coord));
-  };
-}
-
-export { AbsoluteScale, RelativeScale, ProjectedScale, Scale };
+export { AbsoluteScale, RelativeScale, Scale };

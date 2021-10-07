@@ -1,3 +1,5 @@
+import { TextureLoader, RepeatWrapping } from 'three'
+
 import Layer from "../geojson2three/components/Layer.js";
 
 function Lego(settings) {
@@ -10,7 +12,7 @@ function Lego(settings) {
 
   Layer.call(this, settings);
 
-  this.loader = new THREE.TextureLoader();
+  this.loader = new TextureLoader();
 }
 
 Lego.prototype = Object.create(Layer.prototype);
@@ -18,8 +20,8 @@ Lego.prototype = Object.create(Layer.prototype);
 Lego.prototype.load = function () {
   return new Promise((res, rej) => {
     this.loader.load("/static/images/lego.texture--gray.png", (texture) => {
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
       texture.repeat.set(120, 75);
       this.settings.map = texture;
       fetch("/static/data/lego.base.geojson", {

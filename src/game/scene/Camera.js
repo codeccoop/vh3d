@@ -1,4 +1,6 @@
-class Camera extends THREE.PerspectiveCamera {
+import { PerspectiveCamera } from 'three'
+
+class Camera extends PerspectiveCamera {
   constructor() {
     super(...arguments);
     this.up.set(0, 0, 1);

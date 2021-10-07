@@ -1,3 +1,18 @@
+import {
+  Points,
+  Line,
+  LineSegments,
+  Mesh,
+  Geometry,
+  Vector3,
+  ShapeGeometry,
+  Shape,
+  EdgesGeometry,
+  PointsMaterial,
+  LineBasicMaterial,
+  MeshLambertMaterial
+} from 'three'
+
 var Scale = require("./components/Scale.js");
 var Projection = require("./components/Projection.js");
 var BBox = require("./components/BBox.js");
@@ -345,7 +360,7 @@ Geojson2Three.prototype.Point = function (sc, options, feature) {
   var point_material = this.PointMaterial(options, feature, name);
   point_material.name = name;
 
-  var point = new THREE.Points(point_geom, this.material);
+  var point = new Points(point_geom, this.material);
   point.name = name;
 
   var self = this;
@@ -362,7 +377,7 @@ Geojson2Three.prototype.Line = function (sc, options, feature) {
 
   var line_material = this.LineMaterial(options, feature, name);
 
-  var line = new THREE.Line(line_geom, line_material);
+  var line = new Line(line_geom, line_material);
   line.name = name;
 
   var self = this;
@@ -384,8 +399,8 @@ Geojson2Three.prototype.Polygon = function (sc, options, feature, scales) {
     feature,
     name
   );
-  var polygon = new THREE.Mesh(polygon_geom, polygon_material);
-  var edges = new THREE.LineSegments(edges_geom, edges_material);
+  var polygon = new Mesh(polygon_geom, polygon_material);
+  var edges = new LineSegments(edges_geom, edges_material);
 
   var self = this;
   polygon.draw = function () {
@@ -407,16 +422,16 @@ Geojson2Three.prototype.Geom = function (sc, name) {
   // geom.computeBoundingSphere();
   // geom.name = name || uid();
   // return geom;
-  var geom = new THREE.Geometry();
+  var geom = new Geometry();
   sc.map(function (coord) {
-    geom.vertices.push(new THREE.Vector3(coord[0], coord[1], coord[2]));
+    geom.vertices.push(new Vector3(coord[0], coord[1], coord[2]));
   });
   geom.name = name || uid();
   return geom;
 };
 
 Geojson2Three.prototype.Shape = function (sc, name) {
-  var shape = new THREE.Shape();
+  var shape = new Shape();
   sc.map(function (coord, i) {
     if (i == 0) {
       shape.moveTo(coord[0], coord[1]);
@@ -425,13 +440,13 @@ Geojson2Three.prototype.Shape = function (sc, name) {
     }
   });
 
-  var geometry = new THREE.ShapeGeometry(shape);
+  var geometry = new ShapeGeometry(shape);
   geometry.name = name || uid();
   return geometry;
 };
 
 Geojson2Three.prototype.Edges = function (sc, name) {
-  var shape = new THREE.Shape();
+  var shape = new Shape();
   sc.map(function (coord, i) {
     if (i == 0) {
       shape.moveTo(coord[0], coord[1]);
@@ -440,7 +455,7 @@ Geojson2Three.prototype.Edges = function (sc, name) {
     }
   });
 
-  var geometry = new THREE.EdgesGeometry(new THREE.ShapeGeometry(shape));
+  var geometry = new EdgesGeometry(new ShapeGeometry(shape));
   geometry.name = name || uid();
   return geometry;
 };
@@ -458,7 +473,7 @@ Geojson2Three.prototype.PointMaterial = function (options, feature, name) {
     return a;
   }, new Object());
 
-  var material = new THREE.PointsMaterial(options);
+  var material = new PointsMaterial(options);
   material.name = name || uid();
   return material;
 };
@@ -476,7 +491,7 @@ Geojson2Three.prototype.LineMaterial = function (options, feature, name) {
     return a;
   }, new Object());
 
-  var material = new THREE.LineBasicMaterial(options);
+  var material = new LineBasicMaterial(options);
   material.name = name || uid();
   return material;
 };
@@ -494,7 +509,7 @@ Geojson2Three.prototype.BasicMaterial = function (options, feature, name) {
     return a;
   }, new Object());
 
-  var material = new THREE.MeshLambertMaterial(options);
+  var material = new MeshLambertMaterial(options);
   material.name = name || uid();
   return material;
 };

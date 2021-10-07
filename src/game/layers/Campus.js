@@ -1,10 +1,12 @@
+import { DoubleSide } from 'three'
+
 import Layer from "../geojson2three/components/Layer.js";
 
 function Campus(settings) {
   settings = settings || {};
   settings.color = 0xaaaaaa;
   settings.name = "campus";
-  settings.side = THREE.DoubleSide;
+  settings.side = DoubleSide;
 
   Layer.call(this, settings);
 }

@@ -1,3 +1,4 @@
+import { Vector2, DoubleSide } from 'three'
 import MultiPolygon from "../geometries/MultiPolygon.js";
 import Polygon from "../geometries/Polygon.js";
 import LineString from "../geometries/LineString.js";
@@ -17,7 +18,7 @@ function Layer(settings) {
   delete this.settings.data;
   this.name = this.settings.name;
   delete this.settings.name;
-  this.settings.side = THREE.DoubleSide;
+  this.settings.side = DoubleSide;
 
   Emitter.asEmitter(this);
 
@@ -146,7 +147,7 @@ Layer.prototype.localToWorld = function () {
     x: target.x - center[0],
     y: target.y - center[1],
   };
-  if (distance.x === 0 && distance.y === 0) return new THREE.Vector2(...center);
+  if (distance.x === 0 && distance.y === 0) return new Vector2(...center);
 
   const bearing = Math.atan(distance.y / distance.x);
   const radius =
@@ -156,7 +157,7 @@ Layer.prototype.localToWorld = function () {
       ? distance.x / Math.cos(bearing)
       : 0;
 
-  return new THREE.Vector2(center[0]);
+  return new Vector2(center[0]);
 };
 
 export default Layer;

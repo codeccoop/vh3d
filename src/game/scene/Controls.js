@@ -1,4 +1,9 @@
-export class OrbitControls extends THREE.OrbitControls {
+import { Vector3, Euler, Raycaster } from 'three'
+import booleanIntersects from '@turf/boolean-intersects'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
+
+export class CustomOrbitControls extends OrbitControls {
   constructor(camera, canvas) {
     super(camera, canvas);
 
@@ -26,16 +31,16 @@ export class OrbitControls extends THREE.OrbitControls {
   }
 }
 
-export class PointerLockControls extends THREE.PointerLockControls {
+export class CustomPointerLockControls extends PointerLockControls {
   constructor(camera, canvas) {
     super(camera, canvas);
 
-    this.velocity = new THREE.Vector3();
-    this.direction = new THREE.Vector3();
-    this.euler = new THREE.Euler(0, 0, 0, "ZYX");
-    this.raycaster = new THREE.Raycaster(
-      new THREE.Vector3(),
-      new THREE.Vector3(0, 0, -1),
+    this.velocity = new Vector3();
+    this.direction = new Vector3();
+    this.euler = new Euler(0, 0, 0, "ZYX");
+    this.raycaster = new Raycaster(
+      new Vector3(),
+      new Vector3(0, 0, -1),
       0,
       5
     );
@@ -210,7 +215,6 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
   isColliding() {
     const position = this.getObject().position;
-    const point = turf.point([position.x, position.y]);
 
     const perimetter = {
       type: "Polygon",
@@ -228,7 +232,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
     return (
       this.buildings.features.filter((feat) => {
         return (
-          feat.properties.base === 0 && turf.booleanIntersects(feat, perimetter)
+          feat.properties.base === 0 && booleanIntersects(feat, perimetter)
         );
       }).length > 0
     );
@@ -236,7 +240,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
 
   onColliding(delta) {
     const position = this.getObject().position;
-    const direction = this.getDirection(new THREE.Vector3(0, 0, -1));
+    const direction = this.getDirection(new Vector3(0, 0, -1));
 
     this.getObject().position.fromArray([
       position.x - 10 * direction.x,
@@ -299,7 +303,7 @@ export class PointerLockControls extends THREE.PointerLockControls {
       this.getObject().position.z += this.velocity.z * delta;
       if (this.getObject().position.z < -1e3) {
         this.deactivate();
-        document.dispatchEvent(new CustomEvent("gameover"));
+        document.dispatchEvent(new Event("gameover"));
       }
     }
 

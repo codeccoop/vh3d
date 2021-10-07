@@ -1,13 +1,15 @@
+import { Scene, Euler, Vector3 } from 'three'
+
 import Camera from "./Camera.js";
 import Lights from "./Lights.js";
-import { OrbitControls, PointerLockControls } from "./Controls.js";
+import { CustomOrbitControls, CustomPointerLockControls } from "./Controls.js";
 import Emitter from "../mixins/Emitter.js";
 import { RelativeScale } from "../geojson2three/components/Scales.js";
 
 const origin = [238580.0, 5075606.0];
 const target = [238007.0, 5075560.0];
 
-class Scene extends THREE.Scene {
+class MyScene extends Scene {
   constructor(canvas, mode) {
     super(...arguments);
 
@@ -21,12 +23,12 @@ class Scene extends THREE.Scene {
     this.state = {
       _mode: mode === "touch" || mode === "cover" ? "orbit" : "pointer",
       orbit: {
-        position: new THREE.Vector3(0, 0, 100),
-        rotation: new THREE.Euler(1.08, 0.57, 0.28, "XYZ"),
+        position: new Vector3(0, 0, 100),
+        rotation: new Euler(1.08, 0.57, 0.28, "XYZ"),
       },
       pointer: {
-        position: new THREE.Vector3(175, 254, 2.5),
-        rotation: new THREE.Euler(Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"),
+        position: new Vector3(175, 254, 2.5),
+        rotation: new Euler(Math.PI * 0.5, Math.PI * 0.5, 0.0, "XYZ"),
       },
     };
 
@@ -36,8 +38,8 @@ class Scene extends THREE.Scene {
     };
 
     this.controls = {
-      orbit: new OrbitControls(this.cameras.orbit, this.canvasEl),
-      pointer: new PointerLockControls(this.cameras.pointer, document.body),
+      orbit: new CustomOrbitControls(this.cameras.orbit, this.canvasEl),
+      pointer: new CustomPointerLockControls(this.cameras.pointer, document.body),
     };
 
     Object.defineProperties(this.state, {
@@ -215,7 +217,7 @@ class Scene extends THREE.Scene {
 
     if (this.legoPiece) {
       const direction = this.controls.pointer.getDirection(
-        new THREE.Vector3(0, 0, 0)
+        new Vector3(0, 0, 0)
       );
       const rotation = this.controls.pointer.getObject().rotation.clone();
       const reordered = rotation.reorder("ZYX");
@@ -389,4 +391,4 @@ class Scene extends THREE.Scene {
   }
 }
 
-export default Scene;
+export default MyScene;

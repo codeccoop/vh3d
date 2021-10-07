@@ -1,3 +1,20 @@
+import {
+  WebGLRenderer,
+  ConeGeometry,
+  RingGeometry,
+  PlaneGeometry,
+  TextGeometry,
+  ShapeGeometry,
+  Shape,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  MeshToonMaterial,
+  Mesh,
+  DoubleSide,
+  FontLoader
+} from "three"
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+
 import Scene from "./scene/index.js";
 
 import Campus from "./layers/Campus.js";
@@ -22,7 +39,7 @@ export default class Game {
     this.playerData = piece;
     this.mode = mode;
     this.canvas = canvas;
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       alpha: true,
       canvas: this.canvas,
       pixelRatio: window.devicePixelRatio,
@@ -124,7 +141,7 @@ export default class Game {
       this.done = true;
       this.scene.done = true;
       this.scene.legoShadow.children.forEach((child) => {
-        child.material = new THREE.MeshLambertMaterial({
+        child.material = new MeshLambertMaterial({
           color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
         });
       });
@@ -148,41 +165,41 @@ export default class Game {
     const lego = new Lego();
     const pieces = new Pieces();
 
-    const markerGeom = new THREE.ConeGeometry(10, 50, 32);
-    const markerMat = new THREE.MeshToonMaterial({ color: 0xff0000 });
-    const marker = new THREE.Mesh(markerGeom, markerMat);
+    const markerGeom = new ConeGeometry(10, 50, 32);
+    const markerMat = new MeshToonMaterial({ color: 0xff0000 });
+    const marker = new Mesh(markerGeom, markerMat);
     marker.rotation.x = -Math.PI * 0.5;
 
     // if (this.mode === "cover") {
     const self = this;
-    const loader = new THREE.FontLoader();
-    loader.load("/vendor/helvetiker_bold.typeface.json", function (font) {
-      const textMat = new THREE.MeshToonMaterial({ color: 0xffffff });
-      const exitGeom = new THREE.PlaneGeometry(100, 30);
-      const exitText = new THREE.TextGeometry("Sortida", {
+    const loader = new FontLoader();
+    loader.load("/static/helvetiker_bold.typeface.json", function (font) {
+      const textMat = new MeshToonMaterial({ color: 0xffffff });
+      const exitGeom = new PlaneGeometry(100, 30);
+      const exitText = new TextGeometry("Sortida", {
         size: 14,
         font: font,
         height: 0.5,
         curveSegments: 12,
         bevelEnabled: false,
       });
-      const targetGeom = new THREE.PlaneGeometry(100, 30);
-      const targetText = new THREE.TextGeometry("Arribada", {
+      const targetGeom = new PlaneGeometry(100, 30);
+      const targetText = new TextGeometry("Arribada", {
         size: 13,
         font: font,
         height: 0.5,
         curveSegments: 12,
         bevelEnabled: false,
       });
-      const exit = new THREE.Mesh(exitGeom, markerMat);
+      const exit = new Mesh(exitGeom, markerMat);
       exit.position.y += 5;
-      const exitLabel = new THREE.Mesh(exitText, textMat);
+      const exitLabel = new Mesh(exitText, textMat);
       exitLabel.position.x -= 30;
       exitLabel.position.y -= 7;
       exit.add(exitLabel);
-      const target = new THREE.Mesh(targetGeom, markerMat);
+      const target = new Mesh(targetGeom, markerMat);
       target.position.y += 5;
-      const targetLabel = new THREE.Mesh(targetText, textMat);
+      const targetLabel = new Mesh(targetText, textMat);
       targetLabel.position.x -= 35;
       targetLabel.position.y -= 7;
       target.add(targetLabel);
@@ -205,7 +222,7 @@ export default class Game {
     this.scene.marker = marker;
     // }
 
-    const closinesGeom = new THREE.RingGeometry(
+    const closinesGeom = new RingGeometry(
       1.3,
       1.4,
       20,
@@ -213,21 +230,21 @@ export default class Game {
       -Math.PI * 0.25,
       Math.PI * 0.5
     );
-    const closinesMat = new THREE.MeshLambertMaterial({
+    const closinesMat = new MeshLambertMaterial({
       transparent: true,
       opacity: 0.8,
       color: 0xfdff85,
       shininess: 150,
     });
-    const closinesRing = new THREE.Mesh(closinesGeom, closinesMat);
-    const arrowShape = new THREE.Shape();
+    const closinesRing = new Mesh(closinesGeom, closinesMat);
+    const arrowShape = new Shape();
     arrowShape.moveTo(-0.5, 0);
     arrowShape.lineTo(0, 1);
     arrowShape.lineTo(0.5, 0);
     arrowShape.bezierCurveTo(0.4, 0.175, -0.4, 0.175, -0.5, 0);
-    const arrowGeom = new THREE.ShapeGeometry(arrowShape);
+    const arrowGeom = new ShapeGeometry(arrowShape);
     arrowGeom.rotateZ(-Math.PI * 0.48);
-    const arrow = new THREE.Mesh(arrowGeom, closinesMat);
+    const arrow = new Mesh(arrowGeom, closinesMat);
     arrow.position.x += 1.4;
     closinesRing.add(arrow);
     this.scene.closinesRing = closinesRing;
@@ -292,7 +309,7 @@ export default class Game {
 
   loadGltfs(callback) {
     if (this.mode === "pointer") {
-      const gltfLoader = new THREE.GLTFLoader();
+      const gltfLoader = new GLTFLoader();
       gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
         const piece = gltf.scene;
         gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
@@ -307,14 +324,14 @@ export default class Game {
 
           piece.children.forEach((child) => {
             if (child.type === "Mesh") {
-              child.material = new THREE.MeshLambertMaterial({
+              child.material = new MeshLambertMaterial({
                 color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
               });
             }
           });
           pieceShadow.children.forEach((child) => {
             if (child.type === "Mesh") {
-              child.material = new THREE.MeshBasicMaterial({
+              child.material = new MeshBasicMaterial({
                 color: 0xffffff,
                 opacity: 0.3,
                 transparent: true,
@@ -323,9 +340,9 @@ export default class Game {
           });
           armRight.children.forEach((child) => {
             if (child.type === "Mesh") {
-              child.material = new THREE.MeshToonMaterial({
+              child.material = new MeshToonMaterial({
                 color: "rgb(240, 200, 160)",
-                side: THREE.DoubleSide,
+                side: DoubleSide,
               });
             }
           });

@@ -1,3 +1,9 @@
+import {
+  Shape,
+  ExtrudeGeometry,
+  Mesh
+} from 'three'
+
 import Geometry from "./Geometry.js";
 
 function LineString(json, settings) {
@@ -31,24 +37,19 @@ LineString.prototype.build = function () {
         return acum;
       }, [])
       .map((box) => {
-        let shape = new THREE.Shape();
+        let shape = new Shape();
         shape.moveTo(box[0][0]);
         shape.lineTo(box[0][1]);
         shape.lineTo(box[1][1]);
         shape.lineTo(box[1][0]);
         shape.lineTo(box[0][0]);
-        let geom = new THREE.ExtrudeGeometry(shape, {
+        let geom = new ExtrudeGeometry(shape, {
           depth: height,
           ...this.settings,
         });
 
-        let mesh = new THREE.Mesh(geom, this.material);
+        let mesh = new Mesh(geom, this.material);
         this.shapes.push(mesh);
-        // let geom = new THREE.BoxGeometry(radius, box[2], height);
-        // geom.position.set(...box[3]);
-        // geom.translate(...box[3]);
-        // geom.rotateZ = box[4];
-        // return geom;
       });
 
     // const geometry = new THREE.BufferGeometry();

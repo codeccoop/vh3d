@@ -1,3 +1,16 @@
+import {
+  Shape,
+  LineSegments,
+  ShapeGeometry,
+  ExtrudeGeometry,
+  PlaneGeometry,
+  EdgesGeometry,
+  Mesh,
+  MeshBasicMaterial,
+  MeshToonMaterial,
+  LineBasicMaterial
+} from 'three'
+
 import BBox from "../components/BBox.js";
 import { RelativeScale } from "../components/Scales.js";
 
@@ -100,23 +113,23 @@ Geometry.prototype.render = function () {
   }
 };
 
-Geometry.prototype.Shape = THREE.Shape;
+Geometry.prototype.Shape = Shape;
 
 Geometry.prototype.Geometry = function (shape, settings) {
   if (settings.z != null) {
-    return new THREE.ExtrudeGeometry(shape, {
+    return new ExtrudeGeometry(shape, {
       bevelEnabled: false,
       ...settings,
     });
   } else {
-    return new THREE.ShapeGeometry(shape, settings);
+    return new ShapeGeometry(shape, settings);
   }
 };
 
-Geometry.prototype.Mesh = THREE.Mesh;
+Geometry.prototype.Mesh = Mesh;
 
 Geometry.prototype.Material = function (settings) {
-  return new THREE.MeshToonMaterial(settings);
+  return new MeshToonMaterial(settings);
 };
 
 Geometry.prototype.buildUVSurface = function (
@@ -133,19 +146,19 @@ Geometry.prototype.buildUVSurface = function (
   const lngs = [this.xScale(bbox.lngs[0]), this.xScale(bbox.lngs[1])];
   const lats = [this.yScale(bbox.lats[0]), this.yScale(bbox.lats[1])];
 
-  const plane = new THREE.PlaneGeometry(
+  const plane = new PlaneGeometry(
     lngs[1] - lngs[0],
     lats[1] - lats[0],
     1,
     1
   );
-  const material = new THREE.MeshBasicMaterial({
+  const material = new MeshBasicMaterial({
     map: map,
     color: 0xffffff,
     // wireframe: true,
     transparent: true,
   });
-  const mesh = new THREE.Mesh(plane, material);
+  const mesh = new Mesh(plane, material);
   mesh.position.set(
     lngs[0] + (lngs[1] - lngs[0]) / 2,
     lats[0] + (lats[1] - lats[0]) / 2,
@@ -161,21 +174,21 @@ Geometry.prototype.buildEdges = function (geometry, color) {
   ["r", "g", "b"].map((band) => {
     color[band] = color[band] * 0.5;
   });
-  geometry = new THREE.EdgesGeometry(geometry);
-  return new THREE.LineSegments(
+  geometry = new EdgesGeometry(geometry);
+  return new LineSegments(
     geometry,
-    new THREE.LineBasicMaterial({ color: color.getHex() })
+    new LineBasicMaterial({ color: color.getHex() })
   );
 };
 
 Geometry.prototype.buildWireframe = function (geometry, color) {
-  const material = new THREE.MeshBasicMaterial({
+  const material = new MeshBasicMaterial({
     wireframe: true,
     transparent: true,
     color: color,
   });
 
-  return new THREE.Mesh(geometry, material);
+  return new Mesh(geometry, material);
 };
 
 export default Geometry;

@@ -1,3 +1,5 @@
+import { TextureLoader, NearestFilter, Vector3 } from 'three'
+
 import Layer from "../geojson2three/components/Layer.js";
 
 function Pieces(settings) {
@@ -11,7 +13,7 @@ function Pieces(settings) {
 
   Layer.call(this, settings);
 
-  this.loader = new THREE.TextureLoader();
+  this.loader = new TextureLoader();
 }
 
 Pieces.prototype = Object.create(Layer.prototype);
@@ -19,7 +21,7 @@ Pieces.prototype = Object.create(Layer.prototype);
 Pieces.prototype.load = function (piece_id) {
   return new Promise((res, rej) => {
     this.loader.load("/puzzle/" + piece_id, (texture) => {
-      texture.magFilter = THREE.NearestFilter;
+      texture.magFilter = NearestFilter;
       texture.center.set(0.5, 0.5);
       // texture.rotation = Math.PI * 0.5;
       this.settings.map = texture;
@@ -60,7 +62,7 @@ Pieces.prototype.localToWorld = function (vector) {
     y: target.y - center.y,
   };
   if (distance.x === 0 && distance.y === 0) {
-    return new THREE.Vector3(center.x, center.y, 0.5);
+    return new Vector3(center.x, center.y, 0.5);
   }
 
   const bearing = Math.atan(distance.y / distance.x);
@@ -71,7 +73,7 @@ Pieces.prototype.localToWorld = function (vector) {
       ? distance.x / Math.cos(bearing)
       : 0;
 
-  return new THREE.Vector3(
+  return new Vector3(
     center.x + Math.cos(bearing + mesh.rotation.z) * radius,
     center.y + Math.sin(bearing + mesh.rotation.z) * radius,
     0.5

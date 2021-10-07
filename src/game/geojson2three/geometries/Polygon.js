@@ -1,3 +1,4 @@
+import { BoxGeometry, PlaneGeometry } from 'three'
 import Geometry from "./Geometry.js";
 import BBox from "../components/BBox.js";
 import Coordinates from "../components/Coordinates.js";
@@ -75,9 +76,9 @@ Polygon.prototype.build = function () {
         }
 
         if (this.settings.primitive_type === "box") {
-          geometry = new THREE.BoxGeometry(maxDistance, minDistance, height);
+          geometry = new BoxGeometry(maxDistance, minDistance, height);
         } else if (this.settings.primitive_type === "plane") {
-          geometry = new THREE.PlaneGeometry(maxDistance, minDistance, 1, 1);
+          geometry = new PlaneGeometry(maxDistance, minDistance, 1, 1);
         }
 
         mesh = new this.Mesh(geometry, material);

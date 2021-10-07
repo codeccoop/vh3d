@@ -1,3 +1,9 @@
+import {
+  CylinderGeometry,
+  SphereGeometry,
+  ConeGeometry,
+  MeshToonMaterial
+} from 'three'
 import Geometry from "./Geometry.js";
 
 function Point(json, settings) {
@@ -45,20 +51,19 @@ Point.prototype.build = function () {
 };
 
 Point.prototype.CylinderGeometry = function (radius, height, segments) {
-  return new THREE.CylinderGeometry(radius, radius, height, segments);
+  return new CylinderGeometry(radius, radius, height, segments);
 };
 
 Point.prototype.SphereGeometry = function (radius, wSegments, hSegments) {
-  return new THREE.SphereGeometry(radius, wSegments, hSegments);
+  return new SphereGeometry(radius, wSegments, hSegments);
 };
 
 Point.prototype.ConeGeometry = function (radius, height, segments) {
-  return new THREE.ConeGeometry(radius, height, segments);
+  return new ConeGeometry(radius, height, segments);
 };
 
 Point.prototype.Material = function (settings) {
-  // return new THREE.MeshLambertMaterial(settings);
-  return new THREE.MeshToonMaterial(settings);
+  return new MeshToonMaterial(settings);
 };
 
 export default Point;
