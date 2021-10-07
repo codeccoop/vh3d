@@ -69,6 +69,50 @@
             align-items: center;
 }
 
+.ie .main .text {
+    width: 700px;
+    padding-left: 200px;
+}
+
+@media screen and (max-width: 1000px) {
+    .ie .main .text {
+        width: 500px;
+        padding-left: 0;
+    }
+}
+
+@media screen and (max-height: 700px) {
+    .ie .main {
+        padding-top: 5%;
+    }
+}
+
+.ie .main .text h1 {
+    position: relative;
+}
+
+@media screen and (max-width: 1000px) {
+    .ie .main .text h1 {
+        text-align: center;
+    }
+}
+
+.ie .main .text h1 .piece {
+    position: absolute;
+    z-index: 10;
+    width: 200px;
+    height: 150px;
+    left: -230px;
+    top: -20px;
+}
+
+@media screen and (max-width: 1000px) {
+    .ie .main .text h1 .piece {
+        left: 150px;
+        top: 220px;
+    }
+}
+
 .ie .main .text p.enter-btn {
     margin: 2em 0px;
     text-align: center;
@@ -80,18 +124,14 @@
     font-weight: bold;
 }
 
-.ie .main .piece {
-    display: none;
-    position: absolute;
-    z-index: 10;
-    width: 200px;
-    height: auto;
-    left: calc(calc(100vw - 500px) / 2 - 210px);
-    top: calc(10% + 165px);
+.ie .main .text .link {
+    text-align: left;
 }
 
-.ie .main .text .link {
-    text-align: center;
+@media screen and (max-width: 1000px) {
+    .ie .main .text .link {
+        text-align: center;
+    }
 }
 
 #useruri {
