@@ -73,7 +73,11 @@
         document
           .getElementsByClassName("ie")[0]
           .setAttribute("class", "ie resume");
-        var uri = "https://fem.vallhebron.com/#/game/resume?pieceId=" + id;
+        var query = '';
+        if (id != null && id !== 'undefined') {
+          query = '?pieceId=' + id;
+        }
+        var uri = "https://fem.vallhebron.com/#/game/resume" + query;
         document.getElementById("resumeuri").setAttribute("href", uri);
         document.getElementById("resumeuri").innerText = uri;
       } else {
