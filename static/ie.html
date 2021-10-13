@@ -39,8 +39,8 @@
         <div class="text resume">
           <h1><img src="/static/images/piece-blue.png" class="piece" />Avís</h1>
           <p>
-            Si vols veure com ha quedat el puzzle, fes-ho amb Google Chrome copiant i enganxant
-            aquest enllaç
+            Si vols veure com ha quedat el puzzle, fes-ho amb Google Chrome
+            copiant i enganxant aquest enllaç
           </p>
           <p class="link"><a id="resumeuri"></a></p>
         </div>
@@ -55,31 +55,32 @@
       </div>
       <div class="footer"></div>
     </div>
-  </body>
-  <script>
-    var id = "",
-      mode = "",
-      hash = "";
-    var chunks = location.hash.replace("#", "").split("/"), chunk;
-    for (var i = 0; i < chunks.length; i++) {
-      chunk = chunks[i];
-      if (i === 0 && chunk !== "undefined") {
-        id = chunk;
-      } else if (i === 1) {
-        mode = chunk;
+    <script>
+      var id = "",
+        mode = "",
+        hash = "";
+      var chunks = location.hash.replace("#", "").split("/"),
+        chunk;
+      for (var i = 0; i < chunks.length; i++) {
+        chunk = chunks[i];
+        if (i === 0 && chunk !== "undefined") {
+          id = chunk;
+        } else if (i === 1) {
+          mode = chunk;
+        }
       }
-    }
-    if (mode === "resume") {
-      document
-        .getElementsByClassName("ie")[0]
-        .setAttribute("class", "ie resume");
-      var uri = "https://fem.vallhebron.com/#/game/resume?pieceId=" + id;
-      document.getElementById("resumeuri").setAttribute("href", uri);
-      document.getElementById("resumeuri").innerText = uri;
-    } else {
-      var uri = "https://fem.vallhebron.com/#/?pieceId=" + id;
-      document.getElementById("useruri").setAttribute("href", uri);
-      document.getElementById("useruri").innerText = uri;
-    }
-  </script>
+      if (mode === "resume") {
+        document
+          .getElementsByClassName("ie")[0]
+          .setAttribute("class", "ie resume");
+        var uri = "https://fem.vallhebron.com/#/game/resume?pieceId=" + id;
+        document.getElementById("resumeuri").setAttribute("href", uri);
+        document.getElementById("resumeuri").innerText = uri;
+      } else {
+        var uri = "https://fem.vallhebron.com/#/?pieceId=" + id;
+        document.getElementById("useruri").setAttribute("href", uri);
+        document.getElementById("useruri").innerText = uri;
+      }
+    </script>
+  </body>
 </html>
