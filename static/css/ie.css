@@ -14,6 +14,18 @@
     padding-bottom: 50px;
 }
 
+.ie.resume .text.resume {
+    display: initial;
+}
+
+.ie.resume .game {
+    display: none;
+}
+
+.ie:not(.resume) .text.resume {
+    display: none;
+}
+
 .ie h1 {
     margin-bottom: 0px;
     font-size: 2.5em;
