@@ -74,7 +74,7 @@
           .getElementsByClassName("ie")[0]
           .setAttribute("class", "ie resume");
         var query = '';
-        if (id != null && id !== 'undefined') {
+        if (id != "" && id !== 'undefined') {
           query = '?pieceId=' + id;
         }
         var uri = "https://fem.vallhebron.com/#/game/resume" + query;
