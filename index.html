@@ -1,21 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>vh3d</title>
+      <title><%= htmlWebpackPlugin.options.title %></title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="<%= htmlWebpackPlugin.options.title %>" />
 
-    <link href="/static/css/index.css" rel="stylesheet" type="text/css" />
-
-    <!--
-    <script src="/vendor/vue.min.js"></script>
-    <script src="/vendor/vue-router.min.js"></script>
-    <script src="/vendor/turf.min.js"></script>
-    <script src="/vendor/three.min.js"></script>
-    <script src="/vendor/vue-carousel.min.js"></script>
-    <script src="/vendor/OrbitControls.js"></script>
-    <script src="/vendor/PointerLockControls.js"></script>
-    <script src="/vendor/GLTFLoader.js"></script> -->
+    <link href="static/css/index.css" rel="stylesheet" type="text/css" />
 
     <link
       rel="shortcut icon"
@@ -43,10 +34,10 @@
             .split("/")
             .pop();
         }
-        location = "/static/ie.html" + "#" + id + "/" + mode;
+        location = "static/ie.html" + "#" + id + "/" + mode;
       } else {
         var script = document.createElement("script");
-        script.setAttribute("src", "/index.js");
+        script.setAttribute("src", "index.js");
         document.getElementsByTagName("head")[0].appendChild(script);
       }
     </script>

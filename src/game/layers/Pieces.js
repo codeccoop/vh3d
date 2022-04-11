@@ -1,4 +1,4 @@
-import { TextureLoader, NearestFilter, Vector3 } from 'three'
+import { TextureLoader, NearestFilter, Vector3 } from "three";
 
 import Layer from "../geojson2three/components/Layer.js";
 
@@ -18,28 +18,28 @@ function Pieces(settings) {
 
 Pieces.prototype = Object.create(Layer.prototype);
 
-Pieces.prototype.load = function (piece_id) {
+Pieces.prototype.load = function(piece_id) {
   return new Promise((res, rej) => {
-    this.loader.load("/puzzle/" + piece_id, (texture) => {
+    this.loader.load("puzzle/" + piece_id, texture => {
       texture.magFilter = NearestFilter;
       texture.center.set(0.5, 0.5);
       // texture.rotation = Math.PI * 0.5;
       this.settings.map = texture;
-      fetch("/static/data/lego.base.geojson", {
+      fetch("static/data/lego.base.geojson", {
         method: "GET",
       })
-        .then((res) => res.json().then(this.parse))
-        .then((_) => res())
-        .catch((err) => rej(err));
+        .then(res => res.json().then(this.parse))
+        .then(_ => res())
+        .catch(err => rej(err));
     });
   });
 };
 
-Pieces.prototype.render = function () {
+Pieces.prototype.render = function() {
   Layer.prototype.render.call(this);
 };
 
-Pieces.prototype.localToWorld = function (vector) {
+Pieces.prototype.localToWorld = function(vector) {
   const mesh = this.geometry.shapes[0];
   mesh.updateWorldMatrix();
   const geom = mesh.geometry;
@@ -80,7 +80,7 @@ Pieces.prototype.localToWorld = function (vector) {
   );
 };
 
-Pieces.prototype.getTargetLocation = function (playerData) {
+Pieces.prototype.getTargetLocation = function(playerData) {
   if (!this.built) return;
   const xRel = this.geometry.shapes[0].geometry.parameters.width / 120;
   const yRel = this.geometry.shapes[0].geometry.parameters.height / 75;
@@ -89,13 +89,12 @@ Pieces.prototype.getTargetLocation = function (playerData) {
   return this.localToWorld({ x: x, y: y });
 };
 
-Pieces.prototype.getNearest = function (vector, direction) {
+Pieces.prototype.getNearest = function(vector, direction) {
   const mesh = this.geometry.shapes[0];
   const width = mesh.geometry.parameters.width;
   const height = mesh.geometry.parameters.height;
   const rotation = mesh.rotation.reorder("ZYX");
-  let forward =
-    Math.round((direction.z - rotation.z) * (360 / (2 * Math.PI))) % 360;
+  let forward = Math.round((direction.z - rotation.z) * (360 / (2 * Math.PI))) % 360;
   if (forward < 0) forward = 360 + forward;
   forward =
     forward > 360 * 0.125 && forward <= 360 * 0.375
@@ -160,8 +159,7 @@ Pieces.prototype.getNearest = function (vector, direction) {
     Math.pow(lPosition.x - lOrigin.x, 2) + Math.pow(lOrigin.y - lPosition.y, 2)
   );
   const lBearing =
-    Math.PI * 1.5 +
-    Math.atan((lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y));
+    Math.PI * 1.5 + Math.atan((lPosition.x - lOrigin.x) / (lOrigin.y - lPosition.y));
 
   const position = {
     x: origin.x + Math.cos(lBearing + rotation.z) * lRadius,

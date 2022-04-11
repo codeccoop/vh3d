@@ -1,80 +1,81 @@
-@import url('/static/css/Game.css');
-@import url('/static/css/Cover.css');
+@import url("./Game.css");
+@import url("./Cover.css");
 
 * {
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-    font-family: 'Raleway', sans-serif;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: "Raleway", sans-serif;
 }
 
 :root {
-    --cover-bg-color: #ffe600;
-    --vh-dark-blue: #0429be;
-    --vh-blue: #264EFA;
+  --cover-bg-color: #ffe600;
+  --vh-dark-blue: #0429be;
+  --vh-blue: #264efa;
 }
 
-html, body {
-    margin: 0;
-    padding: 0px;
-    height: 100%;
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-    font-size: 18px;
-    line-height: 1.7;
+html,
+body {
+  margin: 0;
+  padding: 0px;
+  height: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 ul {
-    padding: 0px;
-    list-style: none;
+  padding: 0px;
+  list-style: none;
 }
 
 .centered {
-    text-align: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+  text-align: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
 }
 
 .text {
-    width: 500px;
-    margin: 3em auto auto;
+  width: 500px;
+  margin: 3em auto auto;
 }
 
 button.button {
-    background: #ffffff00;
-    border: 1px solid;
-    border-radius: 5px;
-    width: 300px;
-    font-size: 1.2em;
-    color: white;
-    padding: .8em;
-    cursor: pointer;
-    -webkit-transition: background 300ms;
-    transition: background 300ms;
+  background: #ffffff00;
+  border: 1px solid;
+  border-radius: 5px;
+  width: 300px;
+  font-size: 1.2em;
+  color: white;
+  padding: 0.8em;
+  cursor: pointer;
+  -webkit-transition: background 300ms;
+  transition: background 300ms;
 }
 
 button.button.black {
-    background: #00000000;
-    color: black;
+  background: #00000000;
+  color: black;
 }
 
 button.button:hover {
-    background: #ffffff55;
+  background: #ffffff55;
 }
 
 button.button.black:hover {
-    background: #00000033;
+  background: #00000033;
 }
 
 @media only screen and (max-width: 700px) and (orientation: portrait) {
-    .text {
-        width: 300px;
-    }
+  .text {
+    width: 300px;
+  }
 
-    button.button {
-        width: 150px;
-    }
+  button.button {
+    width: 150px;
+  }
 }

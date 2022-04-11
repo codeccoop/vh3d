@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>vh3d</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="<%= htmlWebpackPlugin.options.title %>" />
 
-    <link href="/static/css/index.css" rel="stylesheet" type="text/css" />
-    <link href="/static/css/ie.css" rel="stylesheet" type="text/css" />
+    <link href="static/css/index.css" rel="stylesheet" type="text/css" />
+    <link href="static/css/ie.css" rel="stylesheet" type="text/css" />
 
     <link
       rel="shortcut icon"
       type="image/png"
-      href="/static/images/vh-icon.png"
+      href="static/images/vh-icon.png"
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,19 +26,19 @@
     <div class="ie">
       <div class="header">
         <img
-          src="/static/images/pla-estrategic.png"
+          src="static/images/pla-estrategic.png"
           class="logo-pla"
           type="image/png"
         />
         <img
-          src="/static/images/logo-vh--blue.png"
+          src="static/images/logo-vh--blue.png"
           class="logo-vh"
           type="image/png"
         />
       </div>
       <div class="main">
         <div class="text resume">
-          <h1><img src="/static/images/piece-blue.png" class="piece" />Avís</h1>
+          <h1><img src="static/images/piece-blue.png" class="piece" />Avís</h1>
           <p>
             Si vols veure com ha quedat el puzle, fes-ho amb Google Chrome
             copiant i enganxant aquest enllaç
@@ -45,7 +46,7 @@
           <p class="link"><a id="resumeuri"></a></p>
         </div>
         <div class="text game">
-          <h1><img src="/static/images/piece-blue.png" class="piece" />Avís</h1>
+          <h1><img src="static/images/piece-blue.png" class="piece" />Avís</h1>
           <p>
             Si vols jugar, fes-ho amb Google Chrome copiant i enganxant aquest
             enllaç

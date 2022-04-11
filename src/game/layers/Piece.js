@@ -12,10 +12,10 @@ function Piece(settings) {
 
 Piece.prototype = Object.create(Layer.prototype);
 
-Piece.prototype.load = function (piece_id) {
-  return fetch("/static/data/piece.geojson", {
+Piece.prototype.load = function(piece_id) {
+  return fetch("static/data/piece.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };

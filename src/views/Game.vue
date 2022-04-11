@@ -1,8 +1,8 @@
 <template>
   <div id="game">
     <div v-if="(!gameLock && !done) || waiting" class="game-cover" >
-      <img src="/static/images/pla-estrategic--white.svg" class="logo-pla"/>
-      <img src="/static/images/logo-vh--white.png" class="logo-vh"/>
+      <img src="static/images/pla-estrategic--white.svg" class="logo-pla"/>
+      <img src="static/images/logo-vh--white.png" class="logo-vh"/>
       <div v-if="waiting === true" class="game-cover__loader">Carregant...</div>
       <div v-if="waiting === false" class="game-cover__menu-wrapper">
         <div class="game-cover__menu">
@@ -32,39 +32,39 @@
           <div class="controls">
             <div class="control move">
               <div class="icon">
-              <img src="/static/images/arrows-icon.svg"/>
-              <img src="/static/images/wasd-icon.svg"/>
+              <img src="static/images/arrows-icon.svg"/>
+              <img src="static/images/wasd-icon.svg"/>
               </div>
               <p>Per moure’t pel campus i pel puzle, has d’utilitzar les fletxes o aquestes lletres, el que prefereixis.</p>
             </div>
             <div class="control action">
-              <div class="icon"><img src="/static/images/enter-icon.svg"/></div>
+              <div class="icon"><img src="static/images/enter-icon.svg"/></div>
               <p>Per col·locar la teva peça quan arribis al lloc que li correspon.</p>
             </div>
             <label class="general">Durant tot el joc pots utilitzar aquests comandaments:</label>
             <div class="control map">
-              <div class="icon"><img src="/static/images/map-icon.svg"/></div>
+              <div class="icon"><img src="static/images/map-icon.svg"/></div>
               <p>Per anar al mapa i veure on ets.</p>
             </div>
             <div class="control menu">
-              <div class="icon"><img src="/static/images/esc-icon.svg"/></div>
+              <div class="icon"><img src="static/images/esc-icon.svg"/></div>
               <p>Per aturar el joc i tornar al menú.</p>
             </div>
             <div class="control help">
-              <div class="icon"><img src="/static/images/help-icon.svg"/></div>
+              <div class="icon"><img src="static/images/help-icon.svg"/></div>
               <p>Per veure un resum dels controls.</p>
             </div>
             <label class="map">Si surts del joc i vas al mapa, hauràs d’utilitzar el ratolí:</label>
             <div class="control orbit">
-              <div class="icon"><img src="/static/images/left-click-icon.svg"/></div>
+              <div class="icon"><img src="static/images/left-click-icon.svg"/></div>
               <p>Per voltejar el mapa.</p>
             </div>
             <div class="control pan">
-              <div class="icon"><img src="/static/images/right-click-icon.svg"/></div>
+              <div class="icon"><img src="static/images/right-click-icon.svg"/></div>
               <p>Per desplaçar el mapa.</p>
             </div>
             <div class="control zoom">
-              <div class="icon"><img src="/static/images/zoom-icon.svg"/></div>
+              <div class="icon"><img src="static/images/zoom-icon.svg"/></div>
               <p>Per apropar o allunyar el mapa.</p>
             </div>
           </div>
@@ -74,7 +74,7 @@
         </div>
         <div v-else class="game-cover__video" ref="gameVideo">
           <video ref="resume" v-if="isResume" id="resume" autoplay muted playsinline>
-            <source src="/static/multimedia/resume.mp4"></source>
+            <source src="static/multimedia/resume.mp4"></source>
             El teu navegador no pot reproduir videos amb HTML.
           </video>
         </div>
@@ -159,7 +159,7 @@ export default {
     };
   },
   beforeMount() {
-    fetch("/piece/" + this.pieceId)
+    fetch("piece/" + this.pieceId)
       .then((res) => res.json())
       .then((data) => {
         this.game = new Game(
@@ -212,7 +212,7 @@ export default {
       return Math.min(window.innerHeight, window.innerWidth) + "px";
     },
     doneImageSrc() {
-      return "/puzzle/0";
+      return "puzzle/0";
     },
   },
   methods: {
@@ -276,7 +276,7 @@ export default {
     submitForm(field, value, el) {
       clearTimeout(submitTimeout);
       submitTimeout = setTimeout(() => {
-        fetch("/form/" + this.pieceId, {
+        fetch("form/" + this.pieceId, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -295,7 +295,7 @@ export default {
             JSON.stringify(event.state)
         );
       });
-      fetch("/static/resources.json").then((res) => {
+      fetch("static/resources.json").then((res) => {
         res.json().then((config) => {
           window.open(config.VIDEO_URL);
         });

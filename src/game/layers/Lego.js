@@ -1,4 +1,4 @@
-import { TextureLoader, RepeatWrapping } from 'three'
+import { TextureLoader, RepeatWrapping } from "three";
 
 import Layer from "../geojson2three/components/Layer.js";
 
@@ -17,29 +17,29 @@ function Lego(settings) {
 
 Lego.prototype = Object.create(Layer.prototype);
 
-Lego.prototype.load = function () {
+Lego.prototype.load = function() {
   return new Promise((res, rej) => {
-    this.loader.load("/static/images/lego.texture--gray.png", (texture) => {
+    this.loader.load("static/images/lego.texture--gray.png", texture => {
       texture.wrapS = RepeatWrapping;
       texture.wrapT = RepeatWrapping;
       texture.repeat.set(120, 75);
       this.settings.map = texture;
-      fetch("/static/data/lego.base.geojson", {
+      fetch("static/data/lego.base.geojson", {
         method: "GET",
       })
-        .then((res) => res.json().then(this.parse))
-        .then((_) => res())
-        .catch((err) => rej(err));
+        .then(res => res.json().then(this.parse))
+        .then(_ => res())
+        .catch(err => rej(err));
     });
   });
   return fetch("/static/data/lego.base.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };
 
-Lego.prototype.render = function () {
+Lego.prototype.render = function() {
   Layer.prototype.render.call(this);
   // this.geometry.shapes[0].rotation.z = 0;
   // this.geometry.shapes[0].rotateZ(Math.PI - 0.3);

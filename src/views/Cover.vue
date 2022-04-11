@@ -1,8 +1,8 @@
 <template>
   <div id="cover">
     <header>
-      <img src="/static/images/pla-estrategic--blue.svg" class="logo-pla">
-      <img src="/static/images/logo-vh--blue.png" class="logo-vh">
+      <img src="static/images/pla-estrategic--blue.svg" class="logo-pla">
+      <img src="static/images/logo-vh--blue.png" class="logo-vh">
     </header>
     <main class="text">
       <h1>Benvingut, Benvinguda</h1>
@@ -10,7 +10,7 @@
       <h3>Juguem?</h3>
       <p>La forma de participar-hi és molt senzilla. Quan cliquis al botó de jugar, t’apareixerà una imatge virtual aèria del campus de Vall d’Hebron. El reconeixeràs de seguida. Al costat veuràs les instruccions del joc i els comandaments o tecles que et permetran moure’t pel campus.</p>
       <p v-if="pieceId" class="enter-btn"><router-link :to="{path: '/game', query: { pieceId: pieceId }}" ><button class="button black">Jugar</button></router-link></p>
-      <img src="/static/images/piece-blue.png" class="piece" />
+      <img src="static/images/piece-blue.png" class="piece" />
     </main>
     <div id="disclaimer" v-if="showDisclaimer">
       <div class="text">
@@ -32,7 +32,7 @@ export default {
   },
   beforeMount() {
     if (!this.pieceId) {
-      fetch("/piece").then(res => res.json()).then(res => this.$router.push({query: {pieceId: res.id}}))
+      fetch("piece").then(res => res.json()).then(res => this.$router.push({query: {pieceId: res.id}}))
     }
   },
   computed: {

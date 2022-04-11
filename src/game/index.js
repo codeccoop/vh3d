@@ -11,9 +11,9 @@ import {
   MeshToonMaterial,
   Mesh,
   DoubleSide,
-  FontLoader
-} from "three"
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+  FontLoader,
+} from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 import Scene from "./scene/index.js";
 
@@ -78,8 +78,7 @@ export default class Game {
 
   paint() {
     if (this.resizeToDisplaySize()) {
-      this.scene.camera.aspect =
-        this.canvas.clientWidth / this.canvas.clientHeight;
+      this.scene.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
       this.scene.camera.updateProjectionMatrix();
     }
 
@@ -140,7 +139,7 @@ export default class Game {
       this.scene.state.manualUnlock = true;
       this.done = true;
       this.scene.done = true;
-      this.scene.legoShadow.children.forEach((child) => {
+      this.scene.legoShadow.children.forEach(child => {
         child.material = new MeshLambertMaterial({
           color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
         });
@@ -173,7 +172,7 @@ export default class Game {
     // if (this.mode === "cover") {
     const self = this;
     const loader = new FontLoader();
-    loader.load("/static/helvetiker_bold.typeface.json", function (font) {
+    loader.load("static/helvetiker_bold.typeface.json", function(font) {
       const textMat = new MeshToonMaterial({ color: 0xffffff });
       const exitGeom = new PlaneGeometry(100, 30);
       const exitText = new TextGeometry("Sortida", {
@@ -250,7 +249,7 @@ export default class Game {
     this.scene.closinesRing = closinesRing;
 
     this.loadGltfs(() => {
-      campus.load().then((campus) => {
+      campus.load().then(campus => {
         this.scene.bbox = campus.geometry.bbox;
         this.scene.initPosition();
         if (this.mode !== "pointer") this.scene.camera.centerOn(campus);
@@ -269,9 +268,7 @@ export default class Game {
         }
 
         if (this.scene.legoPiece) {
-          const args = Array.apply(null, Array(3)).map(
-            (d) => this.scene.state.worldScale
-          );
+          const args = Array.apply(null, Array(3)).map(d => this.scene.state.worldScale);
           this.scene.legoPiece.scale.set(...args);
           this.scene.legoShadow.scale.set(...args);
         }
@@ -284,7 +281,7 @@ export default class Game {
           tallTrees.load(),
           lego.load(),
           pieces.load(this.playerData.id),
-        ]).then((layers) => {
+        ]).then(layers => {
           sphericCanopies.parse(sphericTrees.json);
           tallCanopies.parse(tallTrees.json);
           this.scene.build();
@@ -310,9 +307,9 @@ export default class Game {
   loadGltfs(callback) {
     if (this.mode === "pointer") {
       const gltfLoader = new GLTFLoader();
-      gltfLoader.load("/static/gltf/piezaLego.gltf", (gltf) => {
+      gltfLoader.load("static/gltf/piezaLego.gltf", gltf => {
         const piece = gltf.scene;
-        gltfLoader.load("/static/gltf/arm.gltf", (gltf) => {
+        gltfLoader.load("static/gltf/arm.gltf", gltf => {
           const armRight = gltf.scene;
           armRight.rotation.reorder("ZYX");
           armRight.rotation.x = Math.PI * 0.3;
@@ -322,14 +319,14 @@ export default class Game {
           piece.rotation.x = Math.PI * 0.5;
           const pieceShadow = piece.clone();
 
-          piece.children.forEach((child) => {
+          piece.children.forEach(child => {
             if (child.type === "Mesh") {
               child.material = new MeshLambertMaterial({
                 color: `rgb(${this.playerData.red}, ${this.playerData.green}, ${this.playerData.blue})`,
               });
             }
           });
-          pieceShadow.children.forEach((child) => {
+          pieceShadow.children.forEach(child => {
             if (child.type === "Mesh") {
               child.material = new MeshBasicMaterial({
                 color: 0xffffff,
@@ -338,7 +335,7 @@ export default class Game {
               });
             }
           });
-          armRight.children.forEach((child) => {
+          armRight.children.forEach(child => {
             if (child.type === "Mesh") {
               child.material = new MeshToonMaterial({
                 color: "rgb(240, 200, 160)",
@@ -402,13 +399,13 @@ export default class Game {
       this.scene.closinesRing.rotation.z = targetBearing;
 
       if (distance <= 0.4) {
-        this.scene.legoShadow.children.forEach((child) => {
+        this.scene.legoShadow.children.forEach(child => {
           child.material.color.setHex(0x00ff00);
         });
         this.isOnTarget = true;
         this.paint();
       } else {
-        this.scene.legoShadow.children.forEach((child) => {
+        this.scene.legoShadow.children.forEach(child => {
           child.material.color.setHex(0xff0000);
         });
         this.paint();

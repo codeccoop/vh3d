@@ -16,10 +16,10 @@ function SphericTrees(settings) {
 
 SphericTrees.prototype = Object.create(Layer.prototype);
 
-SphericTrees.prototype.load = function () {
-  return fetch("/static/data/trees.tall.geojson", {
+SphericTrees.prototype.load = function() {
+  return fetch("static/data/trees.tall.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };

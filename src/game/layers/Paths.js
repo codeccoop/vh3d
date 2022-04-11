@@ -10,10 +10,10 @@ function Paths(settings) {
 
 Paths.prototype = Object.create(Layer.prototype);
 
-Paths.prototype.load = function () {
-  return fetch("/static/data/paths.geojson", {
+Paths.prototype.load = function() {
+  return fetch("static/data/paths.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };

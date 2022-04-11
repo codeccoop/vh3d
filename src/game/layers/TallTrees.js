@@ -15,10 +15,10 @@ function TallTrees(settings) {
 
 TallTrees.prototype = Object.create(Layer.prototype);
 
-TallTrees.prototype.load = function () {
-  return fetch("/static/data/trees.sphere.geojson", {
+TallTrees.prototype.load = function() {
+  return fetch("static/data/trees.sphere.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };

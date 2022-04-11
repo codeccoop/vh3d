@@ -6,7 +6,7 @@ function Buildings(settings) {
   settings.zFactor = 5;
   settings.base = "base";
   settings.edges = true;
-  settings.color = function (feat) {
+  settings.color = function(feat) {
     switch (feat.properties.id) {
       case 1:
         return 0xef9400;
@@ -58,10 +58,10 @@ function Buildings(settings) {
 
 Buildings.prototype = Object.create(Layer.prototype);
 
-Buildings.prototype.load = function () {
-  return fetch("/static/data/buildings.geojson", {
+Buildings.prototype.load = function() {
+  return fetch("static/data/buildings.geojson", {
     method: "GET",
-  }).then((res) => {
+  }).then(res => {
     return res.json().then(this.parse);
   });
 };
