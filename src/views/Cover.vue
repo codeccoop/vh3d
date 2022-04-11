@@ -30,6 +30,11 @@ export default {
       showDisclaimer: false,
     };
   },
+  beforeMount() {
+    if (!this.pieceId) {
+      fetch("/piece").then(res => res.json()).then(res => this.$router.push({query: {pieceId: res.id}}))
+    }
+  },
   computed: {
     isTouch() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

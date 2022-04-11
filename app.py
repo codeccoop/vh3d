@@ -1,4 +1,12 @@
-from flask import Flask, send_from_directory, request, abort, jsonify, url_for, make_response
+from flask import (
+    Flask,
+    send_from_directory,
+    request,
+    abort,
+    jsonify,
+    url_for,
+    make_response,
+)
 import sqlite3
 from PIL import Image
 import numpy as np
@@ -11,25 +19,32 @@ except ImportError:
 
 app = Flask(__name__)
 
-tables = {
-    "pieces": [
-        "id",
-        "row",
-        "col",
-        "red",
-        "green",
-        "blue",
-        "done"
-    ]
-}
+tables = {"pieces": ["id", "row", "col", "red", "green", "blue", "done"]}
 
 
-def format_piece (rec):
+def format_piece(rec):
     return {header: rec[i] for i, header in enumerate(tables["pieces"])}
 
 
+@app.route("/piece")
+def piece_id():
+    if request.method == "GET":
+        conn = sqlite3.connect("vh3d.db")
+        cur = conn.cursor()
+
+        cur.execute("SELECT ROWID FROM pieces WHERE NOT done")
+        piece = cur.fetchone()
+
+        if piece:
+            return jsonify({"id": piece[0]})
+        else:
+            return jsonify({"id": random.randint(0, 9000)})
+    else:
+        return abort(405)
+
+
 @app.route("/piece/<int:piece_id>", methods=["GET", "POST"])
-def piece (piece_id):
+def piece(piece_id):
     conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
 
@@ -38,7 +53,10 @@ def piece (piece_id):
             cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces")
             res = [format_piece(piece) for piece in cur.fetchall()]
         else:
-            cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?", (piece_id,))
+            cur.execute(
+                "SELECT ROWID, row, col, red, green, blue, done FROM pieces WHERE ROWID = ?",
+                (piece_id,),
+            )
             piece = cur.fetchone()
             if not piece:
                 return abort(401)
@@ -55,7 +73,7 @@ def piece (piece_id):
 
 
 @app.route("/puzzle/<int:piece_id>")
-def puzzle (piece_id):
+def puzzle(piece_id):
     conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
     cur.execute("SELECT ROWID, row, col, red, green, blue, done FROM pieces")
@@ -65,7 +83,14 @@ def puzzle (piece_id):
 
     for piece in pieces:
         piece = format_piece(piece)
-        image_array[int(piece["row"]), int(piece["col"])] = [piece["red"], piece["green"], piece["blue"], (piece_id == 0 or piece["id"] != piece_id and piece["done"] == 1) and 255 or 0]
+        image_array[int(piece["row"]), int(piece["col"])] = [
+            piece["red"],
+            piece["green"],
+            piece["blue"],
+            (piece_id == 0 or piece["id"] != piece_id and piece["done"] == 1)
+            and 255
+            or 0,
+        ]
 
     img = Image.fromarray(image_array)
     img.save("static/images/puzzle.png")
@@ -77,7 +102,7 @@ def puzzle (piece_id):
 
 
 @app.route("/puzzle/reset")
-def reset ():
+def reset():
     if key is not None and request.args.get("key") != str(key):
         abort(401)
 
@@ -90,22 +115,27 @@ def reset ():
 
 
 @app.route("/puzzle/fullfill/<int:quantity>", methods=["GET"])
-def fullfill (quantity):
+def fullfill(quantity):
     if key is not None and request.args.get("key") != str(key):
         abort(401)
 
     conn = sqlite3.connect("vh3d.db")
     cur = conn.cursor()
-    cur.execute("UPDATE pieces SET done = TRUE WHERE ROWID IN (SELECT ROWID FROM pieces WHERE done IS FALSE ORDER BY RANDOM() LIMIT ?)", (quantity,))
+    cur.execute(
+        "UPDATE pieces SET done = TRUE WHERE ROWID IN (SELECT ROWID FROM pieces WHERE done IS FALSE ORDER BY RANDOM() LIMIT ?)",
+        (quantity,),
+    )
     conn.commit()
     conn.close()
     return jsonify({"success": True})
 
 
 @app.route("/form/<int:piece_id>", methods=["GET", "POST"])
-def form (piece_id):
+def form(piece_id):
     if request.method == "GET":
-        if key is not None and (piece_id != 0 or key and request.args.get("key") != str(key)):
+        if key is not None and (
+            piece_id != 0 or key and request.args.get("key") != str(key)
+        ):
             abort(401)
 
         conn = sqlite3.connect("vh3d.db")
@@ -113,11 +143,16 @@ def form (piece_id):
         cur.execute("SELECT ROWID, name, area, opinion FROM form")
         responses = cur.fetchall()
 
-        response = make_response("id,name,area,opinion\n" + "\n".join([
-            ",".join(['"' + str(d) + '"' for d in res]) for res in responses
-        ]))
+        response = make_response(
+            "id,name,area,opinion\n"
+            + "\n".join(
+                [",".join(['"' + str(d) + '"' for d in res]) for res in responses]
+            )
+        )
         response.headers.set("Content-Type", "text/csv")
-        response.headers.set("Content-Disposition", "attachment; filename=\"respostes.csv\"")
+        response.headers.set(
+            "Content-Disposition", 'attachment; filename="respostes.csv"'
+        )
         return response
 
     elif request.method == "POST":
@@ -130,10 +165,13 @@ def form (piece_id):
         else:
             abort(405)
 
-        cur.execute(query, (
-            payload["value"],
-            piece_id,
-        ))
+        cur.execute(
+            query,
+            (
+                payload["value"],
+                piece_id,
+            ),
+        )
         conn.commit()
         conn.close()
         return jsonify({"success": True})
